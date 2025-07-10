@@ -12,15 +12,15 @@ import HandleImageLoading from "./handleImageListing";
 
 function SearchFilter(){
    return(
-      <div className="my-10 transistion-all duration-150 ease-in-out">
+      <div className="my-10 ">
          <div className="mb-4 ">
              <Label >
          <span className=" text-base md:text-[2vw] " >Short-Let</span><Switch  /> <span className=" font-bold text-base md:text-[2vw]">Full-Let</span>
         </Label>
          </div>
-         <div className="w-fit mb-7">
+         <div className=" mb-7">
              <form action="" className="grid md:grid-cols-[2fr_1fr] ">
-                <div className="flex box text-left px-3 w-full">
+                <div className="flex box text-left px-3 w-fit">
        
         <div className="py-2 ">
             <label htmlFor="text" className="block text-sm ">Region </label>
@@ -46,7 +46,7 @@ function SearchFilter(){
 
 export default function Body(){
    return(
-    <div className="px-5 mx-auto text-center ">
+    <div className="px-5 mx-auto text-center transistion-all duration-150 ease-in-out">
          <h2 className="text-[5vw] leading-none my-5  font-Merriweather">
             Find Your Dream Home
          </h2>
