@@ -19,7 +19,7 @@ function SearchFilter(){
         </Label>
          </div>
          <div className="w-fit mb-7">
-             <form action="" className="grid grid-cols-[2fr_1fr] ">
+             <form action="" className="grid md:grid-cols-[2fr_1fr] ">
                 <div className="flex box text-left px-3 w-full">
        
         <div className="py-2 ">
@@ -33,7 +33,7 @@ function SearchFilter(){
          </div>
         
          </div>
-       <div className="ml-3 flex justify-start items-center "> <button type="submit" className="button"> search</button></div>
+       <div className="ml-3 flex justify-center md:justify-start items-center "> <button type="submit" className="button"> search</button></div>
              </form>
          </div>
                  
