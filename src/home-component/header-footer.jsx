@@ -7,7 +7,7 @@ export default function Default({children}) {
   
     <div>
 
-    <div className="border-b-2 border border-red-500  ">
+    <div className="border-b-2">
       <div className="  grid grid-cols-[1fr_1fr_1fr] gap-16 w-[90%] mx-auto my-3 ">
      <button> <div className="  border round-bg p-3 md:p-5  border-gray-300 flex items-center justify-center">
   <FontAwesomeIcon icon={faBars} className="sm: h-3 w-3"/>

@@ -20,16 +20,16 @@ function SearchFilter(){
          </div>
          <div className=" mb-7">
              <form action="" className="grid md:grid-cols-[2fr_1fr] ">
-                <div className="flex box text-left px-3 w-fit">
+                <div className="flex flex-row gap-x-3 box text-left px-3 w-full max-w-full">
        
-        <div className="py-2 ">
+        <div className="py-2 flex-1 min-w-0">
             <label htmlFor="text" className="block text-sm ">Region </label>
-           <input type="text" placeholder="input region of choice" id="text" className="placeholder:text-sm "/>
+           <input type="text" placeholder="input region" id="text" className="placeholder:text-sm w-full"/>
          </div>
 
-          <div className="border-l border-gray-400 pl-3 py-2">
+          <div className="border-l border-gray-400 pl-3 py-2 flex-1 min-w-0">
             <label htmlFor="date" className="block text-sm">Let Period</label>
-           <input type="date" placeholder="" id="date" className="text-sm text-gray-400"/>
+           <input type="date" placeholder="" id="date" className="text-sm text-gray-400 w-full"/>
          </div>
         
          </div>
