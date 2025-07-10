@@ -5,7 +5,7 @@ import Shortlet from "@/shortlet/shortlet-house"
 export default function HandleImageLoading(){
 return(
   
-<div className="flex flex-wrap space-x-1 space-y-5">
+<div className="flex flex-wrap space-x-2 space-y-5">
       {Listing.map((im,index)=>{
 
          return(
