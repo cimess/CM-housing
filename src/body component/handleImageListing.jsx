@@ -8,7 +8,6 @@ return(
 <div className="flex flex-wrap space-x-1 space-y-5">
       {Listing.map((im,index)=>{
 
-         console.log(im);
          return(
 <Shortlet key={index} {...im} />
          )

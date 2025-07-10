@@ -1,13 +1,14 @@
 import {Label} from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import image from '../assets/images/my-banners/banner.jpg'
-
+import { faArrowAltCircleRight } from "@fortawesome/free-solid-svg-icons";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import ImageBox from "./image-componet";
 import BoxContainer from "./box-container";
 import lagosimage from '../assets/images/lagos/lagos.jpg'
 import ruralImage from '../assets/images/lagos/iyanaipaja.jpg';
 import HandleImageLoading from "./handleImageListing";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 
 function SearchFilter(){
@@ -55,8 +56,8 @@ export default function Body(){
 <h1 className="text-left mb-2">
          Popular cities
       </h1>
-      <p className="text-left">
-         Discover houses and apartments for rent and shortlet in our popular locations.
+      <p className="text-left text-lg font-thin flex justify-between items-center ">
+        Explore houses around you <FontAwesomeIcon icon={faArrowAltCircleRight} className="text-2xl"/>
       </p>
       <div className="overflow-x-auto scrollbar-hide">
 <div className="grid grid-flow-col auto-cols-max gap-x-3">
