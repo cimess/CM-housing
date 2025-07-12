@@ -47,7 +47,7 @@ function SearchFilter(){
 
 export default function Body(){
    return(
-    <div className="px-5 mx-auto text-center transistion-all duration-150 ease-in-out">
+    <div className="px-1 mx-auto text-center transistion-all duration-150 ease-in-out">
          <h2 className="text-[5vw] leading-none my-5  font-Merriweather">
             Find Your Dream Home
          </h2>

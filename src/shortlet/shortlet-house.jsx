@@ -25,7 +25,7 @@ return(
       <div className="text-left  sm:w-full ">
        
           
-         <div className="max-w-[300px] md:w-[30vw] md: max-w-[300px] h-[200px] relative mb-3 group">
+         <div className=" w-full max-w-[350px] md:w-[30vw] md: max-w-[300px] h-[200px] relative mb-3 group">
 
            <div className={`custom-prev-${sliderId} absolute left-2 top-1/2 z-10 text-white bg-black/40 p-[15px]  flex rounded-full`}>
   <FontAwesomeIcon icon={faArrowLeft} />
@@ -50,7 +50,7 @@ return(
        
           <SwiperSlide key={idx}>
             
- <div className="max-w-[400px] md:w-[30vw] md: max-w-[300px] h-[200px] relative mb-3 group hover:cursor-pointer">
+ <div className="w-full max-w-[350px] md:w-[30vw] md: max-w-[300px] h-[200px] relative mb-3 group hover:cursor-pointer">
             <img src={src} alt={alt} className="w-full h-full object-cover rounded shadow hover:shadow-lg " loading="lazy"/>
             <span className="absolute top-1 left-1  round-bg p-4 md:p-5 flex justify-center items-center bg-white group-hover:bg-transparent group-active:bg-transparent">
 <button><FontAwesomeIcon
