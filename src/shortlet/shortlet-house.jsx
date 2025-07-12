@@ -25,7 +25,7 @@ return(
       <div className="text-left  sm:w-full ">
        
           
-         <div className="max-w-[400px] md:w-[30vw] md: max-w-[300px] h-[200px] relative mb-3 group">
+         <div className="max-w-[300px] md:w-[30vw] md: max-w-[300px] h-[200px] relative mb-3 group">
 
            <div className={`custom-prev-${sliderId} absolute left-2 top-1/2 z-10 text-white bg-black/40 p-[15px]  flex rounded-full`}>
   <FontAwesomeIcon icon={faArrowLeft} />
