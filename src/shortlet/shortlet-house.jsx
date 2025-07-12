@@ -18,16 +18,16 @@ export default function Shortlet({image,src,owner,location,pet,bedrooms,bathroom
 return(
  
 
-   <div className=" ">
+   <div className="w-full md:max-w-[300px]">
 
         
       
       <div className="text-left  sm:w-full ">
        
           
-         <div className=" w-full max-w-[350px] md:w-[30vw] md: max-w-[300px] h-[200px] relative mb-3 group">
+         <div className="w-full   h-[200px] relative mb-3 group">
 
-           <div className={`custom-prev-${sliderId} absolute left-2 top-1/2 z-10 text-white bg-black/40 p-[15px]  flex rounded-full`}>
+           <div className={`custom-prev-${sliderId} absolute left-2 top-1/2 z-10 text-white bg-black/40 p-[15px]  flex rounded-full `}>
   <FontAwesomeIcon icon={faArrowLeft} />
 </div>
 <div className={`custom-next-${sliderId} absolute right-2 top-1/2 z-10 text-white bg-black/40 p-[15px] rounded-full flex`}>
@@ -44,13 +44,13 @@ return(
 }}
         pagination={{ clickable: true }}
         loop={true}
-        className="w-full "
+        
       >
         {image.map((src, idx) => (
        
           <SwiperSlide key={idx}>
             
- <div className="w-full max-w-[350px] md:w-[30vw] md: max-w-[300px] h-[200px] relative mb-3 group hover:cursor-pointer">
+ <div className="  h-[200px] relative mb-3 group hover:cursor-pointer">
             <img src={src} alt={alt} className="w-full h-full object-cover rounded shadow hover:shadow-lg " loading="lazy"/>
             <span className="absolute top-1 left-1  round-bg p-4 md:p-5 flex justify-center items-center bg-white group-hover:bg-transparent group-active:bg-transparent">
 <button><FontAwesomeIcon
@@ -88,7 +88,7 @@ return(
    Pet:  {pet}
    </span>
       </div>
-      <p className="mb-2 font-extralight text-sm md:max-w-[350px] md:w-[30vw]">{description}</p>
+      <p className="mb-2 font-extralight text-sm  md:max-w-[300px] ">{description}</p>
 
       <div className="mb-3 ">
 <div>
