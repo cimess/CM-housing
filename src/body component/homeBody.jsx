@@ -1,7 +1,7 @@
 import {Label} from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import image from '../assets/images/my-banners/banner.jpg'
-import { faArrowAltCircleRight } from "@fortawesome/free-solid-svg-icons";
+import {faArrowRight} from "@fortawesome/free-solid-svg-icons";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import ImageBox from "./image-componet";
 import BoxContainer from "./box-container";
@@ -57,7 +57,7 @@ export default function Body(){
          Popular cities
       </h1>
       <p className="text-left text-lg font-thin flex justify-between items-center ">
-        Explore houses around you <FontAwesomeIcon icon={faArrowAltCircleRight} className="text-2xl"/>
+        Explore houses around you <FontAwesomeIcon icon={faArrowRight} className="text-2xl"/>
       </p>
       <div className="overflow-x-auto scrollbar-hide">
 <div className="grid grid-flow-col auto-cols-max gap-x-3">
