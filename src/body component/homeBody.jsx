@@ -25,12 +25,12 @@ function SearchFilter(){
        
         <div className="py-2 flex-1 min-w-0">
             <label htmlFor="text" className="block text-sm ">Region </label>
-           <input type="text" placeholder="input region" id="text" className="placeholder:text-sm w-full"/>
+           <input type="text" placeholder="input region" id="text" className="placeholder:text-sm w-full input"/>
          </div>
 
           <div className="border-l border-gray-400 pl-3 py-2 flex-1 min-w-0">
             <label htmlFor="date" className="block text-sm">Let Period</label>
-           <input type="date" placeholder="" id="date" className="text-sm text-gray-400 w-full"/>
+           <input type="date" placeholder="" id="date" className="text-sm text-gray-400 w-full input"/>
          </div>
         
          </div>

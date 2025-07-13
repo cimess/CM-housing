@@ -6,10 +6,13 @@
 @import "@fontsource/poppins/400.css";
 @import "@fontsource/poppins/200.css";
 @import "@fontsource/playfair-display/700.css";
+@import '@fontsource/montserrat/500.css';
+
 
 @theme {
   --font-poppins: "Poppins", sans-serif;
   --font-Merriweather: 'Playfair Display', 'serif';
+  --font-montserrat:'Montserrat',sans-serif;
 }
 
 @theme inline {
@@ -122,7 +125,8 @@
 @layer base {
 
   * {
-    @apply border-border outline-ring/50;
+    /* @apply border-border outline-ring/50; */
+    box-sizing: border-box;
   }
 
   body {
@@ -137,7 +141,7 @@
     text-decoration: underline;
   }
 
-  input:focus{
+  .input:focus{
    @apply border-none outline-none ;
 
   }
@@ -145,7 +149,9 @@
 h1{
   font-family: "Merriweather", serif;
   font-size: 2em;
+  
 }
+
 
 }
 @layer components
@@ -157,6 +163,10 @@ h1{
      }
      .round-bg{
       @apply rounded-full h-2 w-2
+     }
+     .hover-me{
+      @apply hover:text-lg no-underline transition duration-300 ease-in-out
+
      }
 }
 
