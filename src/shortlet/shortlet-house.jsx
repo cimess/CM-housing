@@ -27,10 +27,10 @@ return(
           
          <div className="w-full   h-[200px] relative mb-3 group">
 
-           <div className={`custom-prev-${sliderId} absolute left-2 top-1/2 z-10 text-white bg-black/40 p-[15px]  flex rounded-full `}>
+           <div className={`custom-prev-${sliderId} absolute left-2 top-1/2 z-10 text-white bg-black/30 p-[15px]  flex rounded-full cursor-pointer `}>
   <FontAwesomeIcon icon={faArrowLeft} />
 </div>
-<div className={`custom-next-${sliderId} absolute right-2 top-1/2 z-10 text-white bg-black/40 p-[15px] rounded-full flex`}>
+<div className={`custom-next-${sliderId} absolute right-2 top-1/2 z-10 text-white bg-black/30 p-[15px] rounded-full cursor-pointer flex`}>
   <FontAwesomeIcon icon={faArrowRight} />
 </div>
 
