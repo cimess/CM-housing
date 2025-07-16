@@ -1,5 +1,3 @@
-// import { LogIn } from "lucide-react";
-import Default from "@/home-component/header-footer";
 import { Link } from "react-router-dom";
 export default function Login(){
 
@@ -32,7 +30,7 @@ Login as Guest
 
 
 <hr className="mt-15 text-gray-300"/>
-<Link className="text-center block mt-5" to='/register'>Forgot Password?</Link>
+<Link className="text-center block mt-5" to='/RecoverPassword'>Forgot Password?</Link>
   </form>
 
 </div>

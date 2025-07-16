@@ -51,10 +51,10 @@ export default function Default({children}) {
         </div>
        </button>
  
- <Link to="/Login" className="hidden md:inline-block w-[50px]">Log in</Link>
-            <button className="button rounded-full hidden w-[150px] md:inline-block">
+ <Link to="/Login" className="hidden text-center md:hover:bg-black py-2 px-3  rounded-full md:hover:text-white whitespace-nowrap md:block hover:no-underline ">Log in</Link>
+            <Link to="/HouseRegister" className="button rounded-full hidden py-2  text-center whitespace-nowrap hover:no-underline md:block">
               List your house
-            </button>
+            </Link>
           
         </div>
 
