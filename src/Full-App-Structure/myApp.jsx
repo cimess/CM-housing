@@ -6,6 +6,7 @@ import Register from "@/Page-component/register";
 import {BrowserRouter as Router, Routes,Route} from 'react-router-dom'
 import HouseRegister from "@/Page-component/Agent";
 import RecoverPassword from "@/Page-component/RecoverPassword";
+import HouseOwner from "@/Page-component/ownerLogin";
 
 
 export default function MyApp(){
@@ -31,6 +32,10 @@ export default function MyApp(){
 
 <Route path="/RecoverPassword" element={ <Default>
 <RecoverPassword/>
+</Default>}/>
+
+<Route path="/HouseOwner" element={ <Default>
+<HouseOwner/>
 </Default>}/>
 
          </Routes>

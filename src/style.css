@@ -166,7 +166,9 @@ h1{
      }
      .hover-me{
       @apply hover:text-lg no-underline transition duration-300 ease-in-out
-
+     }
+     .hover-bg{
+      @apply hover:bg-black hover:text-white rounded 
      }
 }
 

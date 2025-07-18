@@ -23,7 +23,7 @@ List Your House
       <Input label='First name' add='*' type='text' id='firstname'/>
       <Input label='Last name' add='*' type='text' id='lastname'/>
       <Input label='Email address' add='*' type='email' id='email'/>
-      <Input label=' Confirm email address' add='*' type='email' id='confirmemail'/>
+      <Input label=' Confirm email ' add='*' type='email' id='confirmemail'/>
     <Input label='password' add='*' type='password' id='password'/>
     <Input label='Confirm password' add='*' type='password' id='confirmpassword' />
 
