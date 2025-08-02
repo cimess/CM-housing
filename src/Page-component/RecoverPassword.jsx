@@ -5,6 +5,11 @@ import { Link } from "react-router-dom";
 export default function RecoverPassword(){
 
    return(
+      <motion.div
+      initial={{ opacity: 0, x: 100 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -100 }}
+      transition={{ duration: 0.3 }}>
 
 <div className="text-center w-[90%] md:w-[70%] mx-auto py-10">
    <h1 className="font-montserrat my-5">
@@ -27,6 +32,6 @@ Recover Your Password
   <span className="text-gray-600 ">Remember your password? </span><Link to='/Login' className="underline ml-2 hover:no-underline">Back to login</Link>
 </div>
 </div>
-
+</motion.div>
    )
 }

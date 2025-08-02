@@ -1,10 +1,16 @@
 import  Input  from "../body component/input-component";
 import ImageBox from "@/body component/image-componet";
 import image from '../assets/images/my-banners/banner2.jpg'
+import { motion } from "framer-motion";
 export default function HouseRegister(){
 
+   
    return(
-      <>
+      <motion.div
+      initial={{ opacity: 0, x: 100 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -100 }}
+      transition={{ duration: 0.3 }}>
   
          <ImageBox src={image} noradius='no' /> 
     
@@ -40,6 +46,6 @@ List Your House
   </form>
 
 </div>
-</>
+</motion.div>
    )
 }

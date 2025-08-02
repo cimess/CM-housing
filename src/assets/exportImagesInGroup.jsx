@@ -26,7 +26,7 @@ import room22 from '../assets/images/sub/spacejoy-NpF_OYE301E-unsplash.jpg'
 import room23 from '../assets/images/sub/spacejoy-vPKNB_gc23Q-unsplash.jpg'
 import room24 from '../assets/images/sub/spacejoy-YqFz7UMm8qE-unsplash.jpg'
 
-const image={
+export const image={
    room1:[room1,room12],
    room2:[room2,room13],
    room3:[room3,room14],

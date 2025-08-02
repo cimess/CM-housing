@@ -1,9 +1,13 @@
 import  Input  from "../body component/input-component";
-
+import { motion } from "framer-motion";
 export default function Register(){
 
    return(
-
+<motion.div
+      initial={{ opacity: 0, x: 100 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -100 }}
+      transition={{ duration: 0.3 }}>
 <div className="text-center w-[90%] md:w-[70%] mx-auto py-10">
    <h1 className="font-montserrat my-5">
 Guest Registration
@@ -33,6 +37,6 @@ Guest Registration
   </form>
 
 </div>
-
+</motion.div>
    )
 }

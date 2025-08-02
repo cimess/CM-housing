@@ -1,18 +1,21 @@
 
-import Body from "../body component/homeBody";
-import Login from "../Page-component/Login";
-import  Default  from "../home-component/header-footer";
+import Body from "@/body component/homeBody";
+import Login from "@/Page-component/Login";
+import  Default  from "@/home-component/header-footer";
 import Register from "@/Page-component/register";
-import {BrowserRouter as Router, Routes,Route} from 'react-router-dom'
+import {BrowserRouter as Router, Routes,Route,useLocation} from 'react-router-dom'
 import HouseRegister from "@/Page-component/Agent";
 import RecoverPassword from "@/Page-component/RecoverPassword";
 import HouseOwner from "@/Page-component/ownerLogin";
+import MyMessagePage from "@/Page-component/my-message-component";
+import { AnimatePresence, motion } from "framer-motion";
 
+function AnimatedRouter(){
+   const location=useLocation()
 
-export default function MyApp(){
    return(
-      <Router>
-         <Routes>
+      <AnimatePresence location={location} key={location.pathname} >
+  <Routes>
 
             <Route path="/" element={ <Default>
 <Body/>
@@ -38,7 +41,19 @@ export default function MyApp(){
 <HouseOwner/>
 </Default>}/>
 
+<Route path="/MyMessagePage" element={ <Default>
+<MyMessagePage/>
+</Default>}/>
+
          </Routes>
+      </AnimatePresence>
+   )
+}
+
+export default function MyApp(){
+   return(
+      <Router>
+       <AnimatedRouter/>
          
       </Router>
 
