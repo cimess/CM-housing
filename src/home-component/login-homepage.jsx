@@ -2,8 +2,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faInbox,faBell,faBoxArchive,faClipboardList} from "@fortawesome/free-solid-svg-icons"
 import { Link,useNavigate } from "react-router-dom"
 import {useState } from "react"
+import { useLoginAuth } from "@/Authentication/Usecontext-logic"
+
 
 function HoverMessage({text}){
+
+
+
    return(
       <p className=" hidden rounded group-hover:block bg-black p-2 absolute translate-y-10 translate-x-2 text-white  whitespace-nowrap text-xs">
          {text}
@@ -11,10 +16,10 @@ function HoverMessage({text}){
    )
 }
 
-export default function IsLoginFunction({IsLogin,notifications}){
+export default function IsLoginFunction({notifications}){
 
 const [notification,setNotification]=useState(0)
-
+const {isLogin}=useLoginAuth()
 
    const Navigate=useNavigate('/')
 
@@ -33,7 +38,7 @@ const [notification,setNotification]=useState(0)
    
       
       
-      <div className="flex gap-x-1 ">
+      <div className={`flex gap-x-1 ${isLogin?"":'hidden'}`}>
 <div to='/Login' className="round-bg p-3 md:p-5 relative group" onClick={()=>Navigate('/MyMessagePage')}>
 <FontAwesomeIcon className="sm:h-3 w-3" icon={faInbox}/>
 <NotificationHolder/>

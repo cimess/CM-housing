@@ -1,6 +1,22 @@
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import Input from "@/body component/input-component";
+import { useLoginAuth } from "@/Authentication/Usecontext-logic";
+
+
 export default function LoginComponent({header}){
+
+const {setIsLogin}=useLoginAuth()
+console.log('setIsLogin:', setIsLogin);
+   const navigate=useNavigate();
+
+   function HandleLoginAuth(e){
+e.preventDefault()
+      console.log('hello')
+      setIsLogin(true)
+      alert('Welcome back')
+navigate('/')
+
+   }
 
    return(
 
@@ -11,7 +27,7 @@ export default function LoginComponent({header}){
    <div>
  <span className="text-gray-600 mb-5">Dont have have an account? </span><Link to='/Register' className="underline ml-2">Register now</Link>
    </div>
-  <form className=" w-[80%] mx-auto text-left">
+  <form className=" w-[80%] mx-auto text-left" onSubmit={HandleLoginAuth}>
   <Input label='Email' type='email' id='email'/>
   <Input label='Password' type='password' id='password'/>
 
@@ -22,7 +38,7 @@ export default function LoginComponent({header}){
 />
 <label className="text-sm my-3 text-gray-500">Remember me</label>
  </div>
-<div className="text-center"><button className="button rounded-full mt-7 w-[150px]">Login</button></div>
+<div className="text-center"><button className="button rounded-full mt-7 w-[150px]" >Login</button></div>
 
 
 <hr className="mt-15 text-gray-300"/>

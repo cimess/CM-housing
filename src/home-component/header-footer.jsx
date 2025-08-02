@@ -3,22 +3,28 @@ import { faUser,faBars, faPlus, } from "@fortawesome/free-solid-svg-icons";
 import { faFacebook, faInstagram, faTiktok, faTwitter } from "@fortawesome/free-brands-svg-icons";
 import logo from "../assets/images/logo/newIcon.png"
 
-import { Link, useNavigate } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
 import { useState,useRef,useEffect } from "react";
 
 import NavLink from "./navigation-link-component";
 import SlideInSidebar from "@/sideBar-component/sidebar-component";
 import IsLoginFunction from "./login-homepage";
+import {useLoginAuth} from "@/Authentication/Usecontext-logic";
 import { Nav } from "./login-homepage";
 
 
 export default function Default({children}) {
   const [state,setState]=useState(false)
     const [isOpen, setIsOpen] = useState(false);
-    const [isLogin,setIsLogin]=useState(true)
+
+    const {isLogin}=useLoginAuth()
+    console.log(isLogin)
   const node=useRef(null)
   const sideNode=useRef(null)
 const navigate=useNavigate('/')
+
+
+
 
   useEffect(
     ()=>{function handleClick(e){
@@ -113,7 +119,7 @@ const navigate=useNavigate('/')
        
          {state && showLogin('true')}
  
- <IsLoginFunction isLogin={isLogin}/>
+ { <IsLoginFunction />}
   <div ref={node} className=" round-bg md:p-5 p-3 group " 
         onClick={()=>setState((prev)=>!prev)}
        

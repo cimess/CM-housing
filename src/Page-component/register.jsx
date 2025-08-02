@@ -1,6 +1,10 @@
 import  Input  from "../body component/input-component";
 import { motion } from "framer-motion";
+import { useLoginAuth } from "@/Authentication/Usecontext-logic";
+
+
 export default function Register(){
+const {IsLogin}=useLoginAuth()
 
    return(
 <motion.div
