@@ -8,7 +8,6 @@
 @import "@fontsource/playfair-display/700.css";
 @import '@fontsource/montserrat/500.css';
 
-
 @theme {
   --font-poppins: "Poppins", sans-serif;
   --font-Merriweather: 'Playfair Display', 'serif';
@@ -149,7 +148,7 @@
 h1{
   font-family: "Merriweather", serif;
   font-size: 2em;
-  
+
 }
 
 .lastnoborder:last-child{
@@ -197,4 +196,12 @@ border-bottom: none;
   @apply  absolute right-2 top-1/2 z-10 text-white bg-black/40 p-2 rounded-full
 }
 
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
 

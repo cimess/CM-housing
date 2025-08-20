@@ -1,29 +1,53 @@
 import {  message } from "@/data/messageBox"
-import { faArrowLeft, faBars, faCamera, faFaceGrin, faPaperclip, faPhone, faSmile } from "@fortawesome/free-solid-svg-icons"
+import { faArrowLeft, faBars, faCamera, faFaceGrin, faMicrophone, faPaperclip, faPaperPlane, faPhone, faSmile } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { motion } from "framer-motion"
 
 import { useState } from "react"
 
 
+// pls fix the issue of when i refresh the page and the islogin is false but it still displaying the message component  
+
 export default function MyMessagePage(){
 
 const [state,setState]=useState(true)
 const [id,setId]=useState(null)
 
-console.log(state)
 
 function handleChatDisplay(){
 setState((prev)=>!prev)
 
 }
 
-function Inbox({state,setState}){
+
+   return (
+      <motion.div
+      initial={{ opacity: 0, x: 100 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -100 }}
+      transition={{ duration: 0.3 }}>
+      <div className="mt-5 lg:px-5 lg:flex grid grid-col-1 ">
+         {state?<Inbox 
+         state={state} 
+       handleChatDisplay={handleChatDisplay}
+       setId={setId}  />:''}
+
+       {state?"":<Chatbox state={state} 
+      handleChatDisplay={handleChatDisplay}
+      id={id}  />}
+            
+           
+      </div>
+      </motion.div>
+   )
+}
+
+
+function Inbox({state,handleChatDisplay,setId}){
    return(
-  <div className={`${state?'':'hidden'}lg:max-w-[40%] shadow rounded-lg`}>
+  <div className={`${state?'':'hidden'}lg:max-w-[40%] shadow rounded-lg cursor-pointer`}>
             {message.map((mes,index)=>(
                   <div key={index} className="flex h-[70px] items-center border-b-2 border-gray-200 gap-x-2 p-2 last:border-none" onClick={()=>{
-                     <Chatbox message={mes}   /> ;
                      handleChatDisplay()
                      setId(mes.name)
                   }
@@ -52,12 +76,29 @@ function Inbox({state,setState}){
 }
 
 
-function Chatbox(){
+function Chatbox({state,handleChatDisplay,id}){
+  
+   
+
+const [typing,setIsTyping]=useState(false)
+const[sendMessage,setSendMessage]=useState('')
+
+
+   
+// const sendMessages=[]
+
+function handleTypingAndSendingMessage(e){
+e.target.value.length>0?
+setIsTyping(true):setIsTyping(false)
+
+setSendMessage(e.target.value)
+
+}
 
 const profile=message.find(profile=>profile.name===id)
 
-
 if(profile){
+  
    
 return(
     <div className={`lg:max-w-[80%] sm:${state?'hidden':""} shadow rounded-lg bg-gray-300 h-[500px] mx-3 lg:w-full`}>
@@ -137,7 +178,7 @@ className="rounded-full h-[40px] w-[40px] "/>
  
 </div>
 
-<div className="bg-white h-[50px] flex items-center px-2">
+<div className="bg-white h-[50px] flex items-center px-2 gap-x-2">
    <div className="flex border border-gray-400 rounded-full h-[80%] w-[100%] items-center px-3">
 <FontAwesomeIcon 
 icon={faSmile}
@@ -146,6 +187,8 @@ icon={faSmile}
  type="text" 
  placeholder="Message" 
  className="p-3 w-full outline-none"
+ onChange={handleTypingAndSendingMessage}
+ value={sendMessage}
  />
 
 <div className="gap-x-4 flex cursor-pointer">
@@ -158,6 +201,9 @@ icon={faSmile}
    style={{strokeWidth:50}}/>
    </div>
 
+   </div> 
+   <div className="round-bg-mini bg-black h-2 w-2 p-4  text-white cursor-pointer">{
+typing?<div><FontAwesomeIcon icon={faPaperPlane} className="rotate-50"/></div>:<div><FontAwesomeIcon icon={faMicrophone}/> </div>}
    </div>
 </div>
 </div>
@@ -169,25 +215,4 @@ icon={faSmile}
 
 }
 
-}
-
-
-
-
-   return (
-      <motion.div
-      initial={{ opacity: 0, x: 100 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -100 }}
-      transition={{ duration: 0.3 }}>
-      <div className="mt-5 lg:px-5 lg:flex grid grid-col-1 ">
-         {state?<Inbox 
-         state={state} 
-         setState={setState} />:''}
-       {state?"":<Chatbox/>}
-            
-           
-      </div>
-      </motion.div>
-   )
 }

@@ -42,7 +42,7 @@ export const image={
 }
 
 
- const exportImages={
+export const exportImages={
    shortlet:[image.room1,image.room2,image.room3,image.room4,image.room5,image.room6,image.room7,image.room8,image.room9,image.room10,image.room11,image.room12],
    src:['www.fb.com','www.fb.com','www.fb.com','www.fb.com','www.fb.com','www.fb.com','www.fb.com','www.fb.com','www.fb.com','www.fb.com','www.fb.com',],
    owner:["Mr Francis","T&T","T&T","Mr Francis","Mr Emma","Mr Francis","Osas Housing","Osas Housing","Mr Lucky","Mr Jude","Mr Francis",],

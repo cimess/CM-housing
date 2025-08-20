@@ -39,19 +39,23 @@ const {isLogin}=useLoginAuth()
       
       
       <div className={`flex gap-x-1 ${isLogin?"":'hidden'}`}>
-<div to='/Login' className="round-bg p-3 md:p-5 relative group" onClick={()=>Navigate('/MyMessagePage')}>
-<FontAwesomeIcon className="sm:h-3 w-3" icon={faInbox}/>
+<div className="round-bg p-3 md:p-5 relative group" onClick={()=>Navigate('/MyMessagePage')}>
+<FontAwesomeIcon className="sm:h-3 w-3" 
+icon={faInbox}/>
 <NotificationHolder/>
 <HoverMessage text='My messages' />
 </div>
 
-<div to='/Login' className="round-bg p-3 md:p-5 relative group">
-<FontAwesomeIcon className="sm:h-3 w-3" icon={faBoxArchive}/>
+<div className="round-bg p-3 md:p-5 relative group"
+onClick={()=>Navigate('/MyAdvertComponent')}>
+<FontAwesomeIcon className="sm:h-3 w-3" 
+icon={faBoxArchive}/>
 <NotificationHolder/>
 <HoverMessage text='My Advert' />
 </div>
-<div to='/Login' className="round-bg p-3 md:p-5 relative group">
-<FontAwesomeIcon className="sm:h-3 w-3" icon={faClipboardList}/>
+<div className="round-bg p-3 md:p-5 relative group">
+<FontAwesomeIcon className="sm:h-3 w-3" 
+icon={faClipboardList}/>
 <NotificationHolder/>
 <HoverMessage text='liked houses' />
 </div>

@@ -8,6 +8,8 @@ import HouseRegister from "@/Page-component/Agent";
 import RecoverPassword from "@/Page-component/RecoverPassword";
 import HouseOwner from "@/Page-component/ownerLogin";
 import MyMessagePage from "@/Page-component/my-message-component";
+import MyadvertComponent from "@/Page-component/my-advert-component";
+
 import { AnimatePresence, motion } from "framer-motion";
 
 function AnimatedRouter(){
@@ -43,6 +45,9 @@ function AnimatedRouter(){
 
 <Route path="/MyMessagePage" element={ <Default>
 <MyMessagePage/>
+</Default>}/>
+<Route path="/MyAdvertComponent" element={ <Default>
+<MyadvertComponent/>
 </Default>}/>
 
          </Routes>
