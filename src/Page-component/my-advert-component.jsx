@@ -4,10 +4,37 @@ import { faArrowLeft, faCalendarDays,faComments, faChartLine, faGem,  faLocation
 import SlideInSidebar from "@/sideBar-component/sidebar-component";
 import {message} from '@/data/messageBox'
 
+import { useState } from "react";
 
 
 
  export default function MyadvertComponent(){
+
+
+  const [state,setState]=useState(0)
+
+  function handleAdvertState(value){
+
+    setState(value)
+  }
+
+function HandleDisplayComponent({state}){
+
+switch(state){
+  case 1 :
+    return(
+    <ClientAdvert/>
+    )
+     case 2:
+      return(
+        <Feedback/>
+      )
+    default: return(<h1 className= "self-center mx-auto " >Nothing to display</h1>)
+    
+}
+
+}
+
 
  return(
 <div className="flex ">
@@ -21,7 +48,8 @@ import {message} from '@/data/messageBox'
       </div>
 
 
-  <div className='flex py-3 gap-x-3 px-2 border-b-1 cursor-pointer mt-10 hover-bg'>
+  <div className='flex py-3 gap-x-3 px-2 border-b-1 cursor-pointer mt-10 hover-bg'
+  onClick={()=>handleAdvertState(1)}>
          <FontAwesomeIcon 
        icon={faCalendarDays} 
        className="text-lg"/>
@@ -29,7 +57,8 @@ import {message} from '@/data/messageBox'
      </div>
 
 
-     <div className='flex py-3 gap-x-3 px-2 border-b-1 cursor-pointer hover-bg'>
+     <div className='flex py-3 gap-x-3 px-2 border-b-1 cursor-pointer hover-bg'
+     onClick={()=>handleAdvertState(2)}>
         <FontAwesomeIcon 
        icon={faComments} 
        className="text-lg"/>
@@ -52,6 +81,19 @@ import {message} from '@/data/messageBox'
     </main>
   </div>
 
+
+  <HandleDisplayComponent state={state}/>
+  
+    
+ 
+             </div>
+ )
+ 
+ 
+}
+
+function ClientAdvert(){
+  return(
      <div className={` h-[500px] mx-3  `}>
    
  <div className="flex flex-col  h-full ">
@@ -96,9 +138,63 @@ import {message} from '@/data/messageBox'
  </div>
  
  </div>
+  )
+}
+
+function Feedback(){
+    return(
+     <div className={` h-[500px] mx-3  `}>
+   
+ <div className="flex flex-col  h-full ">
  
-             </div>
- )
+
+ <div className="grid lg:grid-cols-2 w-full h-full gap-2  overflow-y-scroll  ">
+ {message.map((advert,index)=>(
+  <div key={index} 
+  className="h-[400px] border-1  flex flex-col my-2 rounded shadow p-4 pt-20">
+   
+    <div className="px-1 py-2 flex flex-col gap-y-8">
+
+<div>
+ 
+
+    <div className="flex items-center gap-x-2 mb-2">
+      <img src={advert.picture} 
+    className=" h-10 w-10 rounded-full "/>
+    
+     <h1>
+         {advert.name}
+    </h1>
+    </div> 
+        <p className="text-gray-600 text-sm">"
+  {advert.feedback}"</p>
+</div>
+
+<div className="flex">
+  
+    <h1>
+      5.0 rating 
+    </h1>
+     
+
+             
+        </div>  
+
+ <h2 className="font-light text-sm "><FontAwesomeIcon icon={faLocationDot}/> {advert.title}</h2>
+
+
+
+</div>
+
+  </div>
+ ))}
+ </div>
+
  
  
+
+ </div>
+ 
+ </div>
+  )
 }

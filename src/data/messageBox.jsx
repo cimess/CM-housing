@@ -21,7 +21,8 @@ export const message=[
       description:description[0],
       pet:pet[0],
       bathrooms:bathrooms[0],
-      bedrooms:beds[0]
+      bedrooms:beds[0],
+      feedback:'this is the best house i have seen in a while price is the best i will give it 5 stars'
    },
     {name:'emmanuel',
       title:'iyana ipaja 2bedrooms-flat',
@@ -32,7 +33,7 @@ export const message=[
       description:description[1],
       pet:pet[1],
       bathrooms:bathrooms[1],
-      bedrooms:beds[1]
+      bedrooms:beds[1],feedback:'the landlord is very friendly and the house got a nice toilet that what i was concern about thanks CM-housing '
    },
     {name:'faith32',
       title:'self-contain kwara-poly ',
@@ -43,7 +44,7 @@ export const message=[
       description:description[3],
       pet:pet[3],
       bathrooms:bathrooms[3],
-      bedrooms:beds[3]
+      bedrooms:beds[3],feedback:'the price is way high solomon224 house is way to high pls dont patronise him'
    },
    {name:'loverboy2222',
       title:'ayobo duplex ',
