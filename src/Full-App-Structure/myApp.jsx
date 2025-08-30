@@ -11,6 +11,7 @@ import MyMessagePage from "@/Page-component/my-message-component";
 import MyadvertComponent from "@/Page-component/my-advert-component";
 
 import { AnimatePresence, motion } from "framer-motion";
+import Settings from "@/Page-component/settings";
 
 function AnimatedRouter(){
    const location=useLocation()
@@ -48,6 +49,10 @@ function AnimatedRouter(){
 </Default>}/>
 <Route path="/MyAdvertComponent" element={ <Default>
 <MyadvertComponent/>
+</Default>}/>
+
+<Route path="/Settings" element={ <Default>
+<Settings/>
 </Default>}/>
 
          </Routes>

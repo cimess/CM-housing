@@ -67,7 +67,7 @@ const navigate=useNavigate('/')
   <NavLink text='User Login' nav='/Login' />
   <NavLink text='House Owner' nav='/HouseOwner' />
     <NavLink text='Notification' nav='/HouseOwner' />
-      <NavLink text='Settings' nav='/HouseOwner' />
+      <NavLink text='Settings' nav='/Settings' />
       
     </div>
   </div>

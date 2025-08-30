@@ -1,11 +1,11 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faArrowLeft, faCalendarDays,faComments, faChartLine, faGem,  faLocationDot, faBed, faBathtub, faDog, faBars, faGear, } from "@fortawesome/free-solid-svg-icons"
+import { faArrowLeft, faCalendarDays,faComments, faChartLine, faGem,  faLocationDot, faBed, faBathtub, faDog, faBars, faGear, faMoon, } from "@fortawesome/free-solid-svg-icons"
 import SlideInSidebar from "@/sideBar-component/sidebar-component";
 import {message} from '@/data/messageBox'
 
 import { useState } from "react";
-
+import Settings from "./settings";
 
 
  export default function MyadvertComponent(){
@@ -29,6 +29,19 @@ switch(state){
       return(
         <Feedback/>
       )
+      case 3:
+        return(
+          <Performance/>
+        )
+        case 4:
+          return(
+            <Settings/>
+          )
+          case 5:
+            return(
+              <div className= "self-center mx-auto"><Darkmode/></div>
+              
+            )
     default: return(<h1 className= "self-center mx-auto " >Nothing to display</h1>)
     
 }
@@ -48,7 +61,7 @@ switch(state){
       </div>
 
 
-  <div className='flex py-3 gap-x-3 px-2 border-b-1 cursor-pointer mt-10 hover-bg'
+  <div className='flex py-3 gap-x-3 px-2 border-b-1 cursor-pointer mt-10 hover-bg items-center'
   onClick={()=>handleAdvertState(1)}>
          <FontAwesomeIcon 
        icon={faCalendarDays} 
@@ -65,18 +78,29 @@ switch(state){
      <p className="">Feedback</p>  
      </div>
 
-     <div className='flex py-3 gap-x-3 px-2 border-b-1 cursor-pointer hover-bg'>
+     <div className='flex py-3 gap-x-3 px-2 border-b-1 cursor-pointer hover-bg' 
+     onClick={()=>handleAdvertState(3)}
+     >
           <FontAwesomeIcon 
        icon={faChartLine} 
        className="text-lg"/>
      <p className="">Performance</p>  
      </div>
 
-<div className='flex py-3 gap-x-3 px-2 border-b-1 cursor-pointer hover-bg'>
+<div className='flex py-3 gap-x-3 px-2 border-b-1 cursor-pointer hover-bg items-center'
+ onClick={()=>handleAdvertState(4)}>
           <FontAwesomeIcon 
        icon={faGear} 
        className="text-lg"/>
      <p className="">Settings</p>  
+     </div>
+      <div className='flex py-3 gap-x-3 px-2 border-b-1 cursor-pointer hover-bg items-center' 
+     onClick={()=>handleAdvertState(5)}
+     >
+          <FontAwesomeIcon 
+       icon={faMoon} 
+       className="text-lg"/>
+     <p className="">Darkmode</p>  
      </div>
     </main>
   </div>
@@ -198,3 +222,35 @@ function Feedback(){
  </div>
   )
 }
+
+function Performance(){
+    return(
+     <div className={` h-[500px] mx-3  shadow w-full`}>
+   
+<h2 className="text-xl text-center mt-3 border-b font-semibold">
+  Performance
+</h2>
+
+<div className="p-2 flex flex-wrap  ">
+  <button className="box mx-1 bg-black/80 text-white ">visitors<p className="text-xl font-bold">{1}</p></button>  
+   <button className="box mx-1 bg-black/80 text-white">chat request<p className="text-xl font-bold">{1}</p></button>
+  
+  <button className="box mx-1 bg-black/80 text-white">followers<p className="text-xl font-bold">{1}</p></button>  
+   
+  <button className="box mx-1 bg-black/80 text-white">feedback<p className="text-xl font-bold">{1}</p></button>
+    <button className="box mx-1 bg-black/80 text-white">likes<p className="text-xl font-bold">{1}</p></button> 
+</div>
+ 
+ </div>
+  )
+}
+
+function Darkmode(){
+  return(
+    <h1>
+      COMING SOON
+    </h1>
+  )
+}
+
+

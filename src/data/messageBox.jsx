@@ -12,6 +12,10 @@ import { exportImages } from "@/assets/exportImagesInGroup"
 
 export const message=[
    {name:'solomon224',
+      lastname:'osas',
+      phone:'+23400000000',
+      password:'password',
+      website:'https://cm-housing.netlify.app',
       email:'mydev@gmail.com',
       title:'igbesa school b/s boys-quarters',
       message:['hello',],
