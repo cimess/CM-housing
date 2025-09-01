@@ -52,14 +52,13 @@ return(
 </div>
 
          <Swiper
-        modules={[Navigation, Pagination, Autoplay]}
+        modules={[Navigation, Autoplay]}
         spaceBetween={30}
         slidesPerView={1}
       navigation={{
   nextEl: `.custom-next-${sliderId}`,
   prevEl:`.custom-prev-${sliderId}`
 }}
-        pagination={{ clickable: true }}
         loop={true}
         speed={1000}
       >
