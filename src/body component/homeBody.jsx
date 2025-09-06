@@ -91,7 +91,7 @@ function handleRegionDropdown(e) {
       <div className="my-10 ">
          <div className="mb-4 ">
              <Label >
-         <span className=" text-base md:text-[2vw] " >Short-Let</span><Switch  /> <span className=" font-bold text-base md:text-[2vw]">Full-Let</span>
+         <span className=" text-base md:text-[2vw] " >Short-Let</span><Switch  /> <span className=" font-bold text-base md:text-[2vw]">Full-Lets</span>
         </Label>
          </div>
 
