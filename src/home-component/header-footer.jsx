@@ -18,8 +18,7 @@ export default function Default({children}) {
     const [isOpen, setIsOpen] = useState(false);
 
     const {isLogin}=useLoginAuth()
-    console.log(isLogin)
-  const node=useRef(null)
+      const node=useRef(null)
   const sideNode=useRef(null)
 const navigate=useNavigate('/')
 
@@ -55,20 +54,20 @@ const navigate=useNavigate('/')
     !isLogin?
     <div className=" absolute  translate-y-[65%]  md:translate-y-[75%] border border-gray-300 bg-white left-[20%] -translate-x-1/2  py-2 w-[150px] md:w-[250px] shadow-sm rounded">
     <div className="flex flex-col gap-y-2 ">
-      <NavLink text='User Login' nav='/Login' />
+      <NavLink text='Login' nav='/Login' />
   <NavLink text='House Owner' nav='/HouseOwner' />
   <NavLink text=' List your house' nav='/HouseRegister' />
-  <NavLink text=' Sign in' nav='/Register' />
+  <NavLink text=' Sign up' nav='/Register' />
 </div>
   </div>
   :
   <div className=" absolute  translate-y-[80%]  md:translate-y-[75%] border border-gray-300 bg-white left-[60%] -translate-x-1/2  py-2 w-[150px] md:w-[250px] shadow-sm rounded">
  <div className="flex flex-col gap-y-2">
-  <NavLink text='User Login' nav='/Login' />
-  <NavLink text='House Owner' nav='/HouseOwner' />
+
+  <NavLink text='List House' nav='/HouseOwner' />
     <NavLink text='Notification' nav='/HouseOwner' />
       <NavLink text='Settings' nav='/Settings' />
-      
+       <NavLink text='Logout' nav='/Login' />
     </div>
   </div>
   }
@@ -129,7 +128,7 @@ const navigate=useNavigate('/')
         
         </div>
 
-{isLogin?'':<Nav/>}
+{<Nav/>}
           
         </div>
 

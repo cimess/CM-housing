@@ -1,4 +1,4 @@
-export default function Input({label,type,add,id,checked,style,styleInput,value,onchange}){
+export default function Input({label,type,add,id,checked,style,styleInput,value,onChange,inputValue}){
 
 
 
@@ -8,13 +8,13 @@ export default function Input({label,type,add,id,checked,style,styleInput,value,
 
    {checked?
    <div className={style}>
-   <input type={type} id={id} className={styleInput} checked={value} onChange={onchange}/>
+   <input type={type} id={id} className={styleInput} checked={value} onChange={onChange} />
    <label htmlFor={id} className="block text-sm font-bold my-3 flex items-center ">{label}<span className="ml-3 text-red-500 pt-1">{add}</span></label>
    </div> 
    :
    <>
    <label htmlFor={id} className="block text-sm font-bold my-3 flex items-center ">{label}<span className="ml-3 text-red-500 pt-1">{add}</span></label>
-   <input type={type} id={id} className="border rounded border-gray-300 w-full  focus:outline-none h-10 pl-2"/>
+   <input type={type} id={id} value={inputValue} onChange={onChange} className="border rounded border-gray-300 w-full  focus:outline-none h-10 pl-2"/>
    </>
    }
 

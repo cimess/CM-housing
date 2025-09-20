@@ -12,7 +12,7 @@ export default function HouseRegister(){
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.3 }}>
   
-         <ImageBox src={image} noradius='no' /> 
+         <ImageBox src={image} banner={true} icon={false} /> 
     
  
 <div className="text-center w-[90%] md:w-[70%] mx-auto py-10">

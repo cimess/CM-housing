@@ -7,7 +7,8 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination'
 
-export default function ImageBox({name,src,icon}){
+export default function ImageBox({banner,src,icon,}){
+ 
    return(
   <Swiper
            modules={[Navigation, Autoplay]}
@@ -18,14 +19,16 @@ export default function ImageBox({name,src,icon}){
            loop={true}
            speed={1000}
          >
-           {src.map((src, idx) => (
+           {banner?<div className="relative h-[300px] w-full flex  justify-start md:h-[400px] group">
+              <img src={src} alt="image of kitchen" className={`${'rounded-xl'} object-cover w-full h-full`}/>
+        </div>:src.map((data, idx) => (
           
              <SwiperSlide key={idx}>
                
      <div className="relative h-[300px] w-full flex  justify-start md:h-[400px] group">
-              <img src={src[0]} alt="image of kitchen" className={`${'rounded-xl'} object-cover w-full h-full`}/>{icon?
+              <img src={data[0]} alt="image of kitchen" className={`${'rounded-xl'} object-cover w-full h-full`}/>{icon?
          <button className="button bg-black/60 group-hover:bg-black group-active:bg-black text-white absolute bottom-5 left-5 w-30 flex items-center justify-center space-x-3">
-            <FontAwesomeIcon icon={icon}/> <span>{src[1]} </span>
+            <FontAwesomeIcon icon={icon}/> <span>{data[1]} </span>
          </button>:''}
         </div>
                

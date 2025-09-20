@@ -70,13 +70,16 @@ icon={faClipboardList}/>
 
 
 export function Nav(){
+ const {isLogin}=useLoginAuth()
    return(
- <div className="flex gap-x-2">
-       <Link to="/Login" className="hidden text-center md:hover:bg-black py-2 px-3  rounded-full md:hover:text-white whitespace-nowrap md:block hover:no-underline ">Log in</Link>
- 
-            <Link to="/HouseRegister" className="button rounded-full hidden py-2  text-center whitespace-nowrap hover:no-underline md:block">
+ <div className="flex gap-x-2">{isLogin?
+     <Link to="/HouseRegister" className="button rounded-full hidden py-2  text-center whitespace-nowrap hover:no-underline md:block">
               List your house
-            </Link>
+            </Link>:
+       <Link to="/Login" className="hidden text-center md:hover:bg-black py-2 px-3  rounded-full md:hover:text-white whitespace-nowrap md:block hover:no-underline font-bold">Sign Up</Link>
+ 
+          
+}
       </div>
    )
 }

@@ -3,7 +3,7 @@ import { use, useState } from "react";
 
 import {Label} from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import images from '../assets/images/my-banners/banner.jpg'
+// import images from '../assets/images/my-banners/banner.jpg'
 import {faArrowRight,faCamera} from "@fortawesome/free-solid-svg-icons";
 import ImageBox from "./image-componet";
 import BoxContainer from "./box-container";
@@ -22,6 +22,7 @@ import { image } from "@/assets/exportImagesInGroup";
 function SearchFilter(){
 const featuredLocation=["Abuja","Lagos","Edo","Abuja","Kwara","Kano","Ogun","Osun","Kogi","Abuja",'Jos']
   const featuredImages=[image.room1[0],image.room1[1],image.room2[0],image.room2[1],image.room3[0],image.room3[1],image.room4[0],image.room4[1],image.room5[0],image.room5[1],image.room6[0],image.room6[1],image.room7[0],image.room7[1],image.room8[0],image.room8[1],image.room9[0],image.room9[1],image.room10[0],image.room10[1],image.room11[0],image.room11[1],image.room3[0],image.room3[1]]
+
   const featured=featuredLocation.map((loc,index)=>(
     [featuredImages[index],loc]
   ))
