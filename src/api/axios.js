@@ -2,7 +2,7 @@ import axios from "axios";
 
 // base axios instance for your backend
 const API = axios.create({
-  baseURL: "https://cm-housing.netlify.app", // change if backend runs elsewhere
+  baseURL: "https://cm-housing.onrender.com/api", // change if backend runs elsewhere
   withCredentials: true, // allows cookies (important for refresh tokens)
 });
 
