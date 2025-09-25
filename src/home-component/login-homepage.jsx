@@ -76,7 +76,7 @@ export function Nav(){
      <Link to="/HouseRegister" className="button rounded-full hidden py-2  text-center whitespace-nowrap hover:no-underline md:block">
               List your house
             </Link>:
-       <Link to="/Login" className="hidden text-center md:hover:bg-black py-2 px-3  rounded-full md:hover:text-white whitespace-nowrap md:block hover:no-underline font-bold">Sign Up</Link>
+       <Link to="/register" className="hidden text-center md:hover:bg-black py-2 px-3  rounded-full md:hover:text-white whitespace-nowrap md:block hover:no-underline font-bold">Sign Up</Link>
  
           
 }

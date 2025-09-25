@@ -1,7 +1,5 @@
 
-import MyApp from "./Full-App-Structure/myApp";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import MyApp from "./Full-App-Structure/Router";
 import { LoginAuth } from "./Authentication/Usecontext-logic";
 
 function App() {

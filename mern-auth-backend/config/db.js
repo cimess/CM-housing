@@ -11,3 +11,10 @@ async function connectDB() {
 }
 
 module.exports = { connectDB };
+
+// await mongoose.connect(uri, {
+//   dbName: 'myAppDB',
+//   maxPoolSize: 10,
+//   serverSelectionTimeoutMS: 5000
+// });
+

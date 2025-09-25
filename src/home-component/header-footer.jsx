@@ -52,11 +52,9 @@ const navigate=useNavigate('/')
 <>
   {
     !isLogin?
-    <div className=" absolute  translate-y-[65%]  md:translate-y-[75%] border border-gray-300 bg-white left-[20%] -translate-x-1/2  py-2 w-[150px] md:w-[250px] shadow-sm rounded">
+    <div className=" absolute  translate-y-[65%]  md:translate-y-[75%] border border-gray-300 bg-white left-[20%] -translate-x-1/2  py-2 w-[150px] md:w-[200px] shadow-sm rounded">
     <div className="flex flex-col gap-y-2 ">
       <NavLink text='Login' nav='/Login' />
-  <NavLink text='House Owner' nav='/HouseOwner' />
-  <NavLink text=' List your house' nav='/HouseRegister' />
   <NavLink text=' Sign up' nav='/Register' />
 </div>
   </div>
@@ -66,7 +64,7 @@ const navigate=useNavigate('/')
 
   <NavLink text='List House' nav='/HouseOwner' />
     <NavLink text='Notification' nav='/HouseOwner' />
-      <NavLink text='Settings' nav='/Settings' />
+      <NavLink text='profile' nav='/Profile' />
        <NavLink text='Logout' nav='/Login' />
     </div>
   </div>

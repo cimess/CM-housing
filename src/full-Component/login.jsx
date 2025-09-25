@@ -4,31 +4,36 @@ import { useContext, useState } from "react";
 import API from "../api/axios";
 import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 
+
+
 export default function LoginComponent({header}){
 
 const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-    const {setIsLogin}=useLoginAuth()
+    const {setIsLogin,}=useLoginAuth()
+
+
   async function handleLogin(e) {
     e.preventDefault();
     setLoading(true);
-    
-
 
     try {
   await API.post("/auth/login", { email, password }, { withCredentials: true });
 
+  setLoading(false);
+navigate("/loading", { state: { redirectTo: "/" } })
   setIsLogin(true);
-  navigate("/");
 } catch (err) {
   alert(err.response?.data?.message || "Login failed");
   setIsLogin(false);
+  setLoading(false)
 }
 
   
    }
+  //  if(loading)return <LoadingAnimation/>
    
    return(
 

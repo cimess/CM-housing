@@ -1,0 +1,8 @@
+1, we need to fix the refresh logic where it doesnt make the user stay logged in 
+2, fix darkmode
+3, put listhouse link to login state 
+
+
+
+this i have added 
+1, animation spinner 

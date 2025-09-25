@@ -25,7 +25,7 @@ export  function LoginAuth({children}){
     checkSession();
   }, []);
 return(
-   <loginAuthProvider.Provider value={{isLogin,setIsLogin}}>
+   <loginAuthProvider.Provider value={{isLogin,setIsLogin,loading}}>
     {children}
    </loginAuthProvider.Provider>
 )

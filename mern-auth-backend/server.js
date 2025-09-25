@@ -10,7 +10,9 @@ const { connectDB } = require('./config/db');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const protectedRoutes = require('./routes/protected');
-
+const businessProfile = require('./models/businessProfile');
+const profileRoutes = require("./routes/profile");
+const House=require("./routes/House");
 const app = express();
 const PORT = process.env.PORT || 4000;
 
@@ -24,7 +26,7 @@ app.use(morgan('dev'));
 
 // CORS - adjust origin in production
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || 'http://localhost:5000',
   credentials: true
 }));
 
@@ -38,6 +40,9 @@ app.use(globalLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/protected', protectedRoutes);
+// app.use("/api/profile", businessProfile);
+app.use("/api/houses", House);
+app.use("/api/profile", profileRoutes);
 
 app.get('/', (req, res) => res.json({ ok: true }));
 

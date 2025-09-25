@@ -9,13 +9,20 @@ const { passwordSchema } = require('../utils/passwordPolicy');
 const { v4: uuidv4 } = require('uuid');
 
 const CLIENT_COOKIE_NAME = 'refreshToken';
-
+// production
+// const COOKIE_OPTIONS = {
+//   httpOnly: true,
+//   secure: process.env.COOKIE_SECURE === 'true',
+//   sameSite: 'lax',
+//   // in production set domain/path appropriately
+// };
+// development 
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.COOKIE_SECURE === 'true',
-  sameSite: 'lax',
-  // in production set domain/path appropriately
+  secure: false, // false for localhost
+  sameSite: 'Lax'
 };
+
 
 function addAudit(userId, action, ip, meta = {}) {
   const doc = new AuditLog({ user: userId, action, ip, meta });
@@ -23,7 +30,7 @@ function addAudit(userId, action, ip, meta = {}) {
 }
 
 exports.register = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { firstname,lastname,phone, email, password, } = req.body;
   // validate password with policy
   const { error } = passwordSchema.validate(password);
   if (error) return res.status(400).json({ message: error.details[0].message });
@@ -34,7 +41,7 @@ exports.register = async (req, res) => {
   const salt = await bcrypt.genSalt(12);
   const passwordHash = await bcrypt.hash(password, salt);
 
-  const user = new User({ name, email, passwordHash });
+  const user = new User({ firstname,lastname,phone, email, passwordHash });
   await user.save();
 
   // email verification token (jwt short lived)
@@ -116,6 +123,9 @@ exports.login = async (req, res) => {
 
   // set refresh token as HttpOnly cookie
   res.cookie(CLIENT_COOKIE_NAME, tokenValue, { ...COOKIE_OPTIONS, maxAge: 7 * 24 * 60 * 60 * 1000 });
+
+  // Add this right after creating accessToken
+res.cookie('accessToken', accessToken, { ...COOKIE_OPTIONS, maxAge: 15 * 60 * 1000 }); // 15 min
 
   addAudit(user._id, 'login', req.ip);
 

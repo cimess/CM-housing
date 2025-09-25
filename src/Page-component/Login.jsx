@@ -4,14 +4,6 @@ import { motion } from "framer-motion";
 
 
 export default function Login(){
- function HandleLoginAuth(){
-      console.log('hello')
-      setUseLoginAuth(true)
-      alert('Welcome back')
-navigate('/Register')
-
-   }
-
 
    return(
       <motion.div

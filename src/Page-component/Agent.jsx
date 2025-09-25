@@ -1,51 +1,170 @@
-import  Input  from "../body component/input-component";
-import ImageBox from "@/body component/image-componet";
-import image from '../assets/images/my-banners/banner2.jpg'
-import { motion } from "framer-motion";
-export default function HouseRegister(){
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-   
-   return(
-      <motion.div
-      initial={{ opacity: 0, x: 100 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -100 }}
-      transition={{ duration: 0.3 }}>
-  
-         <ImageBox src={image} banner={true} icon={false} /> 
-    
- 
-<div className="text-center w-[90%] md:w-[70%] mx-auto py-10">
-   <h1 className="font-montserrat my-5">
-List Your House
-   </h1>
-   <div className="mb-8">
- <span className="text-gray-600 ">Register with us </span>
-   </div>
-  <form className=" w-[80%] mx-auto text-left">
-   <div className="grid grid-cols-2 gap-x-5">
-      <Input label='Company Name' add='*' type='text' id='company'/>
-      <Input label='Website Link [optional]' add='*' type='text' id='website'/>
-      <Input label='First name' add='*' type='text' id='firstname'/>
-      <Input label='Last name' add='*' type='text' id='lastname'/>
-      <Input label='Email address' add='*' type='email' id='email'/>
-      <Input label=' Confirm email ' add='*' type='email' id='confirmemail'/>
-    <Input label='password' add='*' type='password' id='password'/>
-    <Input label='Confirm password' add='*' type='password' id='confirmpassword' />
+export default function HouseRegister() {
+  const [profileCompleted, setProfileCompleted] = useState(null);
+  const [formData, setFormData] = useState({
+    houseType: "",
+    location: "",
+    bedrooms: "",
+    bathrooms: "",
+    rentPrice: "",
+    description: "",
+  });
+  const [houseImages, setHouseImages] = useState([]);
+  const [uploading, setUploading] = useState(false);
 
-   </div>
-   
-  <div className="my-4 flex items-center gap-x-3 text-sm text-gray-500">
-   <input type='checkbox' className='h-4 w-4 accent-black' /> <label > Subscribe to news letter</label>
-  </div>
-<div className="text-center"><button className="button rounded-full mt-7 w-[150px]">Register</button></div>
+  useEffect(() => {
+    async function checkProfile() {
+      try {
+        const res = await axios.get("/api/profile/me");
+        setProfileCompleted(res.data?.isCompleted || false);
+      } catch (err) {
+        console.error(err);
+        setProfileCompleted(false);
+      }
+    }
+    checkProfile();
+  }, []);
 
+  function handleChange(e) {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  }
 
-<hr className="mt-15 text-gray-300"/>
+  function handleHouseImagesUpload(e) {
+    setHouseImages(Array.from(e.target.files));
+  }
 
-  </form>
+  async function handleSubmit(e) {
+    e.preventDefault();
 
-</div>
-</motion.div>
-   )
+    try {
+      setUploading(true);
+
+      // 1. Upload each file to Cloudinary
+      const uploadedUrls = [];
+      for (const file of houseImages) {
+        const data = new FormData();
+        data.append("file", file);
+        data.append("upload_preset", "YOUR_UPLOAD_PRESET"); // replace
+        const res = await fetch(
+          "https://api.cloudinary.com/v1_1/dwd1w7nfu/image/upload",
+          {
+            method: "POST",
+            body: data,
+          }
+        );
+        const result = await res.json();
+        uploadedUrls.push(result.secure_url);
+      }
+
+      // 2. Send house details + image URLs to your backend
+      await axios.post("/api/houses/create", {
+        ...formData,
+        images: uploadedUrls,
+      });
+
+      alert("House listed successfully!");
+      setFormData({
+        houseType: "",
+        location: "",
+        bedrooms: "",
+        bathrooms: "",
+        rentPrice: "",
+        description: "",
+      });
+      setHouseImages([]);
+    } catch (err) {
+      console.error("Upload failed:", err);
+      alert("Failed to list house");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  if (profileCompleted === null) return <p>Loading...</p>;
+
+  if (!profileCompleted) {
+    return (
+      <div className="text-center mt-10">
+        <h2 className="text-xl font-bold">⚠️ Complete Your Profile First</h2>
+        <p className="text-gray-600 mb-4">
+          You need to complete your profile before listing a house.
+        </p>
+        <a href="/profile" className="bg-black text-white px-4 py-2 rounded">
+          Go to Profile
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-[80%] mx-auto py-8">
+      <h1 className="text-2xl font-bold mb-4">List Your House</h1>
+      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+        <input
+          type="text"
+          id="houseType"
+          value={formData.houseType}
+          onChange={handleChange}
+          placeholder="House Type"
+          required
+        />
+        <input
+          type="text"
+          id="location"
+          value={formData.location}
+          onChange={handleChange}
+          placeholder="Location"
+          required
+        />
+        <input
+          type="number"
+          id="bedrooms"
+          value={formData.bedrooms}
+          onChange={handleChange}
+          placeholder="Bedrooms"
+          required
+        />
+        <input
+          type="number"
+          id="bathrooms"
+          value={formData.bathrooms}
+          onChange={handleChange}
+          placeholder="Bathrooms"
+          required
+        />
+        <input
+          type="number"
+          id="rentPrice"
+          value={formData.rentPrice}
+          onChange={handleChange}
+          placeholder="Rent Price (₦)"
+          required
+        />
+        <textarea
+          id="description"
+          value={formData.description}
+          onChange={handleChange}
+          placeholder="Description"
+          className="col-span-2 border p-2 rounded"
+        ></textarea>
+        <input
+          type="file"
+          multiple
+          accept=".jpg,.jpeg,.png"
+          onChange={handleHouseImagesUpload}
+          required
+          className="col-span-2"
+        />
+        <button
+          type="submit"
+          className="col-span-2 bg-black text-white py-2 rounded"
+          disabled={uploading}
+        >
+          {uploading ? "Uploading..." : "Submit"}
+        </button>
+      </form>
+    </div>
+  );
 }
