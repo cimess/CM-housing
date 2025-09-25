@@ -14,7 +14,7 @@ const businessProfile = require('./models/businessProfile');
 const profileRoutes = require("./routes/profile");
 const House=require("./routes/House");
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 
 connectDB();
 
