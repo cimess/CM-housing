@@ -20,7 +20,7 @@ const navigate = useNavigate();
     setLoading(true);
 
     try {
-  await API.post("/auth/login", { email, password }, { withCredentials: true });
+  await API.post("auth/login", { email, password }, { withCredentials: true });
 
   setLoading(false);
 navigate("/loading", { state: { redirectTo: "/" } })

@@ -10,18 +10,18 @@ const { v4: uuidv4 } = require('uuid');
 
 const CLIENT_COOKIE_NAME = 'refreshToken';
 // production
-// const COOKIE_OPTIONS = {
-//   httpOnly: true,
-//   secure: process.env.COOKIE_SECURE === 'true',
-//   sameSite: 'lax',
-//   // in production set domain/path appropriately
-// };
-// development 
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: false, // false for localhost
-  sameSite: 'Lax'
+  secure: process.env.COOKIE_SECURE === 'true',
+  sameSite: 'lax',
+  // in production set domain/path appropriately
 };
+// development 
+// const COOKIE_OPTIONS = {
+//   httpOnly: true,
+//   secure: false, // false for localhost
+//   sameSite: 'Lax'
+// };
 
 
 function addAudit(userId, action, ip, meta = {}) {
