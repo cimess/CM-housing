@@ -8,17 +8,23 @@ import { setAccessToken } from "./utils/authStore";
 function AppContent() {
   const { setIsLogin } = useLoginAuth();
 
-  useEffect(() => {
-    // Try refresh on app load
-    API.post("/auth/refresh-token", {}, { withCredentials: true })
-      .then(res => {
+useEffect(() => {
+  let ignore = false;
+
+  API.post("/auth/refresh-token", {}, { withCredentials: true })
+    .then(res => {
+      if (!ignore) {
         setAccessToken(res.data.accessToken);
         setIsLogin(true);
-      })
-      .catch(() => {
-        setIsLogin(false);
-      });
-  }, [setIsLogin]);
+      }
+    })
+    .catch(() => {
+      if (!ignore) setIsLogin(false);
+    });
+
+  return () => { ignore = true }; // cleanup
+}, [setIsLogin]);
+
 
   return <MyApp />;
 }
