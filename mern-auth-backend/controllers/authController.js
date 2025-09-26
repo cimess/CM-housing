@@ -184,9 +184,17 @@ exports.logout = async (req, res) => {
   if (token) {
     await RefreshToken.findOneAndUpdate({ token }, { revoked: true });
   }
-  res.clearCookie(CLIENT_COOKIE_NAME);
+
+  res.clearCookie(CLIENT_COOKIE_NAME, {
+    httpOnly: true,
+    secure: process.env.COOKIE_SECURE === 'true',
+    sameSite: 'none',
+    path: '/',   // 👈 MUST match the path used when setting the cookie
+  });
+
   return res.json({ message: 'Logged out' });
 };
+
 
 exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
