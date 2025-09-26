@@ -12,10 +12,13 @@ export function LoginAuth({ children }) {
       try {
         await API.get("/auth/me", { withCredentials: true });
         setIsLogin(true);
+        console.log(isLogin)
       } catch (err) {
         setIsLogin(false);
+        console.log(isLogin)
       } finally {
         setLoading(false);
+        console.log(isLogin)
       }
     }
     checkSession();
