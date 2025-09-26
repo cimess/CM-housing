@@ -4,7 +4,6 @@ import { getAccessToken, setAccessToken } from "@/utils/authStore"; // we'll mak
 
 const API = axios.create({
   baseURL: "https://cm-housing.onrender.com/api",
-    // baseURL: "https://localhost/4000/api",
   withCredentials: true, // cookies (refresh token) always included
 });
 
@@ -16,15 +15,17 @@ API.interceptors.response.use(
       error.config._retry = true;
       try {
         const { data } = await API.post("/auth/refresh-token", {}, { withCredentials: true });
-        setAccessToken(data.accessToken); // store new token in memory
+        setAccessToken(data.accessToken);
         error.config.headers["Authorization"] = `Bearer ${data.accessToken}`;
         return API(error.config);
       } catch (err) {
+        // ⛔ stop retrying if refresh fails
         return Promise.reject(err);
       }
     }
     return Promise.reject(error);
   }
 );
+;
 
 export default API;

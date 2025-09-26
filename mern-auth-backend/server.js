@@ -26,7 +26,7 @@ app.use(morgan('dev'));
 
 // CORS - adjust origin in production
 app.use(cors({
-  origin: process.env.FRONTEND_URL ||'https://cm-housing.netlify.app',
+  origin: process.env.FRONTEND_URL ||'https://cmhousing.com.ng',
   credentials: true
 }));
 

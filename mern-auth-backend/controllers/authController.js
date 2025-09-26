@@ -13,8 +13,9 @@ const CLIENT_COOKIE_NAME = 'refreshToken';
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.COOKIE_SECURE === 'true',
-  sameSite: 'lax',
-  // in production set domain/path appropriately
+  sameSite: 'none',
+   path: '/'
+  
 };
 // development 
 // const COOKIE_OPTIONS = {
@@ -124,8 +125,6 @@ exports.login = async (req, res) => {
   // set refresh token as HttpOnly cookie
   res.cookie(CLIENT_COOKIE_NAME, tokenValue, { ...COOKIE_OPTIONS, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
-  // Add this right after creating accessToken
-res.cookie('accessToken', accessToken, { ...COOKIE_OPTIONS, maxAge: 15 * 60 * 1000 }); // 15 min
 
   addAudit(user._id, 'login', req.ip);
 
