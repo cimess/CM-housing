@@ -16,7 +16,7 @@ export default function LogoutButton() {
       // clear accessToken from memory
       setAccessToken(null);
       setIsLogin(false);
-      navigate("/login");
+      navigate("/");
     }
   }
 
