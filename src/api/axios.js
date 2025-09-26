@@ -1,10 +1,29 @@
+// src/api/axios.js
 import axios from "axios";
+import { getAccessToken, setAccessToken } from "@/utils/authStore"; // we'll make this
 
-// base axios instance for your backend
 const API = axios.create({
-  baseURL: "https://cm-housing.onrender.com/api", // change if backend runs elsewhere
-  //  baseURL: "http://localhost:4000/api", // change if backend runs elsewhere
-  withCredentials: true, // allows cookies (important for refresh tokens)
+  baseURL: "https://cm-housing.onrender.com/api",
+  withCredentials: true, // cookies (refresh token) always included
 });
+
+// Add interceptor to refresh accessToken on 401
+API.interceptors.response.use(
+  res => res,
+  async error => {
+    if (error.response?.status === 401 && !error.config._retry) {
+      error.config._retry = true;
+      try {
+        const { data } = await API.post("/auth/refresh-token", {}, { withCredentials: true });
+        setAccessToken(data.accessToken); // store new token in memory
+        error.config.headers["Authorization"] = `Bearer ${data.accessToken}`;
+        return API(error.config);
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default API;
