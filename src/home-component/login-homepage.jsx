@@ -16,10 +16,10 @@ function HoverMessage({text}){
    )
 }
 
-export default function IsLoginFunction({notifications}){
+export default function IsLoginFunction({notifications,userLoggedIn}){
 
 const [notification,setNotification]=useState(0)
-const {isLogin}=useLoginAuth()
+const {isLogin}=userLoggedIn()||useLoginAuth()
 
    const Navigate=useNavigate('/')
 

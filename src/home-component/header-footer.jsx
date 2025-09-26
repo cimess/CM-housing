@@ -116,7 +116,7 @@ const navigate=useNavigate('/')
        
          {state && showLogin('true')}
  
- { <IsLoginFunction />}
+ { <IsLoginFunction userLoggedIn={useLoginAuth} />}
   <div ref={node} className=" round-bg md:p-5 p-3 group " 
         onClick={()=>setState((prev)=>!prev)}
        
