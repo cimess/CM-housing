@@ -12,17 +12,20 @@ export function LoginAuth({ children }) {
       try {
         await API.get("/auth/me", { withCredentials: true });
         setIsLogin(true);
-        console.log(isLogin)
+       
       } catch (err) {
         setIsLogin(false);
-        console.log(isLogin)
       } finally {
         setLoading(false);
-        console.log(isLogin)
       }
     }
     checkSession();
   }, []);
+  
+  useEffect(() => {
+  console.log("isLogin changed →", isLogin);
+}, [isLogin]);
+
 
   return (
     <loginAuthProvider.Provider value={{ isLogin, setIsLogin, loading }}>

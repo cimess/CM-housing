@@ -4,10 +4,7 @@ import { Link,useNavigate } from "react-router-dom"
 import {useState } from "react"
 import { useLoginAuth } from "@/Authentication/Usecontext-logic"
 
-
 function HoverMessage({text}){
-
-
 
    return(
       <p className=" hidden rounded group-hover:block bg-black p-2 absolute translate-y-10 translate-x-2 text-white  whitespace-nowrap text-xs">
@@ -16,11 +13,12 @@ function HoverMessage({text}){
    )
 }
 
-export default function IsLoginFunction({notifications,userLoggedIn}){
+export default function IsLoginFunction({notifications}){
 
 const [notification,setNotification]=useState(0)
-const {isLogin}=userLoggedIn()||useLoginAuth()
+const {isLogin}=useLoginAuth()
 
+if(!isLogin) return null
    const Navigate=useNavigate('/')
 
 
@@ -32,13 +30,9 @@ const {isLogin}=userLoggedIn()||useLoginAuth()
    )
 }
 
-
-   return(
-
-   
+   return(      
       
-      
-      <div className={`flex gap-x-1 ${isLogin?"":'hidden'}`}>
+      <div className={`flex gap-x-1'}`}>
 <div className="round-bg p-3 md:p-5 relative group" onClick={()=>Navigate('/MyMessagePage')}>
 <FontAwesomeIcon className="sm:h-3 w-3" 
 icon={faInbox}/>
@@ -60,10 +54,6 @@ icon={faClipboardList}/>
 <HoverMessage text='liked houses' />
 </div>
       </div>
-   
-      
-     
-   
 
    )
 }
@@ -77,10 +67,8 @@ export function Nav(){
               List your house
             </Link>:
        <Link to="/register" className="hidden text-center md:hover:bg-black py-2 px-3  rounded-full md:hover:text-white whitespace-nowrap md:block hover:no-underline font-bold">Sign Up</Link>
- 
-          
+           
 }
       </div>
    )
 }
-
