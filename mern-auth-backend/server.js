@@ -10,7 +10,7 @@ const { connectDB } = require('./config/db');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const protectedRoutes = require('./routes/protected');
-const businessProfile = require('./models/businessProfile');
+const businessProfileRoutes = require('./routes/businessProfile');
 const profileRoutes = require("./routes/profile");
 const House=require("./routes/House");
 const app = express();
@@ -26,7 +26,7 @@ app.use(morgan('dev'));
 
 // CORS - adjust origin in production
 app.use(cors({
-  origin: process.env.FRONTEND_URL ||'https://cmhousing.com.ng',
+  origin: process.env.FRONTEND_URL ,
   credentials: true
 }));
 
@@ -40,7 +40,7 @@ app.use(globalLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/protected', protectedRoutes);
-// app.use("/api/profile", businessProfile);
+app.use('/api/business-profile', businessProfileRoutes);
 app.use("/api/houses", House);
 app.use("/api/profile", profileRoutes);
 

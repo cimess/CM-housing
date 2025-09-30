@@ -2,7 +2,7 @@ const BusinessProfile = require("../models/businessProfile");
 
 exports.saveProfile = async (req, res) => {
   try {
-    const { userId } = req.user; // from JWT middleware
+    const userId = req.user._id; // <-- fix this
     const existing = await BusinessProfile.findOne({ user: userId });
 
     if (existing) {
@@ -20,12 +20,12 @@ exports.saveProfile = async (req, res) => {
   }
 };
 
+
 exports.getProfile = async (req, res) => {
   try {
-    const { userId } = req.user;
-    const profile = await BusinessProfile.findOne({ user: userId });
-    if (!profile) return res.status(404).json({ message: "Profile not found" });
-    return res.json(profile);
+   const profile = await BusinessProfile.findOne({ user: req.user._id });
+res.json(profile || {}); // always returns object
+
   } catch (err) {
     return res.status(500).json({ message: "Server error", error: err.message });
   }

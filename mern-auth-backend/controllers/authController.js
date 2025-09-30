@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const RefreshToken = require('../models/RefreshToken');
-const AuditLog = require('../models/AuditLog');
+const { AuditLog, addAudit } = require('../models/AuditLog');
 const { signAccessToken, signRefreshToken } = require('../utils/token');
 const { sendEmail } = require('../utils/emailService');
 const { passwordSchema } = require('../utils/passwordPolicy');
@@ -10,25 +10,26 @@ const { v4: uuidv4 } = require('uuid');
 
 const CLIENT_COOKIE_NAME = 'refreshToken';
 // production
-const COOKIE_OPTIONS = {
-  httpOnly: true,
-  secure: process.env.COOKIE_SECURE === 'true',
-  sameSite: 'none',
-   path: '/'
-  
-};
-// development 
 // const COOKIE_OPTIONS = {
 //   httpOnly: true,
-//   secure: false, // false for localhost
-//   sameSite: 'Lax'
+//   secure: process.env.COOKIE_SECURE === 'true',
+//   sameSite: 'none',
+//    path: '/'
+  
 // };
+// development 
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: false, // false for localhost
+  sameSite: 'Lax',
+  path:'/'
+};
 
 
-function addAudit(userId, action, ip, meta = {}) {
-  const doc = new AuditLog({ user: userId, action, ip, meta });
-  doc.save().catch(() => {});
-}
+// function addAudit(userId, action, ip, meta = {}) {
+//   const doc = new AuditLog({ user: userId, action, ip, meta });
+//   doc.save().catch(() => {});
+// }
 
 exports.register = async (req, res) => {
   const { firstname,lastname,phone, email, password, } = req.body;
@@ -65,74 +66,52 @@ exports.verifyEmail = async (req, res) => {
     if (!user) return res.status(400).json({ message: 'Invalid token' });
     user.isEmailVerified = true;
     await user.save();
+      // Log to confirm email verification
+
     addAudit(user._id, 'email_verified', req.ip);
     // redirect to front-end success page or return JSON
-    return res.redirect(`${process.env.FRONTEND_URL}/email-verified`);
+   return res.json({ success: true, message: "Email verified" });
+
   } catch (err) {
     return res.status(400).json({ message: 'Invalid or expired token' });
   }
 };
 
+
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (!user) {
-    return res.status(400).json({ message: 'Invalid credentials' });
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+
+    const match = await bcrypt.compare(password, user.passwordHash);
+    if (!match) return res.status(400).json({ message: 'Invalid credentials' });
+
+    if (!user.isEmailVerified) return res.status(403).json({ message: 'Verify your email' });
+
+    const accessToken = signAccessToken({ sub: user._id, roles: user.roles });
+    const tokenValue = signRefreshToken();
+
+    const refreshDoc = new RefreshToken({
+      user: user._id,
+      token: tokenValue,
+      expiresAt: new Date(Date.now() + 7*24*60*60*1000),
+      createdByIp: req.ip
+    });
+    await refreshDoc.save();
+
+    res.cookie(CLIENT_COOKIE_NAME, tokenValue, { ...COOKIE_OPTIONS, maxAge: 7*24*60*60*1000 });
+
+    return res.json({
+      accessToken,
+      user: { id: user._id, email: user.email, name: user.name }
+    });
+  } catch (err) {
+    console.error('🚨 Login error:', err);
+    return res.status(500).json({ message: 'Server error' });
   }
-
-  // account lockout
-  if (user.isLocked()) {
-    return res.status(423).json({ message: 'Account locked. Try later.' });
-  }
-
-  const match = await bcrypt.compare(password, user.passwordHash);
-  if (!match) {
-    user.failedLoginAttempts += 1;
-    if (user.failedLoginAttempts >= 5) {
-      // lock account for 15 minutes
-      user.lockedUntil = new Date(Date.now() + 15 * 60 * 1000);
-      user.failedLoginAttempts = 0;
-    }
-    await user.save();
-    addAudit(user._id, 'failed_login', req.ip);
-    return res.status(400).json({ message: 'Invalid credentials' });
-  }
-
-  // successful login - reset counters
-  user.failedLoginAttempts = 0;
-  user.lockedUntil = null;
-  await user.save();
-
-  // require email verified
-  if (!user.isEmailVerified) {
-    return res.status(403).json({ message: 'Please verify your email' });
-  }
-
-  // create access token
-  const accessToken = signAccessToken({ sub: user._id, roles: user.roles });
-
-  // rotate/create refresh token
-  const tokenValue = signRefreshToken();
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7d by default
-  const refreshDoc = new RefreshToken({
-    user: user._id,
-    token: tokenValue,
-    expiresAt,
-    createdByIp: req.ip
-  });
-  await refreshDoc.save();
-
-  // set refresh token as HttpOnly cookie
-  res.cookie(CLIENT_COOKIE_NAME, tokenValue, { ...COOKIE_OPTIONS, maxAge: 7 * 24 * 60 * 60 * 1000 });
-
-
-  addAudit(user._id, 'login', req.ip);
-
-  return res.json({
-    accessToken,
-    user: { id: user._id, email: user.email, name: user.name, roles: user.roles }
-  });
 };
+
 
 exports.refreshToken = async (req, res) => {
   const token = req.cookies[CLIENT_COOKIE_NAME] || req.body.token;
@@ -186,26 +165,25 @@ exports.logout = async (req, res) => {
   }
 
   res.clearCookie(CLIENT_COOKIE_NAME, {
-    httpOnly: true,
-    secure: process.env.COOKIE_SECURE === 'true',
-    sameSite: 'none',
-    path: '/',   // 👈 MUST match the path used when setting the cookie
+    ...COOKIE_OPTIONS,   // 👈 use the exact same options as when setting
+    path: '/',           // 👈 add if you set path when creating
   });
 
   return res.json({ message: 'Logged out' });
 };
 
 
+
 exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
-  if (!user) return res.json({ message: 'If that account exists, a reset email was sent.' });
+  if (!user) return res.json({ message: 'Invalid Email.' });
 
   const resetToken = jwt.sign({ sub: user._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '1h' });
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
   await sendEmail(email, 'Password reset', `Reset here: ${resetUrl}`);
   addAudit(user._id, 'forgot_password', req.ip);
-  return res.json({ message: 'If that account exists, a reset email was sent.' });
+  return res.json({ message: ' a reset email was sent.' });
 };
 
 exports.resetPassword = async (req, res) => {

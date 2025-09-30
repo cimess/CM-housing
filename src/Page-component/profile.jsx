@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react";
-import { message } from "@/data/messageBox";
 import profileDemoPic from "../assets/profile-demo-pics/IMG-20250719-WA0002.jpg";
-import API from '@/api/axios'
+import API from "@/api/axios";
 import Input from "@/body component/input-component";
+import { useAxiosAuth } from "@/Authentication/useAxiosAuth";
+import LoadingAnimation from "@/animations/LoadingAnim";
+
 export default function ProfilePage() {
-  // ------------------ Normal Profile ------------------
+  useAxiosAuth();
+
+  // ------------------ States ------------------
+  const [loading, setLoading] = useState(true);
+  const [savingUser, setSavingUser] = useState(false);
+  const [savingBiz, setSavingBiz] = useState(false);
+
   const [userForm, setUserForm] = useState({
     firstname: "",
     lastname: "",
@@ -17,99 +25,105 @@ export default function ProfilePage() {
     website: "",
   });
 
-  useEffect(() => {
-    async function fetchUserProfile() {
-      try {
-        const res = await API.get("/profile/me");
-        if (res.data) {
-          setUserForm({
-            firstname: res.data.firstname || "",
-            lastname: res.data.lastname || "",
-            email: res.data.email || "",
-            password: "",
-            confirmPassword: "",
-            phone: res.data.phone || "",
-            address: res.data.address || "",
-            whatsapp: res.data.whatsapp || "",
-            website: res.data.website || "",
-          });
-        } else {
-          setUserForm({
-            firstname: message[0].name,
-            lastname: message[0].lastname,
-            email: message[0].email,
-            password: "",
-            confirmPassword: "",
-            phone: message[0].phone,
-            address: message[0].location,
-            whatsapp: message[0].phone,
-            website: message[0].website,
-          });
-        }
-      } catch (err) {
-        console.error("Error fetching profile:", err);
-      }
-    }
-    fetchUserProfile();
-  }, []);
-
-  function handleUserChange(e) {
-    setUserForm({ ...userForm, [e.target.id]: e.target.value });
-  }
-
-  async function saveUserProfile(e) {
-    e.preventDefault();
-    if (userForm.password && userForm.password !== userForm.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-    try {
-      await API.post("/profile/save", userForm);
-      alert("Profile saved successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to save profile!");
-    }
-  }
-
-  // ------------------ Business/House Profile ------------------
   const [bizForm, setBizForm] = useState({
     dob: "",
     nin: "",
     idType: "",
     idNumber: "",
     company: "",
-    website: "",
     rcNumber: "",
-    companyAddress: "",
     officePhone: "",
   });
 
-  useEffect(() => {
-    API.get("/house-profile/me").then((res) => {
-      if (res.data) setBizForm(res.data);
-    });
-  }, []);
+  // ------------------ Fetch Data ------------------
+useEffect(() => {
+  async function fetchProfiles() {
+    try {
+      const [userRes, bizRes] = await Promise.all([
+        API.get("/profile/me").catch(() => ({ data: {} })),
+        API.get("/business-profile/me").catch(() => ({ data: {} })),
+      ]);
+console.log(bizRes.data)
+      const u = userRes.data || {};
+      const b = bizRes.data || {};
 
-  function handleBizChange(e) {
-    setBizForm({ ...bizForm, [e.target.id]: e.target.value });
+      setUserForm(prev => ({
+        ...prev,
+        firstname: u.firstname || "",
+        lastname: u.lastname || "",
+        email: u.email || "",
+        phone: u.phone || "",
+        address: u.address || "",
+        whatsapp: u.whatsapp || "",
+        website: u.website || "",
+      }));
+
+      setBizForm(prev => ({
+        ...prev,
+        dob: b.dob || "",
+        nin: b.nin || "",
+        idType: b.idType || "",
+        idNumber: b.idNumber || "",
+        company: b.company || "",
+        rcNumber: b.rcNumber || "",
+        officePhone: b.officePhone || "",
+      }));
+    } catch (err) {
+      console.error("Error fetching profiles:", err);
+    }finally {
+  setLoading(false);
+}
+
   }
+  fetchProfiles();
+}, []);
 
-async function saveBizProfile(e) {
+
+  // ------------------ Handlers ------------------
+  const handleUserChange = (e) =>
+    setUserForm({ ...userForm, [e.target.id]: e.target.value });
+
+  const handleBizChange = (e) =>
+    setBizForm({ ...bizForm, [e.target.id]: e.target.value });
+
+  const saveUserProfile = async (e) => {
+    e.preventDefault();
+
+    try {
+      setSavingUser(true);
+      await API.post("/profile/save", payload);
+      alert("User profile saved successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save user profile!");
+    } finally {
+      setSavingUser(false);
+    }
+  };
+
+  const saveBizProfile = async (e) => {
   e.preventDefault();
   try {
-    const res = await API.post("/profile/save", { ...bizForm, isCompleted: true });
-    alert("Business profile saved!");
+    setSavingBiz(true);
+    await API.post("/business-profile/save", { ...bizForm }); // <-- correct endpoint
+    alert("Business profile saved successfully!");
   } catch (err) {
     console.error(err);
     alert("Failed to save business profile!");
+  } finally {
+    setSavingBiz(false);
   }
-}
+};
 
 
   // ------------------ Render ------------------
+  if (loading)
+    return (
+     <LoadingAnimation/>
+    );
+
   return (
-    <div className="h-[600px] mx-3 shadow w-full overflow-y-scroll [scrollbar-width:none]">
+    <div className="h-[100vh] mx-3 shadow w-full overflow-y-scroll [scrollbar-width:none]">
       {/* Normal Profile */}
       <h2 className="text-xl text-center mt-3 font-bold">Profile Settings</h2>
       <div className="text-center mt-5 mb-2 flex justify-center">
@@ -122,74 +136,35 @@ async function saveBizProfile(e) {
 
       <form onSubmit={saveUserProfile} className="p-2 max-w-[900px] mx-auto">
         <div className="grid gap-4">
-          <Input
-            type="text"
-            id="firstname"
-            label="Firstname"
-            value={userForm.firstname}
-            onChange={handleUserChange}
-          />
-          <Input
-            type="text"
-            id="lastname"
-            label="Lastname"
-            value={userForm.lastname}
-            onChange={handleUserChange}
-          />
-          <Input
-            type="email"
-            id="email"
-            label="Email"
-            value={userForm.email}
-            onChange={handleUserChange}
-          />
-          <Input
-            type="password"
-            id="password"
-            label="Password"
-            value={userForm.password}
-            onChange={handleUserChange}
-          />
-          <Input
-            type="password"
-            id="confirmPassword"
-            label="Confirm Password"
-            value={userForm.confirmPassword}
-            onChange={handleUserChange}
-          />
-          <Input
-            type="text"
-            id="phone"
-            label="Phone"
-            value={userForm.phone}
-            onChange={handleUserChange}
-          />
-          <Input
-            type="text"
-            id="address"
-            label="Address"
-            value={userForm.address}
-            onChange={handleUserChange}
-          />
-          <Input
-            type="text"
-            id="whatsapp"
-            label="Whatsapp Number"
-            value={userForm.whatsapp}
-            onChange={handleUserChange}
-          />
-          <Input
-            type="text"
-            id="website"
-            label="Website"
-            value={userForm.website}
-            onChange={handleUserChange}
-          />
+          {[
+            { id: "firstname", label: "Firstname", type: "text" },
+            { id: "lastname", label: "Lastname", type: "text" },
+            { id: "email", label: "Email", type: "email" },
+            { id: "phone", label: "Phone", type: "text" },
+            { id: "address", label: "Address", type: "text" },
+            { id: "whatsapp", label: "Whatsapp Number", type: "text" },
+            { id: "website", label: "Website", type: "text" },
+          ].map((input) => (
+            <Input
+              key={input.id}
+              type={input.type}
+              id={input.id}
+              label={input.label}
+              inputValue={userForm[input.id]}
+              onChange={handleUserChange}
+            />
+          ))}
         </div>
 
         <div className="text-center">
-          <button className="button rounded-full mt-7 w-[120px]">
-            Save Profile
+          <button
+            type="submit"
+            disabled={savingUser}
+            className={`button rounded-full mt-7 w-[150px] ${
+              savingUser ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            {savingUser ? "Saving..." : "Save Profile"}
           </button>
         </div>
       </form>
@@ -204,90 +179,38 @@ async function saveBizProfile(e) {
 
       <form onSubmit={saveBizProfile} className="p-2 max-w-[900px] mx-auto">
         <div className="grid grid-cols-2 gap-4">
-          <Input
-            type="date"
-            id="dob"
-            value={bizForm.dob}
-            onChange={handleBizChange}
-            label="Date of Birth"
-          />
-          <Input
-            type="text"
-            id="nin"
-            value={bizForm.nin}
-            onChange={handleBizChange}
-            label="NIN"
-          />
-          <Input
-            type="text"
-            id="idType"
-            value={bizForm.idType}
-            onChange={handleBizChange}
-            label="ID Type"
-          />
-          <Input
-            type="text"
-            id="idNumber"
-            value={bizForm.idNumber}
-            onChange={handleBizChange}
-            label="ID Number"
-          />
-          <Input
-            type="text"
-            id="company"
-            value={bizForm.company}
-            onChange={handleBizChange}
-            label="Company Name"
-          />
-          <Input
-            type="text"
-            id="website"
-            value={bizForm.website}
-            onChange={handleBizChange}
-            label="Website"
-          />
-          <Input
-            type="text"
-            id="rcNumber"
-            value={bizForm.rcNumber}
-            onChange={handleBizChange}
-            label="RC Number"
-          />
-          <Input
-           
-            type="text"
-            id="companyAddress"
-            value={bizForm.companyAddress}
-            onChange={handleBizChange}
-            label="Company Address"
-          />
-          <Input
-         
-            type="text"
-            id="officePhone"
-            value={bizForm.officePhone}
-            onChange={handleBizChange}
-            label="Office Phone Number"
-
-          />
+          {[
+            { id: "dob", label: "Date of Birth", type: "date" },
+            { id: "nin", label: "NIN", type: "text" },
+            { id: "idType", label: "ID Type", type: "text" },
+            { id: "idNumber", label: "ID Number", type: "text" },
+            { id: "company", label: "Company Name", type: "text" },
+            { id: "rcNumber", label: "RC Number", type: "text" },
+            { id: "officePhone", label: "Office Phone", type: "text" },
+          ].map((input) => (
+            <Input
+              key={input.id}
+              type={input.type}
+              id={input.id}
+              label={input.label}
+             inputValue={bizForm[input.id]}
+              onChange={handleBizChange}
+            />
+          ))}
         </div>
 
         <div className="text-center">
-          <button className="button rounded-full mt-7 w-fit">
-            Save Business Profile
+          <button
+            type="submit"
+            disabled={savingBiz}
+            className={`button rounded-full mt-7 w-fit ${
+              savingBiz ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            {savingBiz ? "Saving..." : "Save Business Profile"}
           </button>
         </div>
       </form>
     </div>
   );
 }
-{/* <fieldset className="border rounded">
-              <legend className="ml-3 font-light">Address</legend>
-              <Input
-                type="text"
-                id="address"
-                className="input pb-1 px-2 w-full"
-                value={formData.address}
-                onChange={handleChange}
-              />
-            </fieldset> */}

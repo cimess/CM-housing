@@ -8,4 +8,19 @@ const auditSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('AuditLog', auditSchema);
+const AuditLog = mongoose.model('AuditLog', auditSchema);
+
+// ✅ Function to create an audit log and also log to console
+function addAudit(userId, action, ip, meta = {}) {
+  const doc = new AuditLog({ user: userId, action, ip, meta });
+
+  doc.save()
+    .then(() => {
+      console.log(`Audit log saved: user=${userId}, action=${action}, ip=${ip}`, meta);
+    })
+    .catch(err => {
+      console.error('Failed to save audit log:', err);
+    });
+}
+
+module.exports = { AuditLog, addAudit };

@@ -7,9 +7,7 @@ const businessProfileSchema = new mongoose.Schema({
   idType: String,
   idNumber: String,
   company: String,
-  website: String,
   rcNumber: String,
-  companyAddress: String,
   officePhone: String,
   isCompleted: { type: Boolean, default: false }, // mark when profile setup done
   createdAt: { type: Date, default: Date.now },

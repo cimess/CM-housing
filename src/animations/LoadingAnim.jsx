@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 
 export default function LoadingAnimation({ size = 60, color = "#3498db" }) {
   return (
-    <motion.div
+    <div className="flex justify-center items-center w-full h-[100vh]">
+       <motion.div
       style={{
         width: size,
         height: size,
@@ -18,5 +19,7 @@ export default function LoadingAnimation({ size = 60, color = "#3498db" }) {
         ease: "linear",
       }}
     />
+    </div>
+   
   );
 }

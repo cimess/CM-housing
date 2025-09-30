@@ -1,31 +1,60 @@
-// src/api/axios.js
 import axios from "axios";
-import { getAccessToken, setAccessToken } from "@/utils/authStore"; // we'll make this
 
 const API = axios.create({
-  baseURL: "https://cm-housing.onrender.com/api",
-  withCredentials: true, // cookies (refresh token) always included
+  baseURL: "http://localhost:4000/api",
+  withCredentials: true, // cookies sent automatically
 });
 
-// Add interceptor to refresh accessToken on 401
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
+// RESPONSE INTERCEPTOR: handles 401 → refresh token
 API.interceptors.response.use(
   res => res,
   async error => {
-    if (error.response?.status === 401 && !error.config._retry) {
-      error.config._retry = true;
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(token => {
+            originalRequest.headers["Authorization"] = `Bearer ${token}`;
+            return API(originalRequest);
+          })
+          .catch(err => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
       try {
-        const { data } = await API.post("/auth/refresh-token", {}, { withCredentials: true });
-        setAccessToken(data.accessToken);
-        error.config.headers["Authorization"] = `Bearer ${data.accessToken}`;
-        return API(error.config);
+        const { data } = await API.post("/auth/refresh-token"); // cookie sent automatically
+        // this will update the accessToken in context via useAxiosAuth
+        processQueue(null, data.accessToken);
+        return API(originalRequest);
       } catch (err) {
-        // ⛔ stop retrying if refresh fails
+        processQueue(err, null);
         return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
       }
     }
+
     return Promise.reject(error);
   }
 );
-;
 
 export default API;

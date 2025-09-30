@@ -20,7 +20,7 @@ async function addUser() {
       return process.exit();
     }
 
-    const hashedPassword = await bcrypt.hash("123456", 10);
+    const hashedPassword = await bcrypt.hash("Test123456@", 10);
     const user = new User({
   name: "Cimess",
   email: "test1@example.com",

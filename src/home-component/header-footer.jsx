@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+     import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser,faBars, faPlus, } from "@fortawesome/free-solid-svg-icons";
 import { faFacebook, faInstagram, faTiktok, faTwitter } from "@fortawesome/free-brands-svg-icons";
 import logo from "../assets/images/logo/newIcon.png"
@@ -11,6 +11,7 @@ import SlideInSidebar from "@/sideBar-component/sidebar-component";
 import IsLoginFunction from "./login-homepage";
 import {useLoginAuth} from "@/Authentication/Usecontext-logic";
 import { Nav } from "./login-homepage";
+import LogoutButton from "@/Page-component/logoutButton";
 
 
 export default function Default({children}) {
@@ -65,7 +66,7 @@ const navigate=useNavigate('/')
   <NavLink text='List House' nav='/HouseOwner' />
     <NavLink text='Notification' nav='/HouseOwner' />
       <NavLink text='profile' nav='/Profile' />
-       <NavLink text='Logout' nav='/Login' />
+       <LogoutButton/>
     </div>
   </div>
   }
@@ -116,7 +117,7 @@ const navigate=useNavigate('/')
        
          {state && showLogin('true')}
  
- { <IsLoginFunction userLoggedIn={useLoginAuth} />}
+ { <IsLoginFunction />}
   <div ref={node} className=" round-bg md:p-5 p-3 group " 
         onClick={()=>setState((prev)=>!prev)}
        

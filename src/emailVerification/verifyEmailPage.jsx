@@ -1,6 +1,6 @@
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "@/api/axios";
 
 export default function VerifyEmailPage() {
   const [searchParams] = useSearchParams();
@@ -9,22 +9,30 @@ export default function VerifyEmailPage() {
 
   useEffect(() => {
     const token = searchParams.get("token");
-if (!token) return;
-  let ignore = false;
-
-  const verify = async () => {
-    try {
-      await axios.get(`/api/auth/verify-email?token=${token}`);
-      if (!ignore) navigate("/email-verified");
-    } catch (err) {
-      console.error(err.response?.data || err.message);
+    alert(token)
+    if (!token) {
+      setStatus("❌ Invalid verification link");
+      return;
     }
-  };
 
-  verify();
+    let ignore = false;
 
-  return () => { ignore = true };
+    const verify = async () => {
+      try {
+        const res = await API.get(`/auth/verify-email?token=${token}`);
+        if (!ignore) {
+         
+          setStatus(res.data.message );
+          // setTimeout(() => navigate("/email-verified"), 2000);
+        }
+      } catch (err) {
+        console.error(err.response?.data || err.message);
+        if (!ignore) setStatus("❌ Invalid or expired link");
+      }
+    };
 
+    verify();
+    return () => { ignore = true };
   }, [searchParams, navigate]);
 
   return <p>{status}</p>;

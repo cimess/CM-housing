@@ -1,15 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const { authLimiter } = require('../middleware/limiter');
+const { loginLimiter, registerLimiter, forgotPasswordLimiter } = require('../middleware/limiter');
 
-router.post('/register', authLimiter, authController.register);
-router.get('/verify-email', authController.verifyEmail); // ?token=...
-router.post('/login', authLimiter, authController.login);
-router.post('/refresh-token', authController.refreshToken); // uses HttpOnly cookie
+// Registration
+router.post('/register', registerLimiter, authController.register);
+
+// Login
+router.post('/login', loginLimiter, authController.login);
+
+// Forgot password
+router.post('/forgot-password', forgotPasswordLimiter, authController.forgotPassword);
+
+// Other routes
+router.get('/verify-email', authController.verifyEmail);
+router.post('/refresh-token', authController.refreshToken);
 router.post('/logout', authController.logout);
-router.post('/forgot-password', authLimiter, authController.forgotPassword);
-router.post('/reset-password', authLimiter, authController.resetPassword); // body: token, newPassword
-
+router.post('/reset-password', authController.resetPassword);
 
 module.exports = router;

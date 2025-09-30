@@ -2,20 +2,19 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 async function authenticate(req, res, next) {
-  // get token from Authorization header first, fallback to cookie
-  const auth = req.headers.authorization || '';
-  // const tokenFromHeader = auth.startsWith('Bearer ') ? auth.slice(7) : null;
-  const token =  req.cookies?.accessToken;
-
+const authHeader = req.headers.authorization || '';
+const tokenFromHeader = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+const token = tokenFromHeader || req.cookies?.accessToken;
   if (!token) return res.status(401).json({ message: 'Unauthorized: no token' });
 
   try {
     // if you use RS256, use public key here: process.env.JWT_PUBLIC_KEY
-    const verifyOptions = { algorithms: ['HS256'] /* or ['RS256'] */, audience: 'my-api', issuer: 'auth.myapp.com' };
+    const verifyOptions = { algorithms: ['HS256'] };
     const payload = jwt.verify(token, process.env.JWT_ACCESS_SECRET, verifyOptions);
 
     // optionally handle token rotation/jti checks here
     const user = await User.findById(payload.sub).select('-passwordHash').lean();
+
     if (!user) {
       res.clearCookie('accessToken', { httpOnly: true, secure: true, sameSite: 'Strict' });
       return res.status(401).json({ message: 'Unauthorized: user removed' });

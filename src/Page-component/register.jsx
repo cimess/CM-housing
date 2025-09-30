@@ -5,8 +5,9 @@ import Input from "../body component/input-component";
 import API from "../api/axios";
 import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 import LoadingAnimation from "@/animations/LoadingAnim";
-
+import { useAxiosAuth } from "@/Authentication/useAxiosAuth";
 export default function Register() {
+  useAxiosAuth()
   const navigate = useNavigate();
   const { setIsLogin } = useLoginAuth();
 

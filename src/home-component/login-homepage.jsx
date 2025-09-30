@@ -17,9 +17,9 @@ export default function IsLoginFunction({notifications}){
 
 const [notification,setNotification]=useState(0)
 const {isLogin}=useLoginAuth()
-
+  const Navigate=useNavigate('/')
 if(!isLogin) return null
-   const Navigate=useNavigate('/')
+ 
 
 
    function NotificationHolder(){
