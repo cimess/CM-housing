@@ -3,7 +3,7 @@ const BusinessProfile = require("../models/businessProfile");
 
 exports.createHouse = async (req, res) => {
   try {
-    const { userId } = req.user;
+    const { userId } = req.user._id;
 
     // ✅ Check if profile is completed
     const profile = await BusinessProfile.findOne({ user: userId });

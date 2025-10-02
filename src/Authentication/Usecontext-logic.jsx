@@ -1,34 +1,51 @@
+
+
 // import { createContext, useContext, useState, useEffect } from "react";
-// import API from "../api/axios";  
-// // import * as SecureStore from 'expo-secure-store';
+// import API from "../api/axios";
+
 // const loginAuthProvider = createContext();
 
 // export function LoginAuth({ children }) {
 //   const [isLogin, setIsLogin] = useState(false);
 //   const [loading, setLoading] = useState(true);
+//   const [accessToken, setAccessToken] = useState(null);
 
+//   // ------------------ CHECK SESSION ------------------
 //   useEffect(() => {
 //     async function checkSession() {
 //       try {
-//         await API.get("/auth/me", { withCredentials: true });
+//         const res = await API.post("/auth/refresh-token"); // cookie sent automatically
+//         setAccessToken(res.data.accessToken);
 //         setIsLogin(true);
-       
 //       } catch (err) {
 //         setIsLogin(false);
+//         setAccessToken(null);
 //       } finally {
 //         setLoading(false);
 //       }
 //     }
 //     checkSession();
 //   }, []);
-  
-//   useEffect(() => {
-//   console.log("isLogin changed →", isLogin);
-// }, [isLogin]);
 
+//   // ------------------ LOGIN ------------------
+//   const login = async (email, password) => {
+//     const res = await API.post("/auth/login", { email, password });
+//     const { accessToken: token } = res.data;
+//     setAccessToken(token);
+//     setIsLogin(true);
+//   };
+
+//   // ------------------ LOGOUT ------------------
+//   const logout = async () => {
+//     await API.post("/auth/logout"); // cookie handled by backend
+//     setAccessToken(null);
+//     setIsLogin(false);
+//   };
 
 //   return (
-//     <loginAuthProvider.Provider value={{ isLogin, setIsLogin, loading }}>
+//     <loginAuthProvider.Provider
+//       value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken }}
+//     >
 //       {children}
 //     </loginAuthProvider.Provider>
 //   );
@@ -39,56 +56,85 @@
 // }
 
 import { createContext, useContext, useState, useEffect } from "react";
-import API from "../api/axios";
+import API from "@/api/axios";
+import { getAccessToken, setAccessToken, removeAccessToken } from "@/utils/authStore";
 
-const loginAuthProvider = createContext();
+const LoginAuthContext = createContext();
 
 export function LoginAuth({ children }) {
   const [isLogin, setIsLogin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [accessToken, setAccessToken] = useState(null);
+  const [accessToken, setAccessTokenState] = useState(() => getAccessToken());
 
-  // ------------------ CHECK SESSION ------------------
+  // helper to centralize setting token in both state + sessionStorage
+  const setToken = (token) => {
+    setAccessToken(token);
+    setAccessTokenState(token);
+  };
+
+  // startup: if sessionStorage has token, use it; otherwise try one refresh attempt
   useEffect(() => {
-    async function checkSession() {
-      try {
-        const res = await API.post("/auth/refresh-token"); // cookie sent automatically
-        setAccessToken(res.data.accessToken);
+    async function init() {
+      const token = getAccessToken();
+      if (token) {
+        setAccessTokenState(token);
         setIsLogin(true);
+        setLoading(false);
+        return;
+      }
+
+      // Only attempt a single refresh on load (do not loop)
+      try {
+        const res = await API.post("/auth/refresh-token");
+        const newToken = res.data?.accessToken;
+        if (newToken) {
+          setToken(newToken);
+          setIsLogin(true);
+        } else {
+          setIsLogin(false);
+          removeAccessToken();
+        }
       } catch (err) {
         setIsLogin(false);
-        setAccessToken(null);
+        removeAccessToken();
       } finally {
         setLoading(false);
       }
     }
-    checkSession();
+    init();
   }, []);
 
-  // ------------------ LOGIN ------------------
+  // login: keep behavior (store token in sessionStorage)
   const login = async (email, password) => {
     const res = await API.post("/auth/login", { email, password });
-    const { accessToken: token } = res.data;
-    setAccessToken(token);
-    setIsLogin(true);
+    const token = res.data?.accessToken;
+    if (token) {
+      setToken(token);
+      setIsLogin(true);
+    }
+    return res;
   };
 
-  // ------------------ LOGOUT ------------------
   const logout = async () => {
-    await API.post("/auth/logout"); // cookie handled by backend
-    setAccessToken(null);
+    try {
+      await API.post("/auth/logout");
+    } catch (err) {
+      // ignore
+    }
+    removeAccessToken();
+    setAccessTokenState(null);
     setIsLogin(false);
   };
 
   return (
-    <loginAuthProvider.Provider
-      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken }}
+    <LoginAuthContext.Provider
+      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken }}
     >
       {children}
-    </loginAuthProvider.Provider>
+    </LoginAuthContext.Provider>
   );
 }
 
 export function useLoginAuth() {
-  return useContext(loginAuthProvider);
+  return useContext(LoginAuthContext);
 }

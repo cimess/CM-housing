@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "@/api/axios";
+import { useAxiosAuth } from "@/Authentication/useAxiosAuth";
 
 export default function HouseRegister() {
+  useAxiosAuth()
   const [profileCompleted, setProfileCompleted] = useState(null);
   const [formData, setFormData] = useState({
     houseType: "",
@@ -17,7 +19,8 @@ export default function HouseRegister() {
   useEffect(() => {
     async function checkProfile() {
       try {
-        const res = await axios.get("/api/profile/me");
+        const res = await API.get("/business-profile/me");
+        console.log(res)
         setProfileCompleted(res.data?.isCompleted || false);
       } catch (err) {
         console.error(err);
@@ -36,51 +39,55 @@ export default function HouseRegister() {
   }
 
   async function handleSubmit(e) {
-    e.preventDefault();
+  e.preventDefault();
+  try {
+    setUploading(true);
 
-    try {
-      setUploading(true);
-
-      // 1. Upload each file to Cloudinary
-      const uploadedUrls = [];
-      for (const file of houseImages) {
-        const data = new FormData();
-        data.append("file", file);
-        data.append("upload_preset", "YOUR_UPLOAD_PRESET"); // replace
-        const res = await fetch(
-          "https://api.cloudinary.com/v1_1/dwd1w7nfu/image/upload",
-          {
-            method: "POST",
-            body: data,
-          }
-        );
-        const result = await res.json();
-        uploadedUrls.push(result.secure_url);
-      }
-
-      // 2. Send house details + image URLs to your backend
-      await axios.post("/api/houses/create", {
-        ...formData,
-        images: uploadedUrls,
-      });
-
-      alert("House listed successfully!");
-      setFormData({
-        houseType: "",
-        location: "",
-        bedrooms: "",
-        bathrooms: "",
-        rentPrice: "",
-        description: "",
-      });
-      setHouseImages([]);
-    } catch (err) {
-      console.error("Upload failed:", err);
-      alert("Failed to list house");
-    } finally {
+    if (!houseImages || houseImages.length === 0) {
+      alert('Please attach at least one image');
       setUploading(false);
+      return;
     }
+
+    // 1) Upload each file to our backend which uploads to Cloudinary
+    const uploadedUrls = [];
+    for (const file of houseImages) {
+      const form = new FormData();
+      form.append('image', file);
+
+      // Using your API axios instance so auth header is applied
+      const resp = await API.post('/houses/upload', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      uploadedUrls.push(resp.data.url);
+    }
+
+    // 2) Create house record (server side will use req.user already)
+    await API.post('/houses/create', {
+      ...formData,
+      images: uploadedUrls,
+    });
+
+    alert('House listed successfully!');
+    setFormData({
+      houseType: '',
+      location: '',
+      bedrooms: '',
+      bathrooms: '',
+      rentPrice: '',
+      description: '',
+    });
+    setHouseImages([]);
+  } catch (err) {
+    console.error('Upload failed:', err);
+    const msg = err?.response?.data?.message || err?.message || 'Failed to list house';
+    alert(msg);
+  } finally {
+    setUploading(false);
   }
+}
+
 
   if (profileCompleted === null) return <p>Loading...</p>;
 
