@@ -1,63 +1,9 @@
 
-
-// import { createContext, useContext, useState, useEffect } from "react";
-// import API from "../api/axios";
-
-// const loginAuthProvider = createContext();
-
-// export function LoginAuth({ children }) {
-//   const [isLogin, setIsLogin] = useState(false);
-//   const [loading, setLoading] = useState(true);
-//   const [accessToken, setAccessToken] = useState(null);
-
-//   // ------------------ CHECK SESSION ------------------
-//   useEffect(() => {
-//     async function checkSession() {
-//       try {
-//         const res = await API.post("/auth/refresh-token"); // cookie sent automatically
-//         setAccessToken(res.data.accessToken);
-//         setIsLogin(true);
-//       } catch (err) {
-//         setIsLogin(false);
-//         setAccessToken(null);
-//       } finally {
-//         setLoading(false);
-//       }
-//     }
-//     checkSession();
-//   }, []);
-
-//   // ------------------ LOGIN ------------------
-//   const login = async (email, password) => {
-//     const res = await API.post("/auth/login", { email, password });
-//     const { accessToken: token } = res.data;
-//     setAccessToken(token);
-//     setIsLogin(true);
-//   };
-
-//   // ------------------ LOGOUT ------------------
-//   const logout = async () => {
-//     await API.post("/auth/logout"); // cookie handled by backend
-//     setAccessToken(null);
-//     setIsLogin(false);
-//   };
-
-//   return (
-//     <loginAuthProvider.Provider
-//       value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken }}
-//     >
-//       {children}
-//     </loginAuthProvider.Provider>
-//   );
-// }
-
-// export function useLoginAuth() {
-//   return useContext(loginAuthProvider);
-// }
-
 import { createContext, useContext, useState, useEffect } from "react";
 import API from "@/api/axios";
 import { getAccessToken, setAccessToken, removeAccessToken } from "@/utils/authStore";
+import { houseDetailsFormatter } from "@/utils/houseDetailsFormatter";
+
 
 const LoginAuthContext = createContext();
 
@@ -65,12 +11,35 @@ export function LoginAuth({ children }) {
   const [isLogin, setIsLogin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [accessToken, setAccessTokenState] = useState(() => getAccessToken());
-
+   const [houses, setHouses] = useState([]);
+   const [houseLoading,setHouseLoading]=useState(true)
   // helper to centralize setting token in both state + sessionStorage
   const setToken = (token) => {
     setAccessToken(token);
     setAccessTokenState(token);
   };
+ async function fetchHouses() {
+      try {
+        console.log('i reached here ')
+        const res = await API.get("/houses"); // axios
+        const formatted = res.data.map(houseDetailsFormatter);
+        console.log('i got it it here',formatted)
+        setHouses(formatted);
+      } catch (err) {
+        console.error("Error fetching houses:", err);
+      } finally{
+        setHouseLoading(false)
+      }
+    }
+
+
+  useEffect(() => {
+   
+    fetchHouses();
+  }, []);
+
+
+
 
   // startup: if sessionStorage has token, use it; otherwise try one refresh attempt
   useEffect(() => {
@@ -128,9 +97,9 @@ export function LoginAuth({ children }) {
 
   return (
     <LoginAuthContext.Provider
-      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken }}
+      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken,houses,fetchHouses }}
     >
-      {children}
+    { houseLoading?<p>Loading...</p>: children}
     </LoginAuthContext.Provider>
   );
 }

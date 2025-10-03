@@ -1,5 +1,5 @@
-import { use, useState } from "react";
-
+import {useState } from "react";
+import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 
 import {Label} from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
@@ -9,7 +9,7 @@ import ImageBox from "./image-componet";
 import BoxContainer from "./box-container";
 import lagosimage from '../assets/images/lagos/lagos.jpg'
 import ruralImage from '../assets/images/lagos/iyanaipaja.jpg';
-import HandleImageLoading from "./handleImageListing";
+import HandleHouseListing from "./handleImageListing";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Region from "./regionSearch";
 import { location } from "@/assets/exportLocation";
@@ -17,11 +17,14 @@ import { location } from "@/assets/exportLocation";
 
 import useTouchclick from "@/logic-component/logic";
 import { Slider } from "@/components/ui/slider";
-import { image } from "@/assets/exportImagesInGroup";
+
 
 function SearchFilter(){
+  const {houses}=useLoginAuth()
+  console.log(houses)
+  const image=houses[0]?.images || [];
 const featuredLocation=["Abuja","Lagos","Edo","Abuja","Kwara","Kano","Ogun","Osun","Kogi","Abuja",'Jos']
-  const featuredImages=[image.room1[0],image.room1[1],image.room2[0],image.room2[1],image.room3[0],image.room3[1],image.room4[0],image.room4[1],image.room5[0],image.room5[1],image.room6[0],image.room6[1],image.room7[0],image.room7[1],image.room8[0],image.room8[1],image.room9[0],image.room9[1],image.room10[0],image.room10[1],image.room11[0],image.room11[1],image.room3[0],image.room3[1]]
+  const featuredImages=[image[0],image[1],image[3],image[1],image[3],image[1],image[0],image[1],image[0],image[1],image[0],image[1],image[0],image[1],image[0],image[1],image[0],image[1],image[0],image[1],image[0],image[1],image[0],image[1]]
 
   const featured=featuredLocation.map((loc,index)=>(
     [featuredImages[index],loc]
@@ -143,6 +146,7 @@ function handleRegionDropdown(e) {
 }
 
 export default function Body(){
+  
    return(
     <div className="px-1 mx-auto text-center transistion-all duration-150 ease-in-out">
          <h2 className="text-[5vw] leading-none my-5  font-Merriweather">
@@ -170,7 +174,7 @@ export default function Body(){
       </div>
 
  <h1 className="text-left my-5">Top <a href="" className="">short-let Houses</a></h1>
- <HandleImageLoading/>
+ <HandleHouseListing/>
    
 
 

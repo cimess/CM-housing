@@ -43,7 +43,7 @@ useEffect(() => {
         API.get("/profile/me").catch(() => ({ data: {} })),
         API.get("/business-profile/me").catch(() => ({ data: {} })),
       ]);
-console.log(bizRes.data)
+
       const u = userRes.data || {};
       const b = bizRes.data || {};
 
