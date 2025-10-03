@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import API from "@/api/axios";
 import { getAccessToken, setAccessToken, removeAccessToken } from "@/utils/authStore";
 import { houseDetailsFormatter } from "@/utils/houseDetailsFormatter";
-
+import LoadingAnimation from "@/animations/LoadingAnim";
 
 const LoginAuthContext = createContext();
 
@@ -99,7 +99,7 @@ export function LoginAuth({ children }) {
     <LoginAuthContext.Provider
       value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken,houses,fetchHouses }}
     >
-    { houseLoading?<p>Loading...</p>: children}
+    { houseLoading?<LoadingAnimation/>: children}
     </LoginAuthContext.Provider>
   );
 }
