@@ -11,10 +11,11 @@ if (checked) {
         type={type}
         id={id}
         className={styleInput}
-        checked={value}
+        checked={!!value}
         onChange={onChange}
+        
       />
-      <label htmlFor={id} className="block text-sm font-bold my-3 flex items-center ">
+      <label htmlFor={id} className="text-sm font-bold my-3 flex items-center ">
         {label}
         <span className="ml-3 text-red-500 pt-1">{add}</span>
       </label>

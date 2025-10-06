@@ -7,7 +7,7 @@ const router = express.Router();
 
 // Get current user profile
 router.get("/me", authMiddleware, async (req, res) => {
-   console.log('i reached profile.js in backend ')
+   
   try {
    
     const user = await User.findById(req.user._id).select("-passwordHash");
@@ -18,6 +18,32 @@ router.get("/me", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+router.get("/me?.id", authMiddleware, async (req, res) => {
+
+  try {
+   
+    const user = await User.findById(req.user._id).select("-passwordHash");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+// Get another user's profile by ID
+router.get("/:id", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-passwordHash");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 // Save/update profile
 router.post("/save", authMiddleware, async (req, res) => {

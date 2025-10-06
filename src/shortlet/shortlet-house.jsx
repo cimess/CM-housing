@@ -15,6 +15,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
+import { useLoginAuth } from "@/Authentication/Usecontext-logic";
+
 export default function HouseListing({
   images = [],
   owner,
@@ -25,13 +27,25 @@ export default function HouseListing({
   description,
   duration,
   price,
+  consultation,
+  role,
   alt = "house image",
+  _id
 }) {
-  const [liked, setLiked] = useState(false);
-  const sliderId = React.useId();
 
+  const sliderId = React.useId();
+const {toggleLike,isLogin,likedHouses}=useLoginAuth()
+const isLiked =likedHouses.includes(_id)
+
+ function handleLike(){
+if(!isLogin){
+  alert('Please login to like this property.')
+}
+
+toggleLike()
+}
   return (
-    <div className="relative rounded-xl overflow-hidden shadow-lg group w-full md:max-w-md bg-gray-900">
+    <div className="relative rounded-xl overflow-hidden shadow-lg group w-full bg-gray-900 cursor-pointer max-w-[400px]">
       {/* Image carousel */}
       <div className="relative h-56 ">
         <Swiper
@@ -59,12 +73,12 @@ export default function HouseListing({
               <div className="absolute bottom-3  translate-x-1  flex items-center justify-between w-[95%] px-3 py-1 rounded-lg ">
   <span className="text-white font-bold text-2xl">₦ {price}</span> 
   <button
-    onClick={() => setLiked(!liked)}
-    className="p-1.5 bg-white/80 hover:bg-white round-bg-mini h-10 w-10 shadow"
+    onClick={handleLike}
+    className="p-1.5 bg-white/80 hover:bg-white round-bg-mini  h-10 w-10 shadow"
   >
     <FontAwesomeIcon
       icon={faHeart}
-      className={liked ? "text-red-500" : "text-gray-500"}
+      className={isLiked ? "text-red-500 text-2xl" : "text-gray-500"}
     />
   </button>
 </div>
@@ -79,9 +93,9 @@ export default function HouseListing({
 
       {/* Content */}
       <div className="p-4 text-white">
-        <div className="text-sm text-gray-400 mb-1">{location}</div>
+        <div className="text-sm text-gray-400 mb-1">{location?.state} {location?.town}</div>
         <h3 className="text-lg font-semibold mb-2">{owner}</h3>
-        <div className="flex items-center gap-4 text-sm mb-3 text-gray-300">
+        <div className="flex items-center gap-4 text-sm mb-3 text-gray-300 justify-center">
           <span className="flex items-center">
             <FontAwesomeIcon icon={faBed} className="mr-1 text-gray-400" />{" "}
             {bedrooms} Bed
@@ -95,10 +109,12 @@ export default function HouseListing({
             {pet}
           </span>
         </div>
-        <p className="text-gray-300 line-clamp-2">{description}</p>
+        <p className="text-gray-300 line-clamp-2 font-light text-sm">{description}</p>
 
-        <div className="mt-3 text-sm text-gray-400">
-          Duration: <span className="text-white">{duration} mo.</span>
+        <div className="mt-3 text-sm text-gray-400 text-">
+          <div className="text-gray-400"> Duration:  <span className="text-white">{duration}</span></div>
+          <div className="text-gray-400"> HousingProvider:  <span className="text-white">{role}</span></div>
+          {role==='agent'?<div className="text-gray-400"> consultation-fee:  <span className="text-white">{consultation}</span></div>:''}
         </div>
       </div>
     </div>

@@ -12,30 +12,82 @@ export function LoginAuth({ children }) {
   const [loading, setLoading] = useState(true);
   const [accessToken, setAccessTokenState] = useState(() => getAccessToken());
    const [houses, setHouses] = useState([]);
+const [likedHouses, setLikedHouses] = useState([]);
+
    const [houseLoading,setHouseLoading]=useState(true)
   // helper to centralize setting token in both state + sessionStorage
   const setToken = (token) => {
     setAccessToken(token);
     setAccessTokenState(token);
   };
- async function fetchHouses() {
-      try {
-        console.log('i reached here ')
-        const res = await API.get("/houses"); // axios
-        const formatted = res.data.map(houseDetailsFormatter);
-        console.log('i got it it here',formatted)
-        setHouses(formatted);
-      } catch (err) {
-        console.error("Error fetching houses:", err);
-      } finally{
-        setHouseLoading(false)
-      }
-    }
 
 
-  useEffect(() => {
+
+// Fetch houses with optional filters
+ const fetchHouses = async (filters = {}) => {
+  const params = new URLSearchParams(filters).toString();
+  const url = `/houses${params ? `?${params}` : ""}`;
+
+  try {
+    const res = await API.get(url);
+    const formated=res.data.map((house)=>houseDetailsFormatter(house))
+      return formated
+    
+  } catch (err) {
+    console.error("Fetch houses error:", err);
+    return [];
+  }
+};
+
+const fetchMyHouses = async () => {
+  try {
+    const res = await API.get("/houses/my"); // protected route
+    const formatted = res.data.map((house) => houseDetailsFormatter(house));
+    console.log("Fetch my houses error:", res.data);
+    return formatted;
+  } catch (err) {
+    console.error("Fetch my houses error:", err);
+    return [];
+  }
+};
+
+
+// Get recommended houses (random sample)
+const fetchRecommendedHouses = async () => {
+  try {
+    const res = await API.get("/houses");
+    const data = res.data;
+
+    // Just shuffle + slice 3 results for now
+    return data.sort(() => 0.5 - Math.random()).slice(0, 3);
+  } catch (err) {
+    console.error("Fetch recommended houses error:", err);
+    return [];
+  }
+};
+
+// Toggle like on backend + update global state
+const toggleLike = async (houseId) => {
+  try {
+    await API.post(`/houses/${houseId}/like`);
+    setLikedHouses((prev) =>
+      prev.includes(houseId)
+        ? prev.filter((id) => id !== houseId) // unlike
+        : [...prev, houseId] // like
+    );
+  } catch (err) {
+    console.error("Error toggling like:", err);
+  }
+};
+
+
+
+  useEffect( () => {
    
-    fetchHouses();
+    async function load(){
+  const house=await  fetchHouses();
+    setHouses(house)}
+load()
   }, []);
 
 
@@ -97,10 +149,11 @@ export function LoginAuth({ children }) {
 
   return (
     <LoginAuthContext.Provider
-      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken,houses,fetchHouses }}
+      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken,houses,fetchHouses,fetchRecommendedHouses,fetchMyHouses,toggleLike,likedHouses }}
     >
-    { houseLoading?<LoadingAnimation/>: children}
+    { children}
     </LoginAuthContext.Provider>
+    // houseLoading?<LoadingAnimation/>: 
   );
 }
 

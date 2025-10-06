@@ -8,8 +8,14 @@ const sharp = require("sharp");
 const { v4: uuidv4 } = require("uuid");
 const rateLimit = require("express-rate-limit");
 const cloudinary = require("../config/cloudinary");
-
 const router = express.Router();
+const { addComment, toggleLike, getHouseDetails } = require("../controllers/HouseController");
+const authenticate = require("../middleware/authenticate");
+
+
+
+
+
 
 // ============================
 // Multer + Sharp Config
@@ -28,8 +34,8 @@ const upload = multer({
 // Rate limit for uploads
 const uploadLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 6,
-  message: { message: "Too many upload requests, slow down." },
+  max: 10,
+  message: { message: "Maximum of 10 pictures allowed for upload.... Upgrade to Premium for more" },
 });
 
 // ============================
@@ -124,7 +130,6 @@ router.post("/create", authMiddleware, async (req, res) => {
       description,
       alt,
     } = req.body;
-
     // Basic required validation
     if (!roleOfLister || !["agent", "landlord"].includes(roleOfLister)) {
       return res.status(400).json({ message: "roleOfLister is required and must be 'agent' or 'landlord'" });
@@ -194,16 +199,18 @@ router.post("/create", authMiddleware, async (req, res) => {
   }
 });
 
-// ============================
+
 // GET ALL HOUSES -> GET /api/houses
-// Supports query filters like ?durationType=short&location=Lagos
-// ============================
+// Supports query filters like ?durationType=short&state=Lagos&lga=Ikeja&town=Ojodu
 router.get("/", async (req, res) => {
   try {
-    const { durationType, location, roleOfLister } = req.query;
+    const { durationType, state, lga, town, roleOfLister } = req.query;
     const filter = {};
+
     if (durationType) filter.durationType = durationType;
-    if (location) filter.location = new RegExp(location, "i");
+    if (state) filter["location.state"] = new RegExp(state, "i");
+    if (lga) filter["location.lga"] = new RegExp(lga, "i");
+    if (town) filter["location.town"] = new RegExp(town, "i");
     if (roleOfLister) filter.roleOfLister = roleOfLister;
 
     const houses = await House.find(filter).populate("user", "name email");
@@ -211,6 +218,17 @@ router.get("/", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+router.get("/my", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const houses = await House.find({ user: userId });
+    res.json(houses);
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
@@ -228,5 +246,13 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
+
+
+router.post("/:id/comment", authenticate, addComment);
+router.post("/:id/like", authenticate, toggleLike);
+router.get("/:id/details", getHouseDetails);
+
 
 module.exports = router;

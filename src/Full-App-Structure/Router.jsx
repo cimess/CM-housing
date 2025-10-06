@@ -17,6 +17,8 @@ import VerifyEmailPage from "@/emailVerification/verifyEmailPage";
 import { AnimatePresence, motion } from "framer-motion";
 import Settings from "@/Page-component/profile";
 import LoadingAnimationPage from "@/animations/loadingAnimationPage";
+import HouseDetailPage from "@/shortlet/HouseDetailPage";
+
 function AnimatedRouter() {
   const location = useLocation();
 
@@ -33,6 +35,9 @@ function AnimatedRouter() {
         />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/email-verified" element={<EmailSuccess />} />
+        <Route path="/house/:id" element={<Default><HouseDetailPage />
+            </Default>} />
+
         <Route
           path="/loading"
           element={<LoadingAnimationPage redirectTo="/" delay={2000} />}

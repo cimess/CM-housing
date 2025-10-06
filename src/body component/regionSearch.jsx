@@ -1,103 +1,111 @@
-  import Input from "./input-component";
-  import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-  import {faXmarkCircle} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
- 
+import { location } from "@/assets/exportLocation";
 
-  
-  export default function Region({setRegionClick, regionDropdown,handleRegionDropdown}){
+export default function Region({ setRegionClick, onSearch }) {
+  const states = location.country.Nigeria.state;
 
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedLga, setSelectedLga] = useState("");
+  const [selectedTown, setSelectedTown] = useState("");
 
+  function handleSubmit(e) {
+    e.preventDefault();
+    // Pass result upwards only on button click
+    onSearch({
+      state: selectedState,
+      lga: selectedLga,
+      town: selectedTown,
+    });
+    setRegionClick(false);
+  }
 
-   
+  return (
+    <div className="flex items-start justify-between absolute translate-y-[80px] left-2 z-98 w-[50%]">
+      <form
+        onSubmit={handleSubmit}
+        className="border border-gray-300 bg-white w-full rounded pl-2 pr-3 py-3 shadow space-y-3"
+      >
+        {/* State */}
+        <div>
+          <label className="block text-sm mb-1">State</label>
+          <select
+            value={selectedState}
+            onChange={(e) => {
+              setSelectedState(e.target.value);
+              setSelectedLga("");
+              setSelectedTown("");
+            }}
+            className="w-full border rounded px-2 py-1"
+          >
+            <option value="">Select State</option>
+            {Object.keys(states).map((s) => (
+              <option key={s} value={s}>
+                {states[s].name}
+              </option>
+            ))}
+          </select>
+        </div>
 
+        {/* LGA */}
+        {selectedState && (
+          <div>
+            <label className="block text-sm mb-1">LGA</label>
+            <select
+              value={selectedLga}
+              onChange={(e) => {
+                setSelectedLga(e.target.value);
+                setSelectedTown("");
+              }}
+              className="w-full border rounded px-2 py-1"
+            >
+              <option value="">Select LGA</option>
+              {Object.keys(states[selectedState].lga).map((l) => (
+                <option key={l} value={l}>
+                  {states[selectedState].lga[l].name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
-    return  (
-         <div className="flex items-start justify-between absolute translate-y-[80px] left-2   z-98 w-[50%]">
-            <div className=" border border-gray-300 bg-white w-full rounded pl-2 shadow">
-               <Input id='Lagos' 
-               type='checkbox' 
-               label='Lagos State'
-                checked='yes'  
-                 style={'flex gap-x-2 items-center accent-black'} styleInput='h-5 w-5' 
-                  value={regionDropdown.lagos} 
-                  onchange={(e)=>handleRegionDropdown(e)}  
-                  />
+        {/* Town */}
+        {selectedLga && (
+          <div>
+            <label className="block text-sm mb-1">Town</label>
+            <select
+              value={selectedTown}
+              onChange={(e) => setSelectedTown(e.target.value)}
+              className="w-full border rounded px-2 py-1"
+            >
+              <option value="">Select Town</option>
+              {states[selectedState].lga[selectedLga].towns.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
-<Input id='Ogun' 
-type='checkbox' 
-label='Ogun state'
- checked='yes' 
-   style={'flex gap-x-2 items-center accent-black'}
-    styleInput='h-5 w-5' 
-     value={regionDropdown.ogun}
-      onchange={handleRegionDropdown}
-        />
+        {/* Submit button */}
+        <div className="flex justify-between items-center pt-2">
+          <button
+            type="submit"
+            className="bg-black text-white px-3 py-1 rounded hover:bg-gray-800"
+          >
+            Search
+          </button>
 
-<Input id='Osun'
- type='checkbox'
-  label='Osun state'
-   checked='yes' 
-     style={'flex gap-x-2 items-center accent-black'}
-      styleInput='h-5 w-5'
-        value={regionDropdown.osun}
-         onchange={(e)=>handleRegionDropdown(e)} 
-           />
-
-<Input id='Edo'
- type='checkbox'
-  label='Edo state'
-   checked='yes' 
-     style={'flex gap-x-2 items-center accent-black'} 
-     styleInput='h-5 w-5' 
-      value={regionDropdown.edo}
-       onchange={(e)=>handleRegionDropdown(e)}
-          />
-
-<Input id='Ekiti'
- type='checkbox' 
- label='Kwara state'
-  checked='yes'  
-   style={'flex gap-x-2 items-center accent-black'}
-    styleInput='h-5 w-5'  
-    value={regionDropdown.kwara}
-     onchange={(e)=>handleRegionDropdown(e)}
-        />
-
-
-<Input id='Oyo' 
-type='checkbox'
- label='Oyo state'
-  checked='yes'  
-   style={'flex gap-x-2 items-center accent-black'} 
-   styleInput='h-5 w-5' 
-    value={regionDropdown.oyo}
-     onchange={(e)=>handleRegionDropdown(e)}
-        />
-
-
-<Input 
-id='Abuja' 
-type='checkbox' 
-label='Abuja state'
- checked='yes'  
-  style={'flex gap-x-2 items-center accent-black'} 
-  styleInput='h-5 w-5' 
-   value={regionDropdown.abuja} 
-   onchange={(e)=>handleRegionDropdown(e)}
-      />
-
-
-</div>
-
- <button className="-ml-4 -mt-1"
-  onClick={(e)=>{  setRegionClick(false)}}>
-   <FontAwesomeIcon 
-   icon={faXmarkCircle}
-   className="text-xl hover:text-red-600 "/>
- </button>
-
-         </div>
-      )
-
-   }
+          <button type="button" onClick={() => setRegionClick(false)}>
+            <FontAwesomeIcon
+              icon={faXmarkCircle}
+              className="text-xl hover:text-red-600"
+            />
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}

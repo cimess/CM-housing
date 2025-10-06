@@ -16,7 +16,13 @@ const houseSchema = new mongoose.Schema({
 
   // House details
   houseType: { type: String, required: true }, // e.g. Apartment, Duplex, Studio
-  location: { type: String, required: true },
+location: {
+  state: { type: String, required: true },
+  lga: { type: String, required: false },
+  town: { type: String, required: false },
+  address: { type: String, required: false }, // extra
+},
+
   bedrooms: { type: Number, required: true },
   bathrooms: { type: Number, required: true },
   description: { type: String },
@@ -33,6 +39,28 @@ const houseSchema = new mongoose.Schema({
     lat: Number,
     lng: Number,
   },
+
+
+  // Comments, Ratings, Likes
+comments: [
+  {
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    username: String,
+    text: { type: String, required: true },
+    rating: { type: Number, min: 1, max: 5 },
+    createdAt: { type: Date, default: Date.now },
+  }
+],
+
+likes: [
+  {
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  }
+],
+
+averageRating: { type: Number, default: 0 },
+totalRatings: { type: Number, default: 0 },
+
 
   createdAt: { type: Date, default: Date.now },
 });
