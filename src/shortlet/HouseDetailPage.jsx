@@ -25,24 +25,6 @@ import API from "@/api/axios";
 import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 import HouseListing from "@/shortlet/shortlet-house";
 
-/**
- * Premium House Detail Page
- * - Sticky sidebar for booking (md+)
- * - Floating mobile booking bar
- * - Framer Motion reveal on scroll
- * - Swiper gallery with lazy images
- * - Skeleton loaders while fetching
- *
- * Requirements:
- * - API endpoints:
- *   GET /houses/:id/details
- *   POST /houses/:id/like
- *   POST /houses/:id/comment  (body: { text, rating })
- *
- * - house object should include:
- *   _id, houseType, description, images[], amenities[], location, pricePerNight, rentPrice,
- *   durationType, comments[], likes[], owner (string), ownerEmail, createdAt, bedrooms, bathrooms, furnished, petAllowed
- */
 
 function SkeletonCard() {
   return (
@@ -77,6 +59,7 @@ export default function HouseDetailPage() {
     try {
       const res = await API.get(`/houses/${id}/details`);
       const data = res.data;
+      console.log(data)
       setHouse(data);
 
       // load similar houses (by state) — robust: fallback to all houses if not ok
@@ -96,14 +79,14 @@ export default function HouseDetailPage() {
   }
 
 
- const isLiked =likedHouses.includes(userId)
+ const isLiked =likedHouses.includes(house?._id)
  
   function handleLike(){
  if(!isLogin){
    alert('Please login to like this property.')
  }
  
- toggleLike()
+ toggleLike(house._id)
  }
 
   async function handleAddComment() {
@@ -177,7 +160,8 @@ export default function HouseDetailPage() {
   const displayPrice = house.durationType === "short" ? house.pricePerNight : house.rentPrice;
 
   return (
-    <motion.div initial="hidden" animate="show" className="max-w-7xl mx-auto px-4 py-10">
+
+    <motion.div initial="hidden" animate="show" className="max-w-7xl mx-auto px-4 py-10 overflow-x-hidden break-words">
       {/* Top bar */}
       <div className="flex items-center justify-between mb-6">
         <button
@@ -185,7 +169,7 @@ export default function HouseDetailPage() {
           className="flex items-center gap-2 text-gray-600 hover:text-black"
         >
           <FontAwesomeIcon icon={faArrowLeft} />
-          <span className="hidden sm:inline">Back to search results</span>
+          <span className="hidden sm:inline">Back</span>
         </button>
 
         <div className="flex gap-4 items-center">
@@ -198,7 +182,7 @@ export default function HouseDetailPage() {
           </button>
 
           <button onClick={handleLike} title="Like this property">
-            <FontAwesomeIcon icon={faHeart} className={liked ? "text-red-500 text-xl" : "text-gray-600 text-2xl"} />
+            <FontAwesomeIcon icon={faHeart} className={isLiked ? "text-red-500 text-xl" : "text-gray-600 text-2xl"} />
           </button>
         </div>
       </div>
@@ -234,11 +218,11 @@ export default function HouseDetailPage() {
       </motion.section>
 
       {/* Grid: details + sidebar */}
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="flex flex-wrap md:grid md:grid-cols-3 gap-8 w-full min-w-0">
         {/* Main content */}
         <motion.div variants={reveal} className="md:col-span-2 space-y-6" viewport={{ once: false }}>
           {/* header */}
-          <div>
+          <div className="">
             <h1 className="text-3xl font-bold">{house.houseType}</h1>
             <div className="flex flex-wrap gap-4 text-gray-600 mt-2">
               <span className="flex items-center gap-2">
@@ -267,19 +251,19 @@ export default function HouseDetailPage() {
           {/* description */}
           <div>
             <h2 className="text-xl font-semibold mb-2">Description</h2>
-            <p className="text-gray-700 leading-relaxed">{house.description}</p>
+            <p className="text-gray-700 leading-relaxed break-words">{house.description}</p>
           </div>
 
           {/* Email */}
            <div>
             <h2 className="text-xl font-semibold mb-2">Email</h2>
-            <p className="text-gray-700 leading-relaxed">{house.user.email}</p>
+            <p className="text-gray-700 leading-relaxed break-words">{house.user.email}</p>
           </div>
 
           {/* amenities */}
           <div>
             <h2 className="text-xl font-semibold mb-2">Amenities</h2>
-            <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-gray-600">
+            <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-gray-600 break-words">
               {(house.amenities || []).map((a, i) => (
                 <li key={i} className="flex items-center gap-2">• {a}</li>
               ))}
@@ -287,22 +271,22 @@ export default function HouseDetailPage() {
           </div>
 
           {/* reviews */}
-          <div>
+          <div className="w-[90%]">
             <h2 className="text-xl font-semibold mb-3">Reviews</h2>
 
             {house.comments?.length ? (
               <div className="space-y-4">
                 {house.comments.map((c, i) => (
-                  <div key={i} className="border-b pb-3">
-                    <div className="flex items-center gap-3 mb-1">
+                  <div key={i} className="border-b pb-3 ">
+                    <div className="flex items-center gap-2 mb-1">
                       <div className="flex items-center gap-1">
                         {[...Array(c.rating || 0)].map((_, idx) => (
                           <FontAwesomeIcon key={idx} icon={faStar} className="text-yellow-400" />
                         ))}
                       </div>
-                      <div className="text-sm text-gray-500">by {c.username || "Guest"}</div>
+                      <div className="text-sm text-gray-500 truncate">by {c.username || "Guest"}</div>
                     </div>
-                    <p className="text-gray-700">{c.text}</p>
+                    <p className="text-gray-700 break-words">{c.text}</p>
                   </div>
                 ))}
               </div>
@@ -413,10 +397,10 @@ export default function HouseDetailPage() {
       <motion.section variants={reveal} className="mt-12" viewport={{ once: false }}>
         <h2 className="text-2xl font-semibold mb-5">Similar Listings</h2>
         {similarHouses.length ? (
-          <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
+          <div className="flex flex-wrap  md:grid md:grid-cols-2 lg:grid-cols-6 gap-6 w-full">
             {similarHouses.slice(0, 8).map((h) => (
-              <Link to={`/house/${h._id}`} key={h._id}>
-                <div className="max-w-[400px] "><HouseListing {...h} /></div>
+              <Link to={`/house/${h._id}`} key={h._id} className="block w-full">
+                <div className="sm:w-[400px] md:max-w-[400px] lg:[300px] flex "><HouseListing {...h} /></div>
               </Link>
             ))}
           </div>

@@ -1,5 +1,5 @@
 
-
+import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
@@ -42,12 +42,12 @@ if(!isLogin){
   alert('Please login to like this property.')
 }
 
-toggleLike()
+toggleLike(_id)
 }
   return (
-    <div className="relative rounded-xl overflow-hidden shadow-lg group w-full bg-gray-900 cursor-pointer max-w-[400px]">
+    <div className="relative rounded-xl overflow-hidden shadow-lg group bg-gray-900 cursor-pointer w-full">
       {/* Image carousel */}
-      <div className="relative h-56 ">
+      <div className="relative h-56">
         <Swiper
           modules={[Navigation, Autoplay]}
           spaceBetween={0}
@@ -61,12 +61,14 @@ toggleLike()
         >
           {images.map((src, idx) => (
             <SwiperSlide key={idx}>
-              <img
+              <Link to={`/house/${_id}`} >
+   <img
                 src={src}
                 alt={alt}
                 className="w-full h-56 object-cover "
                 loading="lazy"
               />
+</Link> 
               {/* dark gradient overlay */}
               <div className="relative inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent " />
               {/* price tag */}

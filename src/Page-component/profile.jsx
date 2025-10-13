@@ -91,7 +91,7 @@ useEffect(() => {
 
     try {
       setSavingUser(true);
-      await API.post("/profile/save", payload);
+      await API.post("/profile/save", {...userForm});
       alert("User profile saved successfully!");
     } catch (err) {
       console.error(err);

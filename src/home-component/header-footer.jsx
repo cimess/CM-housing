@@ -63,9 +63,10 @@ const navigate=useNavigate('/')
   <div className=" absolute  translate-y-[80%]  md:translate-y-[75%] border border-gray-300 bg-white left-[60%] -translate-x-1/2  py-2 w-[150px] md:w-[250px] shadow-sm rounded">
  <div className="flex flex-col gap-y-2">
 
-  <NavLink text='List House' nav='/HouseOwner' />
-    <NavLink text='Notification' nav='/HouseOwner' />
+  <NavLink text='List House' nav='/HouseRegister' />
+    {/* <NavLink text='Notification' nav='/HouseRegister' /> */}
       <NavLink text='profile' nav='/Profile' />
+       <NavLink text='change password' nav='/RecoverPassword' />
        <LogoutButton/>
     </div>
   </div>
@@ -76,9 +77,9 @@ const navigate=useNavigate('/')
   }
   return (
   
-    <div >
+    <div className="" >
 
-    <div className="border-b-2  border-gray-300 sticky top-0 z-99  bg-white pt-2 ">
+    <div className="border-b-2  border-gray-300 sticky top-0 z-99  bg-white pt-2 w-full ">
       <div className={` grid grid-cols-[1fr_1fr_1fr] place-items-center ${isLogin?'gap-12':'gap-16'} w-[90%] mx-auto  `}>
        <div className="  border round-bg p-3 md:p-5 relative" onClick={()=>setIsOpen(!isOpen)}>
   <FontAwesomeIcon icon={faBars} className="sm: h-3 w-3"/>
@@ -137,7 +138,7 @@ const navigate=useNavigate('/')
       
       {children}
 
-      <div className="max-h-[1000px] bg-black mt-10">
+      <div className="max-h-[1000px] bg-black mt-3 rounded">
        <h1 className="text-white text-center md:text-[50px] mb-5 animate-fade-in-up hover:scale-105 transition-transform duration-300 ease-in-out">
   Find your dream home
 </h1>

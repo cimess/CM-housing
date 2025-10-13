@@ -13,6 +13,8 @@ import { message } from "@/data/messageBox";
 import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 import HouseListing from "@/shortlet/shortlet-house";
 import Settings from "./profile";
+import LoadingAnimation from "@/animations/LoadingAnim";
+
 
 export default function MyadvertComponent() {
   const [state, setState] = useState(0);
@@ -137,25 +139,29 @@ export default function MyadvertComponent() {
 function ClientAdvert() {
   const { fetchMyHouses } = useLoginAuth();
   const [house, setHouse] = useState([]);
+const [loading,setLoading]=useState(false)
 
   useEffect(() => {
     handleFetchHouse();
   }, []);
 
   async function handleFetchHouse() {
+    setLoading(true)
     const houses = await fetchMyHouses();
     setHouse(houses);
-    console.log("from advert component", houses);
+    
+    setLoading(false)
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 px-5  overflow-y-scroll">
+   <>{loading? <LoadingAnimation/>: <div className="grid grid-cols-1 md:grid-cols-3 gap-5  overflow-y-scroll">
       {house.length > 0 ? (
         house.map((houses, index) =><div className="w-full "> <HouseListing key={index} {...houses} /></div>)
       ) : (
         <h2 className="text-center w-full">No houses available.</h2>
       )}
-    </div>
+    </div>}
+    </>
   );
 }
 

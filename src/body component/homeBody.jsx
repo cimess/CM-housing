@@ -1,8 +1,6 @@
 import {useState } from "react";
 import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 import { Link } from "react-router-dom";
-import {Label} from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
 // import images from '../assets/images/my-banners/banner.jpg'
 import {faArrowRight,faCamera,faSearch} from "@fortawesome/free-solid-svg-icons";
 import ImageBox from "./image-componet";
@@ -12,11 +10,6 @@ import ruralImage from '../assets/images/lagos/iyanaipaja.jpg';
 import HouseListing from "@/shortlet/shortlet-house";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Region from "./regionSearch";
-import { location } from "@/assets/exportLocation";
-
-
-import useTouchclick from "@/logic-component/logic";
-import { Slider } from "@/components/ui/slider";
 
 
 function SearchFilter() {
@@ -85,12 +78,13 @@ function SearchFilter() {
       {/* Results */}
       <div className="mt-5">
         {houses.length > 0 ? (
-          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+         <div className="flex flex-wrap  md:grid md:grid-cols-2 lg:grid-cols-5 sm:gap-y-6 gap-6">
             {houses.map((house, index) => (
               
-             <Link to={`/house/${house._id}`}>
    <HouseListing key={index} {...house} />
-</Link>
+
+
+             
             ))}
           </div>
         ) : hasSearched ? (
@@ -110,14 +104,12 @@ export default  function Body(){
   
   
    return(
-    <div className="px-1 mx-auto text-center transistion-all duration-150 ease-in-out">
+    <div className="px-1 mx-auto text-center transition-all duration-150 ease-in-out  w-full">
          <h2 className="text-[5vw] leading-none my-5  font-Merriweather">
             Find Your Dream Home
          </h2>
          <p className="text-xl text-gray-500 ">Your go-to guide for renting Nigeria’s standout stays</p>
-         <div className="text-left text-xl flex items-center">
-          <span></span>shortLet
-          <Switch /><span>Full-Let</span></div>
+         
 <SearchFilter/>
 
 <h1 className="text-left mb-2">
@@ -129,28 +121,28 @@ export default  function Body(){
       <div className="overflow-x-auto scrollbar-hide">
 <div className="grid grid-flow-col auto-cols-max gap-x-3">
  <BoxContainer images={lagosimage} href={"www.fb.com"} state="Lagos" city="Ajah" alt="image of lagos"/>
- <BoxContainer images={ruralImage} href={"www.fb.com"} state="Lagos" city="Ipaja" alt="image of lagos"/>
+ <BoxContainer images={ruralImage} href={"www.fb.com"} state="Ogun" city="ota" alt="image of lagos"/>
   <BoxContainer images={lagosimage} href={"www.fb.com"} state="Lagos" city="Bariga" alt="image of lagos"/>
-   <BoxContainer images={lagosimage} href={"www.fb.com"} state="Lagos" city="Fatade" alt="image of lagos"/>
-    <BoxContainer images={ruralImage} href={"www.fb.com"} state="Lagos" city="Dopemu" alt="image of lagos"/>
-      <BoxContainer images={lagosimage} href={"www.fb.com"} state="Lagos" city="Bariga" alt="image of lagos"/>
-   <BoxContainer images={lagosimage} href={"www.fb.com"} state="Lagos" city="Fatade" alt="image of lagos"/>
+   <BoxContainer images={lagosimage} href={"www.fb.com"} state="Lagos" city="lekki" alt="image of lagos"/>
+    <BoxContainer images={ruralImage} href={"www.fb.com"} state="Edo" city="benin" alt="image of lagos"/>
+      <BoxContainer images={lagosimage} href={"www.fb.com"} state="Kano" city="Kastina" alt="image of lagos"/>
+   <BoxContainer images={lagosimage} href={"www.fb.com"} state="Lagos" city="Mushin" alt="image of lagos"/>
     <BoxContainer images={ruralImage} href={"www.fb.com"} state="Lagos" city="Dopemu" alt="image of lagos"/>
       </div>
       </div>
 
- <h1 className="text-left my-5">Top <a href="" className="">short-let Houses</a></h1>
-  <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+ <h1 className="text-left my-5">Top Houses</h1>
+ 
+  <div className="flex flex-wrap  md:grid md:grid-cols-2 lg:grid-cols-5 sm:gap-y-6 gap-6">
             {houses.map((house, index) => (
-              <Link to={`/house/${house._id}`}>
+            
    <HouseListing key={index} {...house} />
-</Link>
+
 
              
             ))}
           </div>
    
-
 
       </div>
    )

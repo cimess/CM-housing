@@ -14,7 +14,6 @@ export function LoginAuth({ children }) {
    const [houses, setHouses] = useState([]);
 const [likedHouses, setLikedHouses] = useState([]);
 
-   const [houseLoading,setHouseLoading]=useState(true)
   // helper to centralize setting token in both state + sessionStorage
   const setToken = (token) => {
     setAccessToken(token);
@@ -27,7 +26,7 @@ const [likedHouses, setLikedHouses] = useState([]);
  const fetchHouses = async (filters = {}) => {
   const params = new URLSearchParams(filters).toString();
   const url = `/houses${params ? `?${params}` : ""}`;
-
+ setLoading(true)
   try {
     const res = await API.get(url);
     const formated=res.data.map((house)=>houseDetailsFormatter(house))
@@ -36,18 +35,23 @@ const [likedHouses, setLikedHouses] = useState([]);
   } catch (err) {
     console.error("Fetch houses error:", err);
     return [];
+  }finally{
+    setLoading(false)
   }
 };
 
 const fetchMyHouses = async () => {
+  setLoading(true)
   try {
     const res = await API.get("/houses/my"); // protected route
     const formatted = res.data.map((house) => houseDetailsFormatter(house));
-    console.log("Fetch my houses error:", res.data);
+   
     return formatted;
   } catch (err) {
     console.error("Fetch my houses error:", err);
     return [];
+  }finally{
+    setLoading(false)
   }
 };
 
@@ -149,11 +153,11 @@ load()
 
   return (
     <LoginAuthContext.Provider
-      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken,houses,fetchHouses,fetchRecommendedHouses,fetchMyHouses,toggleLike,likedHouses }}
+      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken,houses,setHouses,fetchHouses,fetchRecommendedHouses,fetchMyHouses,toggleLike,likedHouses }}
     >
-    { children}
+    {children}
     </LoginAuthContext.Provider>
-    // houseLoading?<LoadingAnimation/>: 
+    // : 
   );
 }
 
