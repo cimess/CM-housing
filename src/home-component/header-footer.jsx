@@ -17,14 +17,11 @@ import LogoutButton from "@/Page-component/logoutButton";
 export default function Default({children}) {
   const [state,setState]=useState(false)
     const [isOpen, setIsOpen] = useState(false);
-
-    const {isLogin}=useLoginAuth()
+const {isLogin}=useLoginAuth()
+    
       const node=useRef(null)
   const sideNode=useRef(null)
 const navigate=useNavigate('/')
-
-
-
 
   useEffect(
     ()=>{function handleClick(e){
@@ -66,7 +63,7 @@ const navigate=useNavigate('/')
   <NavLink text='List House' nav='/HouseRegister' />
     {/* <NavLink text='Notification' nav='/HouseRegister' /> */}
       <NavLink text='profile' nav='/Profile' />
-       <NavLink text='change password' nav='/RecoverPassword' />
+       <NavLink text='change password' nav='/ResetPassword' />
        <LogoutButton/>
     </div>
   </div>
@@ -112,17 +109,18 @@ const navigate=useNavigate('/')
             
        
        
-        <div className="flex items-center space-x-2 pl-5  relative">
+        <div className="flex items-center space-x-2 pl-5  relative group">
         
          
        
-         {state && showLogin('true')}
+         {state && (<div className=" border border-red-500" >{showLogin('true')
+          }</div>)}
  
  { <IsLoginFunction />}
   <div ref={node} className=" round-bg md:p-5 p-3 group " 
         onClick={()=>setState((prev)=>!prev)}
-       
-        
+       onMouseEnter={()=>setState(true)}
+        onMouseLeave={()=>setState(false)}
           >
           <FontAwesomeIcon icon={faUser} className=" sm: h-3 w-3 " />
         

@@ -1,9 +1,6 @@
-import {useState } from "react";
+import {useEffect, useState } from "react";
 import { useLoginAuth } from "@/Authentication/Usecontext-logic";
-import { Link } from "react-router-dom";
-// import images from '../assets/images/my-banners/banner.jpg'
 import {faArrowRight,faCamera,faSearch} from "@fortawesome/free-solid-svg-icons";
-import ImageBox from "./image-componet";
 import BoxContainer from "./box-container";
 import lagosimage from '../assets/images/lagos/lagos.jpg'
 import ruralImage from '../assets/images/lagos/iyanaipaja.jpg';
@@ -96,12 +93,15 @@ function SearchFilter() {
 }
 
 
-
-
 export default  function Body(){
-    const { houses } = useLoginAuth();
+  const { houses,houseLoading,fetchHouses } = useLoginAuth();
+
+   useEffect(()=>{
+    if(!houses ||houses.length===0){fetchHouses()}
+
+   },[]) 
   
-  
+ 
   
    return(
     <div className="px-1 mx-auto text-center transition-all duration-150 ease-in-out  w-full">
@@ -134,13 +134,14 @@ export default  function Body(){
  <h1 className="text-left my-5">Top Houses</h1>
  
   <div className="flex flex-wrap  md:grid md:grid-cols-2 lg:grid-cols-5 sm:gap-y-6 gap-6">
-            {houses.map((house, index) => (
-            
-   <HouseListing key={index} {...house} />
+            {houseLoading ? (
+  <div className="p-5 font-semibold">Loading...</div>
+) : houses && houses.length > 0 ? (
+  houses.map((house, index) => <HouseListing key={index} {...house} />)
+) : (
+  <div className="text-gray-400 italic">No houses found</div>
+)}
 
-
-             
-            ))}
           </div>
    
 

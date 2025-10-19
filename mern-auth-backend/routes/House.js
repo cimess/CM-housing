@@ -9,7 +9,7 @@ const { v4: uuidv4 } = require("uuid");
 const rateLimit = require("express-rate-limit");
 const cloudinary = require("../config/cloudinary");
 const router = express.Router();
-const { addComment, toggleLike, getHouseDetails } = require("../controllers/HouseController");
+const { addComment, toggleLike, getHouseDetails,getMyFeedback } = require("../controllers/HouseController");
 const authenticate = require("../middleware/authenticate");
 
 
@@ -221,6 +221,7 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/feedback",authenticate,getMyFeedback)
 
 router.get("/my", authMiddleware, async (req, res) => {
   try {
@@ -231,6 +232,7 @@ router.get("/my", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
+
 
 // ============================
 // GET ONE HOUSE -> GET /api/houses/:id

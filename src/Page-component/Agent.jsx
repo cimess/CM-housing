@@ -1,19 +1,25 @@
 import { useEffect, useState } from "react";
 import API from "@/api/axios";
-import { useAxiosAuth } from "@/Authentication/useAxiosAuth";
 import Input from "@/body component/input-component";
 import LoadingAnimation from "@/animations/LoadingAnim";
 import { useNavigate } from "react-router-dom";
-import { location as locationData } from "@/assets/exportLocation";
+import { useLoginAuth } from "@/Authentication/Usecontext-logic";
+
 
 export default function HouseRegister() {
   const navigate = useNavigate();
-  useAxiosAuth();
 
+const {isLogin}=useLoginAuth()
   const [profileCompleted, setProfileCompleted] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [houseImages, setHouseImages] = useState([]);
   const [newAmenity, setNewAmenity] = useState("");
+
+
+  useEffect(()=>{
+if(!isLogin)return navigate('/')
+
+},[isLogin,navigate])
 
   const [formData, setFormData] = useState({
     roleOfLister: "landlord",

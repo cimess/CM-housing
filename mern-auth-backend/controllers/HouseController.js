@@ -87,6 +87,30 @@ exports.addComment = async (req, res) => {
   }
 };
 
+exports.getMyFeedback=async(req,res)=>{
+
+  try{
+   const userId=req.user._id;
+
+   const houses=await House.find({user:userId})
+   .populate('comments.user','username email')
+   .select('title location comments averageRating totalRatings');
+
+   const feedback =houses.flatMap((house)=>house.comments.map((comment)=>({
+    houseId:house._id,
+    houseTitle:house.title,
+    location:house.location,
+    averageRating:house.averageRating,
+    ...comment.toObject()
+   })))
+
+   res.status(200).json(feedback)
+  }catch(err){
+console.log("❌ getMyFeedback error:", err);
+res.status(500).json({message:"server error",error:err.message})
+  }
+}
+
 
 exports.toggleLike = async (req, res) => {
   try {

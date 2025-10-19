@@ -1,8 +1,19 @@
 import Input from "@/body component/input-component";
 import { Link } from "react-router-dom";
-import {motion} from "framer-motion"
-
+import {motion, setStyle} from "framer-motion"
+import API from "@/api/axios";
+import { useState } from "react";
 export default function RecoverPassword(){
+const [state,setState]=useState('')
+  async function handleResetPassword(e){
+   e.preventDefault()
+try{
+      const request=await API.post("auth/forgot-password",{ email: state})
+      alert(request.data.message)
+   }catch(e){
+      console.log(e);   
+   }
+   }
 
    return(
       <motion.div
@@ -20,9 +31,9 @@ Recover Your Password
  <p className="my-5">Please enter your email address. You will receive a link to create a new password via email.</p>
    </div>
   <form className=" w-[80%] mx-auto text-left mt-8">
-  <Input label='Email address' type='email' id='recovery'  />
+  <Input label='Email address' type='email' id='recovery' onChange={(e)=>setState(e.target.value)} inputValue={state} />
 
- <div className="text-center "><button className="button rounded-full mt-7 w-[180px] ">Recover Password</button></div>
+ <div className="text-center "><button className="button rounded-full mt-7 w-[180px] " onClick={handleResetPassword}>Recover Password</button></div>
 
 
 

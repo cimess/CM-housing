@@ -14,12 +14,17 @@ import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 import HouseListing from "@/shortlet/shortlet-house";
 import Settings from "./profile";
 import LoadingAnimation from "@/animations/LoadingAnim";
-
+import API from "@/api/axios";
 
 export default function MyadvertComponent() {
   const [state, setState] = useState(0);
   const [showContent, setShowContent] = useState(false); // 👈 for small screens
-
+  const [users,setUsers]=useState(false)
+ const { user,fetchUserProfile } = useLoginAuth();
+ 
+ useEffect(()=>{
+setUsers(user)
+ },[])
   function handleAdvertState(value) {
     setState(value);
     setShowContent(true); // 👈 when small screen, switch view
@@ -30,6 +35,7 @@ export default function MyadvertComponent() {
   }
 
   function HandleDisplayComponent({ state }) {
+ 
     switch (state) {
       case 1:
         return <ClientAdvert />;
@@ -59,14 +65,17 @@ export default function MyadvertComponent() {
         } md:block w-full md:w-[30%] lg:w-[50%]`}
       >
         <main className="shadow rounded-lg h-[500px] py-4">
-          <div className="flex items-center flex-col">
-            <img
-              src={message[0].picture}
-              className="rounded-full h-20 w-20 lg:w-32 lg:h-32 mb-4"
-            />
-            <p className="text-xl lg:text-2xl">{message[0].name}</p>
-            <p className="sm:text-sm text-gray-600">{message[0].email}</p>
-          </div>
+         
+
+<div className="flex items-center flex-col">
+  <img
+    src={users?.picture || "/default-avatar.jpg"}
+    className="rounded-full h-20 w-20 lg:w-32 lg:h-32 mb-4"
+  />
+  <p className="text-xl lg:text-2xl">{users?.firstname || "Guest"}</p>
+  <p className="sm:text-sm text-gray-600">{users?.email || ""}</p>
+</div>
+
 
           <div
             className="flex py-3 gap-x-3 px-2 border-b cursor-pointer mt-10 hover-bg items-center"
@@ -165,39 +174,76 @@ const [loading,setLoading]=useState(false)
   );
 }
 
-function Feedback() {
+ function Feedback() {
+  const [feedback, setFeedback] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    handleFetchFeedback();
+  }, []);
+
+  async function handleFetchFeedback() {
+    try {
+      setLoading(true);
+      const res = await API.get("/houses/feedback");
+      setFeedback(res.data);
+    } catch (err) {
+      console.error("❌ Error fetching feedback:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (loading) return <LoadingAnimation />;
+
   return (
-    <div className="h-[500px] mx-3">
-      <div className="flex flex-col h-full">
-        <div className="grid lg:grid-cols-2 w-full h-full gap-2 overflow-y-scroll">
-          {message.map((advert, index) => (
+    <div className="h-[500px] mx-3 overflow-y-scroll">
+      <h2 className="text-xl text-center mt-3 border-b font-semibold">
+        Feedback on My Adverts
+      </h2>
+
+      <div className="grid lg:grid-cols-2 w-full h-full gap-2 py-3">
+        {feedback.length > 0 ? (
+          feedback.map((f, i) => (
             <div
-              key={index}
-              className="h-[400px] border flex flex-col my-2 rounded shadow p-4 pt-20"
+              key={i}
+              className="border rounded shadow p-4 flex flex-col gap-y-3"
             >
-              <div className="px-1 py-2 flex flex-col gap-y-8">
+              <div className="flex items-center gap-x-2">
+                <img
+                  src="/default-avatar.jpg"
+                  className="h-10 w-10 rounded-full"
+                />
                 <div>
-                  <div className="flex items-center gap-x-2 mb-2">
-                    <img
-                      src={advert.picture}
-                      className="h-10 w-10 rounded-full"
-                    />
-                    <h1>{advert.name}</h1>
-                  </div>
-                  <p className="text-gray-600 text-sm">"{advert.feedback}"</p>
+                  <p className="font-bold">{f.user?.username || "Anonymous"}</p>
+                  <p className="text-gray-500 text-xs">{f.user?.email}</p>
                 </div>
-
-                <div className="flex">
-                  <h1>5.0 rating</h1>
-                </div>
-
-                <h2 className="font-light text-sm">
-                  <FontAwesomeIcon icon={faLocationDot} /> {advert.title}
-                </h2>
               </div>
+
+              <p className="text-gray-700 italic">"{f.text}"</p>
+
+              <div className="flex items-center gap-x-2">
+                <p className="font-semibold">{f.rating} ★</p>
+              </div>
+
+              <div className="text-sm text-gray-600 mt-1">
+  <FontAwesomeIcon icon={faLocationDot} />{" "}
+  {f.location
+    ? `${f.location.state || ""} ${f.location.lga || ""} ${f.location.town || ""} ${f.location.address || ""}`
+    : "N/A"}
+</div>
+
+
+              <p className="font-semibold text-gray-800 text-sm">
+                House: {f.houseTitle}
+              </p>
             </div>
-          ))}
-        </div>
+          ))
+        ) : (
+          <h2 className="text-center w-full text-gray-500">
+            No feedback on your listings yet.
+          </h2>
+        )}
       </div>
     </div>
   );

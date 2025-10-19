@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { redirect, useNavigate } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
 import Input from "../body component/input-component";
 import API from "../api/axios";
 import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 import LoadingAnimation from "@/animations/LoadingAnim";
-import { useAxiosAuth } from "@/Authentication/useAxiosAuth";
+// import { useAxiosAuth } from "@/Authentication/useAxiosAuth";
 export default function Register() {
-  useAxiosAuth()
+  // useAxiosAuth()
   const navigate = useNavigate();
   const { setIsLogin } = useLoginAuth();
 

@@ -47,7 +47,7 @@ exports.register = async (req, res) => {
   await user.save();
 
   // email verification token (jwt short lived)
-  const emailToken = jwt.sign({ sub: user._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '1d' });
+  const emailToken = jwt.sign({ sub: user._id }, process.env.JWT_VERIFY_SECRET, { expiresIn: '1d' });
   const verifyUrl = `${process.env.FRONTEND_URL}/verify-email?token=${emailToken}`;
 
   await sendEmail(email, 'Verify your email', `Click here to verify: ${verifyUrl}`);
@@ -61,9 +61,12 @@ exports.verifyEmail = async (req, res) => {
   const { token } = req.query;
   if (!token) return res.status(400).json({ message: 'Token required' });
   try {
-    const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    const payload = jwt.verify(token, process.env.JWT_VERIFY_SECRET);
     const user = await User.findById(payload.sub);
     if (!user) return res.status(400).json({ message: 'Invalid token' });
+    if (user.isEmailVerified) {
+  return res.json({ success: true, message: "Email already verified" });
+}
     user.isEmailVerified = true;
     await user.save();
       // Log to confirm email verification
@@ -77,6 +80,23 @@ exports.verifyEmail = async (req, res) => {
   }
 };
 
+// Get current logged-in user profile
+exports.me = async (req, res) => {
+  try {
+    const userId = req.user?._id; // set by authenticate middleware
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const user = await User.findById(userId).select('-passwordHash'); // don't send password hash
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    return res.json(user);
+  } catch (err) {
+    console.error('Error fetching user profile:', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
 
 exports.login = async (req, res) => {
   try {
@@ -84,6 +104,8 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
+
+    
     const match = await bcrypt.compare(password, user.passwordHash);
     if (!match) return res.status(400).json({ message: 'Invalid credentials' });
 
@@ -175,29 +197,55 @@ exports.logout = async (req, res) => {
 
 
 exports.forgotPassword = async (req, res) => {
+  console.log(req.body)
   const { email } = req.body;
   const user = await User.findOne({ email });
   if (!user) return res.json({ message: 'Invalid Email.' });
 
-  const resetToken = jwt.sign({ sub: user._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '1h' });
+  const resetToken = jwt.sign({ sub: user._id }, process.env.JWT_RESET_SECRET, { expiresIn: '1h' });
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
   await sendEmail(email, 'Password reset', `Reset here: ${resetUrl}`);
   addAudit(user._id, 'forgot_password', req.ip);
   return res.json({ message: ' a reset email was sent.' });
 };
 
+exports.recoverPassword=async(req,res)=>{
+
+const{token}=req.params;
+const{newPassword}=req.body
+
+try{
+
+  const payload=jwt.verify(token,process.env.JWT_RESET_SECRET)
+
+  const user=await User.findById(payload.sub)
+  if(!user)return res.status(400).json({message:"User not found "});
+  user.passwordHash=await bcrypt.hash(newPassword,10);
+  await user.save()
+  return res.status(200).json({message:"password reset successfull Pls login"})
+}catch(err){
+return res.status(500).json({message:"Invalid or expired token"})
+}
+
+}
+
 exports.resetPassword = async (req, res) => {
-  const { token, newPassword } = req.body;
-  if (!token || !newPassword) return res.status(400).json({ message: 'Token and new password required' });
+
+  
+
+  const userId=req.user?._id;
+  const { oldPassword, newPassword } = req.body;
+  if (!oldPassword || !newPassword) return res.status(400).json({ message: 'Old password and new password required' });
 
   const { error } = passwordSchema.validate(newPassword);
   if (error) return res.status(400).json({ message: error.details[0].message });
 
   try {
-    const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-    const user = await User.findById(payload.sub);
-    if (!user) return res.status(400).json({ message: 'Invalid token' });
-
+    
+    const user = await User.findById(userId);
+    if (!user) return res.status(400).json({ message: 'User not Found' });
+const isMatched= await bcrypt.compare(oldPassword,user.passwordHash)
+if(!isMatched)return res.status(400).json({message:'Old password is incorrect '})
     const salt = await bcrypt.genSalt(12);
     user.passwordHash = await bcrypt.hash(newPassword, salt);
     await user.save();

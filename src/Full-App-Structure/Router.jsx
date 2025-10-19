@@ -18,7 +18,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import Settings from "@/Page-component/profile";
 import LoadingAnimationPage from "@/animations/loadingAnimationPage";
 import HouseDetailPage from "@/shortlet/HouseDetailPage";
-
+import ResetPassword from "@/Page-component/ResetPassword";
+import ResetPasswordWithoutLogin from "@/Page-component/resetPasswordWithoutlogin";
 function AnimatedRouter() {
   const location = useLocation();
 
@@ -56,6 +57,22 @@ function AnimatedRouter() {
           element={
             <Default>
               <Register />
+            </Default>
+          }
+        />
+         <Route
+          path="/ResetPassword"
+          element={
+            <Default>
+              <ResetPassword />
+            </Default>
+          }
+        />
+         <Route
+          path="/reset-password"
+          element={
+            <Default>
+              <ResetPasswordWithoutLogin />
             </Default>
           }
         />

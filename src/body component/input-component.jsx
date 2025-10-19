@@ -1,6 +1,9 @@
+import {useState} from "react"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {faEye,faEyeSlash} from "@fortawesome/free-solid-svg-icons"
 export default function Input({label,type,add,id,checked,style,styleInput,value,onChange,inputValue,pattern,inputMode,className}){
 
-
+  const [showPassword,setShowPassword]=useState(false)
 
   let inputField;
 
@@ -39,13 +42,13 @@ if (checked) {
   );
 } else {
   inputField = (
-    <>
+    <div className="relative">
       <label htmlFor={id} className="block text-sm font-bold my-3 flex items-center ">
         {label}
         <span className="ml-3 text-red-500 pt-1">{add}</span>
       </label>
       <input
-        type={type}
+        type={type==='password'&&showPassword?'text':type}
         id={id}
         value={inputValue}
         onChange={onChange}
@@ -53,7 +56,8 @@ if (checked) {
         pattern={pattern}
         inputMode={inputMode}
       />
-    </>
+      {type==="password"?<button type="button" className="absolute right-3 -translate-y-1/2 top-1/2" onClick={()=>setShowPassword(prev=>!prev)}><FontAwesomeIcon icon={showPassword?faEyeSlash:faEye} className="h-4 w-4 "/></button>:''}
+    </div>
   );
 }
 

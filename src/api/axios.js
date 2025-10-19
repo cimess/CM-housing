@@ -76,11 +76,16 @@ API.interceptors.response.use(
       originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
       return API(originalRequest);
     } catch (err) {
-      // refresh failed: clear token and reject queued requests
-      removeAccessToken();
-      processQueue(err, null);
-      return Promise.reject(err);
-    } finally {
+  // refresh failed: clear token and reject queued requests
+  removeAccessToken();
+  processQueue(err, null);
+
+  // 🔥 Tell the entire app to log out
+  window.dispatchEvent(new CustomEvent("auth:logout", { detail: { reason: "refresh_failed" } }));
+
+  return Promise.reject(err);
+}
+ finally {
       isRefreshing = false;
     }
   }

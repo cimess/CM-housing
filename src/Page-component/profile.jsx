@@ -1,12 +1,17 @@
 import { useState, useEffect } from "react";
-import profileDemoPic from "../assets/profile-demo-pics/IMG-20250719-WA0002.jpg";
 import API from "@/api/axios";
 import Input from "@/body component/input-component";
-import { useAxiosAuth } from "@/Authentication/useAxiosAuth";
 import LoadingAnimation from "@/animations/LoadingAnim";
-
+import { useLoginAuth } from "@/Authentication/Usecontext-logic";
+import { useNavigate } from "react-router-dom";
 export default function ProfilePage() {
-  useAxiosAuth();
+  
+  const {isLogin}=useLoginAuth()
+  const navigate=useNavigate()
+useEffect(()=>{
+if(!isLogin)return navigate('/')
+
+},[isLogin,navigate])
 
   // ------------------ States ------------------
   const [loading, setLoading] = useState(true);
@@ -126,13 +131,13 @@ useEffect(() => {
     <div className="h-[100vh] mx-3 shadow w-full overflow-y-scroll [scrollbar-width:none]">
       {/* Normal Profile */}
       <h2 className="text-xl text-center mt-3 font-bold">Profile Settings</h2>
-      <div className="text-center mt-5 mb-2 flex justify-center">
+      {/* <div className="text-center mt-5 mb-2 flex justify-center">
         <img
           src={profileDemoPic}
           className="object-cover h-30 w-30 rounded-full"
           alt="profile"
         />
-      </div>
+      </div> */}
 
       <form onSubmit={saveUserProfile} className="p-2 max-w-[900px] mx-auto">
         <div className="grid gap-4">
