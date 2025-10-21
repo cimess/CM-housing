@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+ "start": "NODE_ENV=production node server.js",
     "dev": "nodemon server.js",
-    "lint": "eslint . --ext .js"
+    "lint": "eslint . --ext .js",
+  "sync-indexes": "node createIndexes.js",
+  "warm-cache": "node scripts/warmCache.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

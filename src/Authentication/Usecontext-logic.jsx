@@ -16,6 +16,24 @@ const [likedHouses, setLikedHouses] = useState([]);
 const [myHouseReady,setMyHouseReady]=useState(false)
 const [houseLoading,setHouseLoading]=useState(false)
 const [user, setUser] = useState(null);
+const [cursor,setCursor]=useState(
+  {
+    all:null,
+    fullLet:null,
+    shortLet:null,
+    search:null
+  }
+);
+const [hasMore,setHasMore]=useState({
+  all:true,
+  fullLet:true,
+  shortLet:true,
+  search:true
+})
+
+const [fullLet,setFullLet]=useState([])
+const [shortLet,setShortLet]=useState([])
+const [searchResults,setSearchResults]=useState([])
 
   // helper to centralize setting token in both state + sessionStorage
   const setToken = (token) => {
@@ -23,13 +41,6 @@ const [user, setUser] = useState(null);
     setAccessTokenState(token);
   };
 
-  // near top imports
-
-// ... other imports
-
-
-
-  // ... existing state and functions
 
   // handle external logout events (from axios layer)
   useEffect(() => {
@@ -56,15 +67,52 @@ const [user, setUser] = useState(null);
 
 
 // Fetch houses with optional filters
- const fetchHouses = async (filters = {}) => {
-  const params = new URLSearchParams(filters).toString();
-  const url = `/houses${params ? `?${params}` : ""}`;
- setHouseLoading(true)
+ const fetchHouses = async ({filters = {}, append = false,type= "all" }={}) => {
+  
   try {
+ setHouseLoading(true)
+    const params = new URLSearchParams(filters);
+  params.append("limit",20);
+
+  let lastList=[];
+  if(type ==="all") lastList=houses;
+  if (type === "fullLet") lastList = fullLet;
+  if (type === "shortLet") lastList = shortLet;
+  if (type === "search") lastList = searchResults;
+  
+  if(append && lastList.length > 0 ){
+    const lastHouse= lastList[lastList.length -1];
+    params.append("cursor",lastHouse._id)
+  }
+
+
+  const url = `/houses?${params.toString()}`;
+
+
     const res = await API.get(url);
-    const formated=res.data.map((house)=>houseDetailsFormatter(house))
-    setHouses(formated)
-      return formated
+
+    const {houses:newHouses, nextCursor, hasMore:moreAvailable}=res.data;
+
+    const formated=newHouses.map((house)=>houseDetailsFormatter(house))
+    if(type==='search'){
+      setSearchResults((prev)=>(append?[...prev, ...formated]:formated));
+       setCursor((prev)=>({...prev, search :nextCursor || null}));
+      setHasMore((prev)=>({...prev, search :moreAvailable}))
+    }else  if(type==="fullLet"){
+      setFullLet((prev)=>(append?[...prev, ...formated]:formated));
+       setCursor((prev)=>({...prev, fullLet:nextCursor || null}));
+      setHasMore((prev)=>({...prev, fullLet :moreAvailable}))
+    }else  if(type==="shortLet"){
+      setShortLet((prev)=>(append?[...prev, ...formated]:formated));
+       setCursor((prev)=>({...prev, shortLet:nextCursor || null}));
+      setHasMore((prev)=>({...prev, shortLet :moreAvailable}))
+    }else{
+      setHouses((prev)=>(append?[...prev, ...formated]:formated));
+      setCursor((prev)=>({...prev,all:nextCursor || null}));
+      setHasMore((prev)=>({...prev, all:moreAvailable}))
+    }
+   
+      return {formated}
     
   } catch (err) {
     console.error("Fetch houses error:", err);
@@ -78,7 +126,7 @@ const fetchMyHouses = async () => {
   setLoading(true)
   try {
     const res = await API.get("/houses/my"); // protected route
-    const formatted = res.data.map((house) => houseDetailsFormatter(house));
+    const formatted = res.data.map((house) => houseDetailsFormatter(house))
    if(formatted){setMyHouseReady(true)}
     return formatted;
   } catch (err) {
@@ -103,6 +151,13 @@ const fetchRecommendedHouses = async () => {
     return [];
   }
 };
+
+useEffect(() => {
+  if (isLogin) {
+    API.get('/user/likes').then(res => setLikedHouses(res.data));
+  }
+}, [isLogin]);
+
 
 // Toggle like on backend + update global state
 const toggleLike = async (houseId) => {
@@ -163,6 +218,47 @@ load()
   }, []);
 
 
+// useEffect(() => {
+//   async function initAuth() {
+//     const token = getAccessToken();
+
+//     if (token) {
+//       try {
+//         setAccessTokenState(token);
+//         setIsLogin(true);
+//         await fetchUserProfile(); // load user info
+//       } catch (err) {
+//         console.error("Token invalid, removing...");
+//         removeAccessToken();
+//         setIsLogin(false);
+//         setUser(null);
+//       } finally {
+//         setLoading(false);
+//       }
+//       return;
+//     }
+
+//     // No token? Try refresh once
+//     try {
+//       const res = await API.post("/auth/refresh-token");
+//       const newToken = res.data?.accessToken;
+//       if (newToken) {
+//         setToken(newToken);
+//         setIsLogin(true);
+//         await fetchUserProfile();
+//       } else {
+//         setIsLogin(false);
+//       }
+//     } catch (err) {
+//       console.log("No valid refresh token, user logged out.");
+//       setIsLogin(false);
+//     } finally {
+//       setLoading(false);
+//     }
+//   }
+
+//   initAuth();
+// }, [accessToken]);
 
 
   // startup: if sessionStorage has token, use it; otherwise try one refresh attempt
@@ -229,7 +325,7 @@ setLoading(false);
 
   return (
     <LoginAuthContext.Provider
-      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken,houses,setHouses,fetchHouses,fetchRecommendedHouses,fetchMyHouses,toggleLike,likedHouses,user,houseLoading  }}
+      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken,houses,setHouses,fetchHouses,fetchRecommendedHouses,fetchMyHouses,toggleLike,likedHouses,user,houseLoading,fullLet,shortLet,searchResults  }}
     >
     {children}
     </LoginAuthContext.Provider>

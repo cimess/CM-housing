@@ -26,6 +26,13 @@ userSchema.methods.isLocked = function () {
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.passwordHash);
 };
+userSchema.index({
+  firstname: "text",
+  lastname: "text",
+  email: "text",
+  address: "text"
+});
+
 module.exports = mongoose.model('User', userSchema);
 
 

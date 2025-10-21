@@ -13,4 +13,9 @@ const businessProfileSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
+businessProfileSchema.index({
+  company:"text",
+  bio:"text",
+  address:"text"
+})
 module.exports = mongoose.model("BusinessProfile", businessProfileSchema);

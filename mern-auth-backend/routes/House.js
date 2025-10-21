@@ -9,7 +9,7 @@ const { v4: uuidv4 } = require("uuid");
 const rateLimit = require("express-rate-limit");
 const cloudinary = require("../config/cloudinary");
 const router = express.Router();
-const { addComment, toggleLike, getHouseDetails,getMyFeedback } = require("../controllers/HouseController");
+const { addComment, toggleLike, getHouseDetails,getMyFeedback, getHouseById, getMyHouses,getHouses } = require("../controllers/HouseController");
 const authenticate = require("../middleware/authenticate");
 
 
@@ -201,53 +201,18 @@ router.post("/create", authMiddleware, async (req, res) => {
 
 
 // GET ALL HOUSES -> GET /api/houses
-// Supports query filters like ?durationType=short&state=Lagos&lga=Ikeja&town=Ojodu
-router.get("/", async (req, res) => {
-  try {
-    const { durationType, state, lga, town, roleOfLister } = req.query;
-    const filter = {};
 
-    if (durationType) filter.durationType = durationType;
-    if (state) filter["location.state"] = new RegExp(state, "i");
-    if (lga) filter["location.lga"] = new RegExp(lga, "i");
-    if (town) filter["location.town"] = new RegExp(town, "i");
-    if (roleOfLister) filter.roleOfLister = roleOfLister;
+router.get("/", getHouses);
 
-    const houses = await House.find(filter).populate("user", "name email");
-    res.json(houses);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+router.get("/feedback",authenticate,getMyFeedback);
 
-router.get("/feedback",authenticate,getMyFeedback)
-
-router.get("/my", authMiddleware, async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const houses = await House.find({ user: userId });
-    res.json(houses);
-  } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-});
+router.get("/my", authMiddleware, getMyHouses);
 
 
 // ============================
 // GET ONE HOUSE -> GET /api/houses/:id
 // ============================
-router.get("/:id", async (req, res) => {
-  try {
-    const id = req.params.id.trim();
-    const house = await House.findById(id).populate("user", "name email");
-    if (!house) return res.status(404).json({ message: "House not found" });
-    res.json(house);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+router.get("/:id",getHouseById);
 
 
 

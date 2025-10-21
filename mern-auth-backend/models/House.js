@@ -63,6 +63,14 @@ totalRatings: { type: Number, default: 0 },
 
 
   createdAt: { type: Date, default: Date.now },
+ 
+});
+houseSchema.index({
+  houseType: "text",
+  description: "text",
+  "location.state": "text",
+  "location.lga": "text",
+  "location.town": "text",
 });
 
 module.exports = mongoose.model("House", houseSchema);

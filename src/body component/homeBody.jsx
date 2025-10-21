@@ -7,7 +7,7 @@ import ruralImage from '../assets/images/lagos/iyanaipaja.jpg';
 import HouseListing from "@/shortlet/shortlet-house";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Region from "./regionSearch";
-
+import TextSearchFilter from "./searchByText";
 
 function SearchFilter() {
   const { fetchHouses } = useLoginAuth();
@@ -92,6 +92,55 @@ function SearchFilter() {
   );
 }
 
+function HandleShortLetAndFullLetListing(){
+  const [fullLet,setFullLet]=useState(null)
+  const [shortLet,setShortLet]=useState(null)
+  const {fetchHouses,houseLoading}=useLoginAuth()
+  
+
+
+  useEffect(()=>{
+  async function loadHouses(){
+const {filteredShortLetHouses,filteredFullLetHouses}=await fetchHouses();
+setShortLet(filteredShortLetHouses);
+setFullLet(filteredFullLetHouses)
+  }
+loadHouses()
+  },[])
+  
+
+
+  return(
+    <div>
+      <h1 className="text-left my-5">ShortLet Houses</h1>
+ 
+  <div className="flex flex-wrap  md:grid md:grid-cols-2 lg:grid-cols-5 sm:gap-y-6 gap-6">
+            {houseLoading ? (
+  <div className="p-5 font-semibold">Loading...</div>
+) : shortLet && shortLet.length > 0 ? (
+  shortLet.map((house, index) => <HouseListing key={index} {...house} />)
+) : (
+  <div className="text-gray-400 italic">No houses found</div>
+)}
+
+          </div>
+
+          <h1 className="text-center my-7 lg:text-[40px] md:text-[60px]">Full-Let Houses</h1>
+ 
+  <div className="flex flex-wrap  md:grid md:grid-cols-2 lg:grid-cols-5 sm:gap-y-6 gap-6">
+            {houseLoading ? (
+  <div className="p-5 font-semibold">Loading...</div>
+) : fullLet && fullLet.length > 0 ? (
+  fullLet.map((house, index) => <HouseListing key={index} {...house} />)
+) : (
+  <div className="text-gray-400 italic">No houses found</div>
+)}
+
+          </div>
+    </div>
+  )
+}
+
 
 export default  function Body(){
   const { houses,houseLoading,fetchHouses } = useLoginAuth();
@@ -110,8 +159,10 @@ export default  function Body(){
          </h2>
          <p className="text-xl text-gray-500 ">Your go-to guide for renting Nigeria’s standout stays</p>
          
-<SearchFilter/>
+ <TextSearchFilter/>
 
+<h1 className="text-left mb-2">Search by Region/State </h1>
+<SearchFilter/>
 <h1 className="text-left mb-2">
          Popular cities
       </h1>
@@ -143,7 +194,7 @@ export default  function Body(){
 )}
 
           </div>
-   
+   <HandleShortLetAndFullLetListing/>
 
       </div>
    )

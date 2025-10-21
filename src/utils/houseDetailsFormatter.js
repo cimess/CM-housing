@@ -1,5 +1,4 @@
 export function houseDetailsFormatter(house) {
-  console.log('the formeter log',house)
   return {
       _id:house._id,
     userId: house.user._id,
