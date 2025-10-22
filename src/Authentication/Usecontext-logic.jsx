@@ -107,7 +107,8 @@ const [searchResults,setSearchResults]=useState([])
        setCursor((prev)=>({...prev, shortLet:nextCursor || null}));
       setHasMore((prev)=>({...prev, shortLet :moreAvailable}))
     }else{
-      setHouses((prev)=>(append?[...prev, ...formated]:formated));
+      const sorted=formated.slice(0,10)
+      setHouses((prev)=>(append?[...prev, ...sorted]:sorted));
       setCursor((prev)=>({...prev,all:nextCursor || null}));
       setHasMore((prev)=>({...prev, all:moreAvailable}))
     }
@@ -123,7 +124,7 @@ const [searchResults,setSearchResults]=useState([])
 };
 
 const fetchMyHouses = async () => {
-  setLoading(true)
+
   try {
     const res = await API.get("/houses/my"); // protected route
     const formatted = res.data.map((house) => houseDetailsFormatter(house))
@@ -132,8 +133,6 @@ const fetchMyHouses = async () => {
   } catch (err) {
     console.error("Fetch my houses error:", err);
     return [];
-  }finally{
-    setLoading(false)
   }
 };
 
@@ -325,7 +324,7 @@ setLoading(false);
 
   return (
     <LoginAuthContext.Provider
-      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken,houses,setHouses,fetchHouses,fetchRecommendedHouses,fetchMyHouses,toggleLike,likedHouses,user,houseLoading,fullLet,shortLet,searchResults  }}
+      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken,houses,setHouses,fetchHouses,fetchRecommendedHouses,fetchMyHouses,toggleLike,likedHouses,user,houseLoading,fullLet,shortLet,searchResults,hasMore  }}
     >
     {children}
     </LoginAuthContext.Provider>

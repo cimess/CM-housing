@@ -162,10 +162,35 @@ const [loading,setLoading]=useState(false)
     setLoading(false)
   }
 
+    const handleDelete = async (houseId) => {
+    if (!confirm("Are you sure you want to delete this house?")) return;
+
+    try {
+      setLoading(true);
+      await API.delete(`/houses/${houseId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      await fetchMyHouses(); // refresh list
+      alert("House deleted successfully ✅");
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Failed to delete house ❌");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
    <>{loading? <LoadingAnimation/>: <div className="grid grid-cols-1 md:grid-cols-3 gap-5  overflow-y-scroll">
       {house.length > 0 ? (
-        house.map((houses, index) =><div className="w-full "> <HouseListing key={index} {...houses} /></div>)
+        house.map((houses, index) =><div className="w-full "><div className="relative"> <HouseListing key={index} {...houses} />
+        <button
+                onClick={() => handleDelete(houses._id)}
+                disabled={loading}
+                className="absolute bottom-2 right-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm"
+              >
+                {loading ? "Deleting..." : "Delete"}
+              </button></div></div>)
       ) : (
         <h2 className="text-center w-full">No houses available.</h2>
       )}

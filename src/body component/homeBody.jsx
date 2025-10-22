@@ -1,4 +1,4 @@
-import {useEffect, useState } from "react";
+import {useEffect, useState ,useRef} from "react";
 import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 import {faArrowRight,faCamera,faSearch} from "@fortawesome/free-solid-svg-icons";
 import BoxContainer from "./box-container";
@@ -8,152 +8,131 @@ import HouseListing from "@/shortlet/shortlet-house";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Region from "./regionSearch";
 import TextSearchFilter from "./searchByText";
+import { Switch } from "@/components/ui/Switch";
 
-function SearchFilter() {
-  const { fetchHouses } = useLoginAuth();
-  const [regionClick, setRegionClick] = useState(false);
-  const [region, setRegion] = useState(null);
-  const [houses, setHouses] = useState([]);
-  const [hasSearched, setHasSearched] = useState(false);
-
-  async function handleRegionSearch(filters) {
-    if (!filters) {
-      // clear/reset
-      setRegion(null);
-      setHouses([]);
-      setHasSearched(false);
-      return;
-    }
-
-    setRegion([filters.state, filters.lga, filters.town].filter(Boolean));
-
-    const data = await fetchHouses(filters);
-    setHouses(data);
-    setHasSearched(true); 
-    console.log(data)
-  }
-
-  function displaySelectedRegion() {
-    return (
-      <div>
-    {hasSearched?<button onClick={()=>{handleRegionSearch(false)}} className="button">Reset search</button> :<div className="relative font-bold rounded-full shadow-sm w-fit md:w-[50%] bg-gray-300/40 mx-auto h-10 flex items-center justify-center px-4 ">
-  {/* Left icon */}
-  <FontAwesomeIcon 
-    icon={faSearch} 
-    className="md:absolute md:left-3 text-gray-600 mr-5" 
-  />
-
-  {/* Centered text */}
-  <span className="truncate text-gray-500 font-light">
-    {region?.length > 0 ? region.join(", ") : "Search"}
-  </span>
-</div>
-}
-      </div>
-    );
-  }
-
-  return (
-    <div className="my-10">
-      {/* Trigger dropdown */}
-      <div className="flex justify-center  w-full">
-      <div
-        className="py-2 flex-1 min-w-0 relative cursor-pointer  "
-        onClick={() => setRegionClick((prev) => !prev)}
-      >
-        
-        <div className="truncate ">{displaySelectedRegion()}</div>
-      </div>
-</div>
-      {regionClick && (
-        <Region
-          setRegionClick={setRegionClick}
-          onSearch={handleRegionSearch}
-        />
-      )}
-
-      {/* Results */}
-      <div className="mt-5">
-        {houses.length > 0 ? (
-         <div className="flex flex-wrap  md:grid md:grid-cols-2 lg:grid-cols-5 sm:gap-y-6 gap-6">
-            {houses.map((house, index) => (
-              
-   <HouseListing key={index} {...house} />
-
-
-             
-            ))}
-          </div>
-        ) : hasSearched ? (
-          <p className="text-gray-400 italic">No houses yet. Use search.</p>
-        ) : null}
-      </div>
-    </div>
-  );
-}
 
 function HandleShortLetAndFullLetListing(){
-  const [fullLet,setFullLet]=useState(null)
-  const [shortLet,setShortLet]=useState(null)
-  const {fetchHouses,houseLoading}=useLoginAuth()
-  
 
+  const {fullLet,shortLet,houseLoading,fetchHouses,houses,hasMore}=useLoginAuth()
+  console.log(hasMore,"this is hasMore")
+
+  const loadMoreAll=useRef(null)
+   const loadMoreShortLet=useRef(null)
+    const loadMoreFullLet=useRef(null)
+     const newestRef=useRef(null)
+
+
+
+      const [showHouse,setShowHouse]=useState(false)
 
   useEffect(()=>{
   async function loadHouses(){
-const {filteredShortLetHouses,filteredFullLetHouses}=await fetchHouses();
-setShortLet(filteredShortLetHouses);
-setFullLet(filteredFullLetHouses)
+
+if((!fullLet || fullLet .length===0) && (!shortLet || shortLet.length===0)&& (!houses || houses.length===0)){
+ await fetchHouses({type:'shortLet',filters:{filter:'shortLet'}});
+  await fetchHouses({type:'fullLet',filters:{filter:'fullLet'}})
+  await fetchHouses()
+}
   }
 loadHouses()
   },[])
   
+useEffect(()=>{
+
+function createObserver(ref,type,filter){
+
+if(!ref.current)return;
+const observer= new IntersectionObserver(
+  async(entries)=>{
+    const entry=entries[0];
+    if(!entry.isIntersecting || houseLoading)return;
+
+    // guard against overfecting 
+    if(!hasMore?.[type]){
+      observer.unobserve(ref.current);
+      return;
+    }
+    await fetchHouses({type, append:true, filters:filter});
+  },{threshold:1.0}
+);
+observer.observe(ref.current)
+return observer;
+
+}
+
+const obsAll=createObserver(loadMoreAll,"all",{});
+const obsShort = createObserver(loadMoreShortLet, "shortLet", { filter: "shortLet" });
+  const obsFull = createObserver(loadMoreFullLet, "fullLet", { filter: "fullLet" });
+
+  return ()=>{
+    if(obsAll)obsAll.disconnect();
+    if(obsShort)obsShort.disconnect();
+    if(obsFull)obsFull.disconnect()
+  }
+},[houseLoading,hasMore])
 
 
-  return(
-    <div>
-      <h1 className="text-left my-5">ShortLet Houses</h1>
+
+
+ const houseType=showHouse?fullLet:shortLet
+
+function changeHouseButton(){
+setShowHouse((prev)=>!prev)
+
+}
+
+  return( <div>
+
+<div className="md:flex justify-between items-center  text-left"><div className="flex justify-left items-center gap-x-3 text-xl mt-3"><span className="text-base text-gray-400">View by</span>
+  <span className="text-gray-600">Short-Let</span>
+  <Switch checked={showHouse} onCheckedChange={changeHouseButton} className="md:h-6 md:w-12"/>
+  <span className="text-gray-600">Full-Let</span></div>   <button onClick={()=>newestRef.current?.scrollIntoView({behavior:"smooth"})} className="button md:justify-self-right sm:mt-5">Recent Listing</button></div>
+
+
+      <h1 className="md:text-center my-7 text-left md:text-[40px]">{showHouse?"Full-Let":'Short-Let'} Houses</h1>
  
   <div className="flex flex-wrap  md:grid md:grid-cols-2 lg:grid-cols-5 sm:gap-y-6 gap-6">
-            {houseLoading ? (
-  <div className="p-5 font-semibold">Loading...</div>
-) : shortLet && shortLet.length > 0 ? (
-  shortLet.map((house, index) => <HouseListing key={index} {...house} />)
+            {houseType ?  houseType && houseType.length > 0 ? (
+  houseType.map((house, index) => {return <><HouseListing key={index} {...house} />
+
+          
+     </>})
 ) : (
   <div className="text-gray-400 italic">No houses found</div>
+):(
+  <div className="p-5 font-semibold">Loading...</div>
 )}
-
+{<div ref={showHouse?loadMoreFullLet:loadMoreShortLet} className="text-center">{(houseLoading&&(showHouse?hasMore.fullLet:hasMore.shortLet))&&<span>Loading more.....</span>}</div>}
           </div>
 
-          <h1 className="text-center my-7 lg:text-[40px] md:text-[60px]">Full-Let Houses</h1>
+
+
+ <h1 className="text-left my-5" ref={newestRef}>Recent Listed Houses</h1>
  
   <div className="flex flex-wrap  md:grid md:grid-cols-2 lg:grid-cols-5 sm:gap-y-6 gap-6">
-            {houseLoading ? (
-  <div className="p-5 font-semibold">Loading...</div>
-) : fullLet && fullLet.length > 0 ? (
-  fullLet.map((house, index) => <HouseListing key={index} {...house} />)
-) : (
-  <div className="text-gray-400 italic">No houses found</div>
-)}
-
-          </div>
-    </div>
-  )
+            {houses.map((house, index) => (
+  <>
+    <HouseListing key={index} {...house} />
+    
+  </>
+))
+}
+{<div ref={loadMoreAll} className="text-center">{(houseLoading&&hasMore.all)&&<span>Loading more.....</span>}</div>}
+</div>
+</div>
+)
 }
 
 
+
+
 export default  function Body(){
-  const { houses,houseLoading,fetchHouses } = useLoginAuth();
 
-   useEffect(()=>{
-    if(!houses ||houses.length===0){fetchHouses()}
-
-   },[]) 
   
  
   
    return(
-    <div className="px-1 mx-auto text-center transition-all duration-150 ease-in-out  w-full">
+    <div className="px-1 mx-auto text-center transition-all duration-150 ease-in-out  w-[98%]">
          <h2 className="text-[5vw] leading-none my-5  font-Merriweather">
             Find Your Dream Home
          </h2>
@@ -162,7 +141,7 @@ export default  function Body(){
  <TextSearchFilter/>
 
 <h1 className="text-left mb-2">Search by Region/State </h1>
-<SearchFilter/>
+
 <h1 className="text-left mb-2">
          Popular cities
       </h1>
@@ -179,21 +158,12 @@ export default  function Body(){
       <BoxContainer images={lagosimage} href={"www.fb.com"} state="Kano" city="Kastina" alt="image of lagos"/>
    <BoxContainer images={lagosimage} href={"www.fb.com"} state="Lagos" city="Mushin" alt="image of lagos"/>
     <BoxContainer images={ruralImage} href={"www.fb.com"} state="Lagos" city="Dopemu" alt="image of lagos"/>
+     <BoxContainer images={ruralImage} href={"www.fb.com"} state="Lagos" city="ipaja" alt="image of lagos"/>
+      <BoxContainer images={ruralImage} href={"www.fb.com"} state="Ogun" city="ota" alt="image of lagos"/>
       </div>
       </div>
 
- <h1 className="text-left my-5">Top Houses</h1>
- 
-  <div className="flex flex-wrap  md:grid md:grid-cols-2 lg:grid-cols-5 sm:gap-y-6 gap-6">
-            {houseLoading ? (
-  <div className="p-5 font-semibold">Loading...</div>
-) : houses && houses.length > 0 ? (
-  houses.map((house, index) => <HouseListing key={index} {...house} />)
-) : (
-  <div className="text-gray-400 italic">No houses found</div>
-)}
 
-          </div>
    <HandleShortLetAndFullLetListing/>
 
       </div>

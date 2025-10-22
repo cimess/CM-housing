@@ -14,7 +14,7 @@ export default function TextSearchFilter() {
   const [loading, setLoading] = useState(false);
 
   // Debounce input to prevent spam requests
-  const debouncedQuery = useDebounce(query, 600);
+  const debouncedQuery = useDebounce(query, 1500);
 
   useEffect(() => {
     if (debouncedQuery.trim().length < 2) {
@@ -29,7 +29,7 @@ export default function TextSearchFilter() {
       try {
         const filters = { search: debouncedQuery };
         const { formated } = await fetchHouses({ filters, type: "search" });
-        setHouses(formated);
+        setHouses(formated||[]);
         setHasSearched(true);
       } catch (err) {
         console.error("Search error:", err);
@@ -53,7 +53,7 @@ export default function TextSearchFilter() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search for houses, locations, or company name..."
+          placeholder="house type, locations, or Agent..."
           className="pl-10 pr-4 py-2 w-full rounded-full shadow-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 text-gray-700"
         />
       </div>
@@ -62,7 +62,7 @@ export default function TextSearchFilter() {
       <div className="mt-6">
         {loading ? (
           <p className="text-gray-500 italic">Searching...</p>
-        ) : houses.length > 0 ? (
+        ) : Array.isArray(houses) && houses.length > 0 ? (
           <div className="flex flex-wrap md:grid md:grid-cols-2 lg:grid-cols-5 sm:gap-y-6 gap-6">
             {houses.map((house, index) => (
               <HouseListing key={index} {...house} />

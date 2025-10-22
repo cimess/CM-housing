@@ -18,7 +18,7 @@ export default function Default({children}) {
   const [state,setState]=useState(false)
     const [isOpen, setIsOpen] = useState(false);
 const {isLogin}=useLoginAuth()
-    
+    const timeoutRef = useRef(null);
       const node=useRef(null)
   const sideNode=useRef(null)
 const navigate=useNavigate('/')
@@ -42,6 +42,17 @@ const navigate=useNavigate('/')
 
   )
 
+  function toggleDropdown() {
+  setState((prev)=>!prev);
+
+  // Clear any existing timeout so we don’t stack multiple
+  if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+  // Auto close after 4 seconds
+  timeoutRef.current = setTimeout(() => {
+    setState(false);
+  }, 5000);
+}
 
   function showLogin(reg){
     return(
@@ -57,7 +68,7 @@ const navigate=useNavigate('/')
 </div>
   </div>
   :
-  <div className=" absolute  translate-y-[80%]  md:translate-y-[75%] border border-gray-300 bg-white left-[60%] -translate-x-1/2  py-2 w-[150px] md:w-[250px] shadow-sm rounded">
+  <div className=" absolute  translate-y-[20%]  md:translate-y-[20%] border border-gray-300 bg-white left-[60%] -translate-x-1/2  py-2 w-[150px] md:w-[250px] shadow-sm rounded transition-ease-out">
  <div className="flex flex-col gap-y-2">
 
   <NavLink text='List House' nav='/HouseRegister' />
@@ -117,14 +128,15 @@ const navigate=useNavigate('/')
           }</div>)}
  
  { <IsLoginFunction />}
-  <div ref={node} className=" round-bg md:p-5 p-3 group " 
-        onClick={()=>setState((prev)=>!prev)}
-       onMouseEnter={()=>setState(true)}
-        onMouseLeave={()=>setState(false)}
-          >
-          <FontAwesomeIcon icon={faUser} className=" sm: h-3 w-3 " />
-        
-        </div>
+<div
+  ref={node}
+  className="round-bg md:p-5 p-3 group"
+  onClick={toggleDropdown}
+
+>
+  <FontAwesomeIcon icon={faUser} className="sm:h-3 w-3" />
+</div>
+
 
 {<Nav/>}
           

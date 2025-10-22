@@ -9,12 +9,13 @@ const { v4: uuidv4 } = require("uuid");
 const rateLimit = require("express-rate-limit");
 const cloudinary = require("../config/cloudinary");
 const router = express.Router();
-const { addComment, toggleLike, getHouseDetails,getMyFeedback, getHouseById, getMyHouses,getHouses } = require("../controllers/HouseController");
+const { addComment, toggleLike, getHouseDetails,getMyFeedback, getHouseById, getMyHouses,getHouses,deleteHouse } = require("../controllers/HouseController");
 const authenticate = require("../middleware/authenticate");
 
 
 
-
+// delete listed houses 
+router.delete("/:id", authMiddleware, deleteHouse);
 
 
 // ============================
@@ -198,6 +199,8 @@ router.post("/create", authMiddleware, async (req, res) => {
     return res.status(500).json({ message: "Server error", error: err.message });
   }
 });
+
+
 
 
 // GET ALL HOUSES -> GET /api/houses

@@ -45,9 +45,9 @@ if(!isLogin){
 toggleLike(_id)
 }
   return (
-    <div className="relative rounded-xl overflow-hidden shadow-lg group bg-gray-900 cursor-pointer w-full">
+    <div className="relative rounded-xl overflow-hidden shadow-lg group bg-gray-900  w-full">
       {/* Image carousel */}
-      <div className="relative h-56">
+      <div className="relative h-56 cursor-pointer">
         <Swiper
           modules={[Navigation, Autoplay]}
           spaceBetween={0}
