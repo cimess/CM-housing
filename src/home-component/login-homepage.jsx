@@ -17,14 +17,14 @@ export default function IsLoginFunction({notifications}){
 
 const [notification,setNotification]=useState(0)
 const {isLogin}=useLoginAuth()
-  const Navigate=useNavigate('/')
+  const Navigate=useNavigate()
 if(!isLogin) return null
  
 
 
    function NotificationHolder(){
    return(
-      <div>{notification>0?  <div className="round-bg hover:bg-red-600 bg-red-600 p-[7px] absolute translate-y-3 translate-x-2 text-[10px] "><p className="">{notification}</p></div>:''
+      <div>{notification>0?  <div className="round-bg group-hover:bg-red-600 bg-red-600 p-[7px] absolute translate-y-3 translate-x-2 text-[10px] "><p className="">{notification}</p></div>:''
    }</div>
     
    )
@@ -32,7 +32,7 @@ if(!isLogin) return null
 
    return(      
       
-      <div className={`flex gap-x-1'}`}>
+      <div className='flex gap-x-1'>
 <div className="round-bg p-3 md:p-5 relative group" onClick={()=>Navigate('/MyMessagePage')}>
 <FontAwesomeIcon className="sm:h-3 w-3" 
 icon={faInbox}/>

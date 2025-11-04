@@ -2,14 +2,17 @@ import {  message } from "@/data/messageBox"
 import { faArrowLeft, faBars, faCamera, faFaceGrin, faMicrophone, faPaperclip, faPaperPlane, faPhone, faSmile } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { motion } from "framer-motion"
-import { useState,useEffect } from "react"
-
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { useLoginAuth } from "@/Authentication/Usecontext-logic"
 
 // pls fix the issue of when i refresh the page and the islogin is false but it still displaying the message component  
 
 export default function MyMessagePage(){
-const navigate=useN()
-const {isLogin}=useEffect(()=>{
+const navigate=useNavigate()
+const {isLogin}=useLoginAuth()
+const [view,setView]=useState(false)
+useEffect(()=>{
 if(!isLogin)return navigate('/')
 
 },[isLogin,navigate])
@@ -24,7 +27,7 @@ setState((prev)=>!prev)
 
 
    return (
-      <motion.div
+      view?<motion.div
       initial={{ opacity: 0, x: 100 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -100 }}
@@ -41,8 +44,9 @@ setState((prev)=>!prev)
             
            
       </div>
-      </motion.div>
+      </motion.div>:<h1 className="min-h-screen flex justify-center items-center">COMMING SOON</h1>
    )
+
 }
 
 

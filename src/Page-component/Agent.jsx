@@ -60,7 +60,8 @@ if(!isLogin)return navigate('/')
         setProfileCompleted(res.data?.isCompleted || false);
 
         if (res.data?.company) {
-          setFormData((prev) => ({ ...prev, companyName: res.data.company }));
+          const normalised=res.data.company.trim().toLowerCase().replace(/\s+/g, "")
+          setFormData((prev) => ({ ...prev, companyName: normalised }));
         }
       } catch (err) {
         console.error("profile check error:", err);
@@ -69,6 +70,24 @@ if(!isLogin)return navigate('/')
     }
     checkProfile();
   }, []);
+
+  useEffect(()=>{
+    async function syncCompany(){
+      if(formData.roleOfLister !=="agent") return
+      try{
+        const res= await API.get("/business-profile/me");
+
+        if(res.data?.company){
+          const normalised= res.data.company.trim().toLowerCase().replace(/\s+/g, "");
+            setFormData((prev)=>({...prev, companyName:normalised}))
+          
+        }
+      }catch(err){
+        console.error("error syncing company:", err)
+      }
+      syncCompany()
+    }
+  },[formData.roleOfLister])
 
   // Auto-set recommended amenities
   useEffect(() => {

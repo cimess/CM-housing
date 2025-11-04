@@ -8,7 +8,7 @@ import HouseListing from "@/shortlet/shortlet-house";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Region from "./regionSearch";
 import TextSearchFilter from "./searchByText";
-import { Switch } from "@/components/ui/Switch";
+import { Switch } from "@/components/ui/switch";
 
 
 function HandleShortLetAndFullLetListing(){
@@ -20,7 +20,7 @@ function HandleShortLetAndFullLetListing(){
    const loadMoreShortLet=useRef(null)
     const loadMoreFullLet=useRef(null)
      const newestRef=useRef(null)
-
+const scrollRef=useRef(null)
 
 
       const [showHouse,setShowHouse]=useState(false)
@@ -72,6 +72,23 @@ const obsShort = createObserver(loadMoreShortLet, "shortLet", { filter: "shortLe
 },[houseLoading,hasMore])
 
 
+useEffect(()=>{
+  const handleScrollHorinzontal=async()=>{
+const el=scrollRef.current;
+if(!el ||!loadMoreAll||!hasMore)return 
+
+const nearEnd=el.scrollLeft +el.clientWidth>=el.scrollWidth-50
+
+if(nearEnd){
+  await fetchHouses({type:"all",append:true})
+  
+}
+  }
+
+  const el=scrollRef.current;
+  if(el)addEventListener("scroll",handleScrollHorinzontal)
+},[houseLoading,hasMore])
+
 
 
  const houseType=showHouse?fullLet:shortLet
@@ -82,6 +99,22 @@ setShowHouse((prev)=>!prev)
 }
 
   return( <div>
+ <h1 className="text-left my-5" ref={newestRef}>Recent Listed Houses</h1>
+ 
+  <div className="">
+    <div ref={scrollRef} className="overflow-x-auto flex scrollbar-hide">
+            {houses.map((house, index) => (
+  <div className="w-[300px]">
+    <HouseListing key={index} {...house} />
+    
+  </div>
+))
+}
+
+{<div ref={loadMoreAll} className="text-center">{(houseLoading&&hasMore.all)&&<span>Loading more.....</span>}</div>}
+</div>
+</div>
+
 
 <div className="md:flex justify-between items-center  text-left"><div className="flex justify-left items-center gap-x-3 text-xl mt-3"><span className="text-base text-gray-400">View by</span>
   <span className="text-gray-600">Short-Let</span>
@@ -107,18 +140,7 @@ setShowHouse((prev)=>!prev)
 
 
 
- <h1 className="text-left my-5" ref={newestRef}>Recent Listed Houses</h1>
- 
-  <div className="flex flex-wrap  md:grid md:grid-cols-2 lg:grid-cols-5 sm:gap-y-6 gap-6">
-            {houses.map((house, index) => (
-  <>
-    <HouseListing key={index} {...house} />
-    
-  </>
-))
-}
-{<div ref={loadMoreAll} className="text-center">{(houseLoading&&hasMore.all)&&<span>Loading more.....</span>}</div>}
-</div>
+
 </div>
 )
 }

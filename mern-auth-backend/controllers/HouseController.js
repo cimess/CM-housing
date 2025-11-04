@@ -1,7 +1,6 @@
 const House = require("../models/House");
 const BusinessProfile = require("../models/businessProfile");
 const redis = require("../config/redis");
-const { mongo } = require("mongoose");
 const Fuse = require("fuse.js");
 const User = require("../models/User");
 
@@ -54,7 +53,6 @@ res.status(500).json({ message: "Server Error", error: err.message, stack: err.s
   }
 };
 
-
 exports.deleteHouse = async (req, res) => {
   try {
     const { id } = req.params;
@@ -78,107 +76,121 @@ exports.deleteHouse = async (req, res) => {
   }
 };
 
+exports.getHouses=async(req,res)=>{
+  console.log("this is the querry",req.query)
 
+  try{
+    const {search="",cursor,limit =20,filter}=req.query;
+    const cacheKey=`houses:${search || "all"}:${filter || "none"}:${cursor || "start"}:${limit}`;
 
-
-exports.getHouses = async (req, res) => {
-  console.log("this is the query", req.query);
-
-  try {
-    const { search = "", cursor, limit = 20, filter } = req.query;
-    const cacheKey = `houses:${search || "all"}:${filter || "none"}:${cursor || "start"}:${limit}`;
-
-    // 1️⃣ Try cache first
+    // try cache first
     const cachedData = await redis.get(cacheKey);
-    if (cachedData) {
+
+    if(cachedData){
       console.log("💾 Cache hit");
       return res.json(JSON.parse(cachedData));
     }
 
-    const mongoFilter = {};
-    if (cursor) mongoFilter._id = { $lt: cursor };
-    if (filter === "shortLet") mongoFilter.durationType = "short";
-    if (filter === "fullLet") mongoFilter.durationType = "long";
+    let houses=[];
 
-    let userIdsFromSearch = [];
-    let businessUserIds = [];
+    //  full-text search if search query exists
 
-    // 2️⃣ First pass: full-text search
-    if (search) {
-      const matchedBusinesses = await BusinessProfile.find(
-        { $text: { $search: search } },
-        { user: 1, company: 1, score: { $meta: "textScore" } }
+    if(search){
+      const matchedBusinesses=await BusinessProfile.find(
+        {$text:{$search:search}},
+        {user:1}
       );
-      businessUserIds = matchedBusinesses.map((b) => b.user);
+      const matchedUsers=await User.find(
+        {$text:{$search:search}},
+        {_id:1}
+      )
 
-      const matchedUsers = await User.find(
-        { $text: { $search: search } },
-        { _id: 1, firstname: 1, lastname: 1, email: 1, score: { $meta: "textScore" } }
-      );
-      userIdsFromSearch = matchedUsers.map((u) => u._id);
+      const relatedUserIds=[
+        ...new Set(
+          [
+            ...matchedBusinesses.map(b=> b.user),
+            ...matchedUsers.map(u=>u._id)
+          ]
+        )
+      ]
 
-      const relatedUserIds = [...new Set([...userIdsFromSearch, ...businessUserIds])];
-
-      if (relatedUserIds.length > 0) {
-        mongoFilter.$or = [
-          { user: { $in: relatedUserIds } },
-          { $text: { $search: search } },
-        ];
-      } else {
-        mongoFilter.$text = { $search: search };
+      let byUsers=[];
+      if(relatedUserIds.length>0){
+        byUsers=await House.find({user:{$in:relatedUserIds}}).lean()
       }
-    }
 
-    // 3️⃣ Fetch results
-    let houses = await House.find(
-      mongoFilter,
-      search ? { score: { $meta: "textScore" } } : {}
-    )
-      .sort(search ? { score: { $meta: "textScore" } } : { _id: -1 })
+      let byText=await House.find({$text:{$search:search}}, {score:{$meta:"textScore"}})
+      .sort({score:{$meta:"textScore"}})
+      .lean()
+
+      //  Merge results, remove duplicates
+      const map = new Map();
+      [...byUsers, ...byText].forEach(h=> map.set(h._id.toString(),h));
+      houses= Array.from(map.values());
+    }else{
+      //  no search -> fecth normally with filters
+
+      const mongoFilter={};
+      if (cursor) mongoFilter._id = {$lt: cursor};
+      if (filter==="shortLet") mongoFilter.durationType= "short";
+      if(filter==="fullLet") mongoFilter.durationType="long";
+
+      houses= await House.find(mongoFilter)
+      .sort({_id:-1})
       .limit(Number(limit))
-      .populate("user", "firstname lastname email address phone")
       .lean();
+    }
+      //  Apply additional filter (cursor + duration ) in Js if needed
 
-    // 4️⃣ Fuzzy fallback (Fuse.js) — only if text search found few or none
-    if (houses.length < 5 && search) {
-      console.log("🧠 Triggering fuzzy search fallback");
+      if(cursor) houses=houses.filter(h=>h._id < cursor);
+      if(filter==="shortLet") houses=houses.filter(h =>h.durationType === "short");
+      if(filter==="fullLet") houses = houses.filter(h => h.durationType==="long")
 
-      // Get a wider batch of houses to run fuzzy match on
-      const allHouses = await House.find({})
-        .populate("user", "firstname lastname email address phone")
-        .lean();
+        //  fuse.js fuzzy fallback if text search returned <5 results
 
-      const fuse = new Fuse(allHouses, {
-        keys: [
-          "houseType",
-          "description",
-          "location.state",
-          "location.lga",
-          "location.town",
-          "user.firstname",
-          "user.lastname",
-          "user.email",
-          "user.address",
-          "companyName"
-        ],
-        threshold: 0.4, // lower = stricter match, higher = more forgiving
-      });
+        if(houses.lenght <5 && search){
+          console.log("🧠 Triggering fuzzy search fallback")
 
-      const fuzzyResults = fuse.search(search);
-      houses = fuzzyResults.slice(0, limit).map((r) => r.item);
+          const allHouses =await House.find({}).populate("user","firstname lastname email address phone")
+          .lean()
+          const fuse = new Fuse(allHouses, {
+            keys: [
+              "house Type",
+              "description",
+              "location.state",
+              "location.lga",
+              "location.town",
+              "user.firstname",
+              "user.lastname",
+              "user.email",
+              "user.address",
+              "companyName",
+              "user.businessProfile.company"
+            ],
+            threshold: 0.4
+          });
+          houses = fuse.search(search).slice(0, limit).map(r => r.item);
     }
 
-    const nextCursor = houses.length ? houses[houses.length - 1]._id : null;
-    const hasMore = houses.length === Number(limit);
-    const result = { houses, hasMore, nextCursor };
+    //  Populate user for all houses
 
-    await redis.set(cacheKey, JSON.stringify(result), "EX", 300);
-    return res.json(result);
-  } catch (err) {
+    houses - await User.populate(houses,{path:"user", select: "firstname lastname email address phone"})
+
+    const nextCursor = houses.length ? houses[houses.length - 1]._id :null
+    const hasMore= houses.length ===Number(limit);
+    const result = {houses, hasMore, nextCursor};
+
+    //  Cache results for 5 minutes
+
+    await redis.set(cacheKey, JSON.stringify(result, "EX", 300));
+    return res.json(result)
+  }catch(err){
+
     console.error("❌ Error fetching houses:", err);
-    res.status(500).json({ message: "Server Error", error: err.message });
+    res.status(500).json({message:"Server Error", error: err.message});
   }
-};
+}
+
 
 
 exports.getHouseById = async (req, res) => {

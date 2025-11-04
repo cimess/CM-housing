@@ -120,7 +120,7 @@ const navigate=useNavigate('/')
             
        
        
-        <div className="flex items-center space-x-2 pl-5  relative group">
+        <div className="flex items-center space-x-2 pl-5  relative ">
         
          
        
