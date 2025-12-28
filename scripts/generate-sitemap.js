@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 
 // Config
 const BACKEND_URL = 'https://cm-housing.onrender.com/api/houses';
-const DOMAIN = 'https://cmhousing.com';
+const DOMAIN = 'https://cmhousing.com.ng';
 const PUBLIC_DIR = path.join(__dirname, '../public');
 
 async function fetchHouses() {
