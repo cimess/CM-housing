@@ -34,8 +34,8 @@ async function generateSitemap() {
   try {
     const houses = await fetchHouses();
 
-    // We expect the API to return either an array or { data: [...] }
-    const houseList = Array.isArray(houses) ? houses : (houses.data || []);
+    // API returns { houses: [...], hasMore: true, ... }
+    const houseList = Array.isArray(houses) ? houses : (houses.houses || houses.data || []);
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
