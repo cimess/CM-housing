@@ -2,7 +2,7 @@
 import simpleRestProvider from "@refinedev/simple-rest";
 import axios from "axios";
 import { getAccessToken } from "@/utils/authStore";
-
+// nice to fix this
 const API_URL =import.meta.env.MODE === "production" ? "https://cm-housing.onrender.com/api" : "http://localhost:4000/api";
 
 const axiosAuth = axios.create({
