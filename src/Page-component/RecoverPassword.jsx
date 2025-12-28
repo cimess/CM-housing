@@ -1,3 +1,5 @@
+
+
 import Input from "@/body component/input-component";
 import { Link } from "react-router-dom";
 import {motion, setStyle} from "framer-motion"
@@ -11,7 +13,7 @@ try{
       const request=await API.post("auth/forgot-password",{ email: state})
       alert(request.data.message)
    }catch(e){
-      console.log(e);   
+      console.log(e);
    }
    }
 
@@ -27,7 +29,7 @@ try{
 Recover Your Password
    </h1>
    <div className="w-[80%] mx-auto">
- 
+
  <p className="my-5">Please enter your email address. You will receive a link to create a new password via email.</p>
    </div>
   <form className=" w-[80%] mx-auto text-left mt-8">
@@ -40,7 +42,7 @@ Recover Your Password
 
   </form>
   <div className=" my-5">
-  <span className="text-gray-600 ">Remember your password? </span><Link to='/Login' className="underline ml-2 hover:no-underline">Back to login</Link>
+  <span className="text-muted-foreground ">Remember your password? </span><Link to='/Login' className="underline ml-2 hover:no-underline text-primary">Back to login</Link>
 </div>
 </div>
 </motion.div>

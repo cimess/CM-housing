@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { toast } from "sonner";
 import {useNavigate } from "react-router-dom";
 import Input from "../body component/input-component";
 import API from "../api/axios";
@@ -24,11 +25,11 @@ export default function Register() {
     e.preventDefault();
 
     if (email !== confirmEmail) {
-      alert("Emails do not match");
+      toast.error("Emails do not match");
       return;
     }
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -42,10 +43,10 @@ export default function Register() {
         password,
       });``
 
-      alert("Registration successful. Please verify your email.");
+      toast.success("Registration successful. Please verify your email.");
       setIsLogin(false); // user not logged in until verification
     } catch (err) {
-      alert(err.response?.data?.message || "Registration failed");
+      toast.error(err.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -61,8 +62,8 @@ if(loading)return <LoadingAnimation/>
       transition={{ duration: 0.3 }}
     >
       <div className="text-center w-[90%] md:w-[70%] mx-auto py-10">
-        <h1 className="font-montserrat my-5">Guest Registration</h1>
-        <span className="text-gray-600 mb-8 block">
+        <h1 className="font-montserrat my-5 text-foreground">Guest Registration</h1>
+        <span className="text-muted-foreground mb-8 block">
           Join us and explore homes made for you
         </span>
 
@@ -77,16 +78,16 @@ if(loading)return <LoadingAnimation/>
             <Input label="Confirm password" add="*" type="password" id="confirmpassword" value={confirmPassword} onChange={(e)=>setConfirmPassword(e.target.value)}/>
           </div>
 
-          <div className="my-4 flex items-center gap-x-3 text-sm text-gray-500">
-            <input type="checkbox" className="h-4 w-4 accent-black" /> 
+          <div className="my-4 flex items-center gap-x-3 text-sm text-muted-foreground">
+            <input type="checkbox" className="h-4 w-4 accent-primary" />
             <label>Subscribe to newsletter</label>
           </div>
 
-          <div className="my-4 flex items-center gap-x-3 text-sm text-gray-500">
-            <input type="checkbox" className="h-4 w-4 accent-black" required />
+          <div className="my-4 flex items-center gap-x-3 text-sm text-muted-foreground">
+            <input type="checkbox" className="h-4 w-4 accent-primary" required />
             <label>
               I agree to the{" "}
-              <a href="/terms" className="text-blue-600 underline">Terms & Conditions</a>
+              <a href="/terms" className="text-primary underline">Terms & Conditions</a>
             </label>
           </div>
 

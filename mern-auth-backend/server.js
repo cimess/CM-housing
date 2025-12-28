@@ -26,7 +26,7 @@ app.use(morgan('dev'));
 
 // CORS - adjust origin in production
 app.use(cors({
-  origin: process.env.FRONTEND_URL ,
+  origin: [process.env.FRONTEND_URL,process.env.NODE_ENV === "development" ? "http://localhost:5173" : "https://cm-housing.onrender.com/api"],
   credentials: true
 }));
 
@@ -43,6 +43,39 @@ app.use('/api/protected', protectedRoutes);
 app.use('/api/business-profile', businessProfileRoutes);
 app.use("/api/houses", House);
 app.use("/api/profile", profileRoutes);
+app.use("/api/reports", require("./routes/reports"));
+
+const HouseModel = require('./models/House');
+
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const houses = await HouseModel.find({}, '_id updatedAt');
+    const frontendUrl = process.env.FRONTEND_URL || 'https://cmhousing.com';
+
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+      <url>
+        <loc>${frontendUrl}/</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+      </url>
+      ${houses.map(house => `
+        <url>
+          <loc>${frontendUrl}/house/${house._id}</loc>
+          <lastmod>${new Date(house.updatedAt || Date.now()).toISOString()}</lastmod>
+          <changefreq>weekly</changefreq>
+          <priority>0.8</priority>
+        </url>
+      `).join('')}
+    </urlset>`;
+
+    res.header('Content-Type', 'application/xml');
+    res.send(sitemap);
+  } catch (err) {
+    console.error("Sitemap generation error:", err);
+    res.status(500).end();
+  }
+});
 
 app.get('/', (req, res) => res.json({ ok: true }));
 

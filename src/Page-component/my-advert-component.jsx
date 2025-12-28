@@ -8,198 +8,179 @@ import {
   faGear,
   faMoon,
   faLocationDot,
+  faTrash,
+  faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { message } from "@/data/messageBox";
 import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 import HouseListing from "@/shortlet/shortlet-house";
 import Settings from "./profile";
 import LoadingAnimation from "@/animations/LoadingAnim";
 import API from "@/api/axios";
+import { motion } from "framer-motion";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function MyadvertComponent() {
-  const [state, setState] = useState(0);
-  const [showContent, setShowContent] = useState(false); // 👈 for small screens
-  const [users,setUsers]=useState(false)
- const { user,fetchUserProfile } = useLoginAuth();
- 
- useEffect(()=>{
-setUsers(user)
- },[])
+  const [state, setState] = useState(1);
+  const [showContent, setShowContent] = useState(false);
+  const { user } = useLoginAuth();
+
   function handleAdvertState(value) {
     setState(value);
-    setShowContent(true); // 👈 when small screen, switch view
+    setShowContent(true);
   }
 
   function handleBack() {
-    setShowContent(false); // 👈 go back to menu
+    setShowContent(false);
   }
 
-  function HandleDisplayComponent({ state }) {
- 
-    switch (state) {
-      case 1:
-        return <ClientAdvert />;
-      case 2:
-        return <Feedback />;
-      case 3:
-        return <Performance />;
-      case 4:
-        return <Settings />;
-      case 5:
-        return (
-          <div className="self-center mx-auto">
-            <Darkmode />
-          </div>
-        );
-      default:
-        return <h1 className="self-center mx-auto ">Nothing to display</h1>;
-    }
-  }
+  const menuItems = [
+    { id: 1, label: "My Adverts", icon: faCalendarDays },
+    { id: 2, label: "Feedback", icon: faComments },
+    { id: 3, label: "Performance", icon: faChartLine },
+    { id: 4, label: "Edit Profile", icon: faGear },
+    { id: 5, label: "Dark Mode", icon: faMoon },
+  ];
 
   return (
-    <div className="flex h-[600px]">
-      {/* Sidebar for medium+ OR small-screen menu */}
-      <div
-        className={`${
-          showContent ? "hidden" : "block"
-        } md:block w-full md:w-[30%] lg:w-[50%]`}
-      >
-        <main className="shadow rounded-lg h-[500px] py-4">
-         
+    <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8">
 
-<div className="flex items-center flex-col">
-  <img
-    src={users?.picture || "/default-avatar.jpg"}
-    className="rounded-full h-20 w-20 lg:w-32 lg:h-32 mb-4"
-  />
-  <p className="text-xl lg:text-2xl">{users?.firstname || "Guest"}</p>
-  <p className="sm:text-sm text-gray-600">{users?.email || ""}</p>
-</div>
+        {/* 🧊 Sidebar */}
+        <div className={`${showContent ? "hidden md:block" : "block"} md:col-span-4 lg:col-span-3`}>
+          <div className="glass-panel p-6 rounded-3xl border border-white/10 sticky top-24">
+            <div className="flex flex-col items-center mb-8">
+              <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-br from-primary to-amber-600 mb-4">
+                <img
+                  src={user?.picture || "/default-avatar.jpg"}
+                  alt="Profile"
+                  className="w-full h-full rounded-full object-cover border-2 border-background"
+                />
+              </div>
+              <h2 className="text-xl font-serif font-bold text-foreground">{user?.firstname || "Guest User"}</h2>
+              <p className="text-sm text-muted-foreground">{user?.email}</p>
+            </div>
 
+            <nav className="space-y-2">
+              {menuItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleAdvertState(item.id)}
+                  className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${
+                    state === item.id
+                      ? "bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20"
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  }`}
+                >
+                  <FontAwesomeIcon icon={item.icon} className="text-lg" />
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </nav>
 
-          <div
-            className="flex py-3 gap-x-3 px-2 border-b cursor-pointer mt-10 hover-bg items-center"
-            onClick={() => handleAdvertState(1)}
-          >
-            <FontAwesomeIcon icon={faCalendarDays} className="text-lg" />
-            <p>My advert</p>
+            <div className="mt-8 pt-8 border-t border-border">
+              <button className="w-full flex items-center gap-4 p-4 rounded-xl text-destructive hover:bg-destructive/10 transition-colors">
+                <FontAwesomeIcon icon={faSignOutAlt} />
+                <span>Sign Out</span>
+              </button>
+            </div>
           </div>
+        </div>
 
-          <div
-            className="flex py-3 gap-x-3 px-2 border-b cursor-pointer hover-bg"
-            onClick={() => handleAdvertState(2)}
-          >
-            <FontAwesomeIcon icon={faComments} className="text-lg" />
-            <p>Feedback</p>
-          </div>
+        {/* 📄 Content Area */}
+        <div className={`${showContent ? "block" : "hidden md:block"} md:col-span-8 lg:col-span-9`}>
+          <div className="glass-panel min-h-[600px] p-6 md:p-8 rounded-3xl border border-border relative bg-card/50 backdrop-blur-xl">
 
-          <div
-            className="flex py-3 gap-x-3 px-2 border-b cursor-pointer hover-bg"
-            onClick={() => handleAdvertState(3)}
-          >
-            <FontAwesomeIcon icon={faChartLine} className="text-lg" />
-            <p>Performance</p>
-          </div>
+            {/* Mobile Back Button */}
+            <button
+              onClick={handleBack}
+              className="md:hidden mb-6 flex items-center gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <FontAwesomeIcon icon={faArrowLeft} />
+              <span>Back to Menu</span>
+            </button>
 
-          <div
-            className="flex py-3 gap-x-3 px-2 border-b cursor-pointer hover-bg items-center"
-            onClick={() => handleAdvertState(4)}
-          >
-            <FontAwesomeIcon icon={faGear} className="text-lg" />
-            <p>Edit profile</p>
+            <motion.div
+              key={state}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {state === 1 && <ClientAdvert />}
+              {state === 2 && <Feedback />}
+              {state === 3 && <Performance />}
+              {state === 4 && <Settings />}
+              {state === 5 && <Darkmode />}
+            </motion.div>
           </div>
-
-          <div
-            className="flex py-3 gap-x-3 px-2 border-b cursor-pointer hover-bg items-center"
-            onClick={() => handleAdvertState(5)}
-          >
-            <FontAwesomeIcon icon={faMoon} className="text-lg" />
-            <p>Darkmode</p>
-          </div>
-        </main>
+        </div>
       </div>
-
-      {/* Content area */}
-      <div
-  className={`${
-    showContent ? "block w-full" : "hidden"
-  } md:block md:w-[70%] lg:w-[50%]`}
->
-  {/* Container with back button fixed at top */}
-  <div className="relative h-full flex flex-col">
-    
-    {/* Sticky header */}
-    <div className="md:hidden sticky top-0 bg-white shadow z-50 flex items-center gap-x-2 p-3">
-      <FontAwesomeIcon icon={faArrowLeft} onClick={handleBack} />
-      <span>Back</span>
-    </div>
-
-    {/* Scrollable content below */}
-    <div className="flex-1 overflow-y-auto p-2">
-      <HandleDisplayComponent state={state} />
-    </div>
-  </div>
-</div>
-
     </div>
   );
 }
 
 function ClientAdvert() {
   const { fetchMyHouses } = useLoginAuth();
-  const [house, setHouse] = useState([]);
-const [loading,setLoading]=useState(false)
+  const [houses, setHouses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     handleFetchHouse();
   }, []);
 
   async function handleFetchHouse() {
-    setLoading(true)
-    const houses = await fetchMyHouses();
-    setHouse(houses);
-    
-    setLoading(false)
+    setLoading(true);
+    const data = await fetchMyHouses();
+    setHouses(data);
+    setLoading(false);
   }
 
-    const handleDelete = async (houseId) => {
-    if (!confirm("Are you sure you want to delete this house?")) return;
-
+  const handleDelete = async (houseId) => {
+    if (!confirm("Are you sure you want to delete this listing?")) return;
     try {
       setLoading(true);
       await API.delete(`/houses/${houseId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      await fetchMyHouses(); // refresh list
-      alert("House deleted successfully ✅");
+      await handleFetchHouse();
+      alert("Listing deleted successfully.");
     } catch (err) {
       console.error("Delete error:", err);
-      alert("Failed to delete house ❌");
+      alert("Failed to delete listing.");
     } finally {
       setLoading(false);
     }
   };
 
+  if (loading) return <LoadingAnimation />;
+
   return (
-   <>{loading? <LoadingAnimation/>: <div className="grid grid-cols-1 md:grid-cols-3 gap-5  overflow-y-scroll">
-      {house.length > 0 ? (
-        house.map((houses, index) =><div className="w-full "><div className="relative"> <HouseListing key={index} {...houses} />
-        <button
-                onClick={() => handleDelete(houses._id)}
-                disabled={loading}
-                className="absolute bottom-2 right-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm"
+    <div>
+      <h2 className="text-2xl font-serif font-bold text-foreground mb-6">My Listings</h2>
+      {houses.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {houses.map((house, index) => (
+            <div key={index} className="relative group">
+              <HouseListing {...house} />
+              <button
+                onClick={() => handleDelete(house._id)}
+                className="absolute top-4 right-4 bg-destructive/90 hover:bg-destructive text-destructive-foreground p-2 rounded-full backdrop-blur-md transition-all opacity-0 group-hover:opacity-100"
+                title="Delete Listing"
               >
-                {loading ? "Deleting..." : "Delete"}
-              </button></div></div>)
+                <FontAwesomeIcon icon={faTrash} />
+              </button>
+            </div>
+          ))}
+        </div>
       ) : (
-        <h2 className="text-center w-full">No houses available.</h2>
+        <div className="text-center py-20 text-muted-foreground">
+          <p className="text-xl">You haven't listed any properties yet.</p>
+        </div>
       )}
-    </div>}
-    </>
+    </div>
   );
 }
 
- function Feedback() {
+function Feedback() {
   const [feedback, setFeedback] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -213,7 +194,7 @@ const [loading,setLoading]=useState(false)
       const res = await API.get("/houses/feedback");
       setFeedback(res.data);
     } catch (err) {
-      console.error("❌ Error fetching feedback:", err);
+      console.error("Error fetching feedback:", err);
     } finally {
       setLoading(false);
     }
@@ -222,52 +203,45 @@ const [loading,setLoading]=useState(false)
   if (loading) return <LoadingAnimation />;
 
   return (
-    <div className="h-[500px] mx-3 overflow-y-scroll">
-      <h2 className="text-xl text-center mt-3 border-b font-semibold">
-        Feedback on My Adverts
-      </h2>
-
-      <div className="grid lg:grid-cols-2 w-full h-full gap-2 py-3">
+    <div>
+      <h2 className="text-2xl font-serif font-bold text-foreground mb-6">Guest Feedback</h2>
+      <div className="grid gap-6">
         {feedback.length > 0 ? (
           feedback.map((f, i) => (
-            <div
-              key={i}
-              className="border rounded shadow p-4 flex flex-col gap-y-3"
-            >
-              <div className="flex items-center gap-x-2">
-                <img
-                  src="/default-avatar.jpg"
-                  className="h-10 w-10 rounded-full"
-                />
-                <div>
-                  <p className="font-bold">{f.user?.username || "Anonymous"}</p>
-                  <p className="text-gray-500 text-xs">{f.user?.email}</p>
+            <div key={i} className="bg-card p-6 rounded-2xl border border-border shadow-sm">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">
+                    {f.user?.username ? f.user.username[0].toUpperCase() : "G"}
+                  </div>
+                  <div>
+                    <p className="font-bold text-foreground">{f.user?.username || "Guest"}</p>
+                    <p className="text-xs text-muted-foreground">{f.user?.email}</p>
+                  </div>
+                </div>
+                <div className="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm font-bold">
+                  {f.rating} ★
                 </div>
               </div>
 
-              <p className="text-gray-700 italic">"{f.text}"</p>
+              <p className="text-muted-foreground italic mb-4">"{f.text}"</p>
 
-              <div className="flex items-center gap-x-2">
-                <p className="font-semibold">{f.rating} ★</p>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground pt-4 border-t border-border">
+                <FontAwesomeIcon icon={faLocationDot} />
+                <span>
+                  {f.location
+                    ? `${f.location.state || ""} ${f.location.lga || ""} ${f.location.town || ""}`
+                    : "Unknown Location"}
+                </span>
+                <span className="mx-2">•</span>
+                <span>Property: {f.houseTitle}</span>
               </div>
-
-              <div className="text-sm text-gray-600 mt-1">
-  <FontAwesomeIcon icon={faLocationDot} />{" "}
-  {f.location
-    ? `${f.location.state || ""} ${f.location.lga || ""} ${f.location.town || ""} ${f.location.address || ""}`
-    : "N/A"}
-</div>
-
-
-              <p className="font-semibold text-gray-800 text-sm">
-                House: {f.houseTitle}
-              </p>
             </div>
           ))
         ) : (
-          <h2 className="text-center w-full text-gray-500">
-            No feedback on your listings yet.
-          </h2>
+          <div className="text-center py-20 text-muted-foreground">
+            <p>No feedback received yet.</p>
+          </div>
         )}
       </div>
     </div>
@@ -275,33 +249,40 @@ const [loading,setLoading]=useState(false)
 }
 
 function Performance() {
-  return (
-    <div className="h-[500px] mx-3 shadow w-full">
-      <h2 className="text-xl text-center mt-3 border-b font-semibold">
-        Performance
-      </h2>
+  const stats = [
+    { label: "Total Visitors", value: 124, change: "+12%" },
+    { label: "Chat Requests", value: 8, change: "+5%" },
+    { label: "Followers", value: 45, change: "+2%" },
+    { label: "Total Reviews", value: 12, change: "+18%" },
+    { label: "Likes", value: 89, change: "+24%" },
+  ];
 
-      <div className="p-2 flex flex-wrap">
-        <button className="box mx-1 bg-black/80 text-white">
-          visitors<p className="text-xl font-bold">{1}</p>
-        </button>
-        <button className="box mx-1 bg-black/80 text-white">
-          chat request<p className="text-xl font-bold">{1}</p>
-        </button>
-        <button className="box mx-1 bg-black/80 text-white">
-          followers<p className="text-xl font-bold">{1}</p>
-        </button>
-        <button className="box mx-1 bg-black/80 text-white">
-          feedback<p className="text-xl font-bold">{1}</p>
-        </button>
-        <button className="box mx-1 bg-black/80 text-white">
-          likes<p className="text-xl font-bold">{1}</p>
-        </button>
+  return (
+    <div>
+      <h2 className="text-2xl font-serif font-bold text-foreground mb-6">Performance Overview</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {stats.map((stat, index) => (
+          <div key={index} className="bg-card p-6 rounded-2xl border border-border hover:bg-secondary/50 transition-colors shadow-sm">
+            <p className="text-muted-foreground text-sm mb-2 uppercase tracking-wider">{stat.label}</p>
+            <div className="flex items-end justify-between">
+              <span className="text-4xl font-bold text-foreground">{stat.value}</span>
+              <span className="text-emerald-500 text-sm font-medium">{stat.change}</span>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
 function Darkmode() {
-  return <h1 className="text-center mt-10">COMING SOON</h1>;
+  return (
+    <div className="flex flex-col items-center justify-center h-[400px] text-center">
+      <div className="mb-6 scale-150">
+        <ThemeToggle />
+      </div>
+      <h2 className="text-2xl font-serif font-bold text-foreground mb-2">Appearance</h2>
+      <p className="text-muted-foreground">Switch between Dark and Light mode to suit your preference.</p>
+    </div>
+  );
 }

@@ -1,3 +1,4 @@
+
 import Input from "@/body component/input-component";
 import { Link } from "react-router-dom";
 import {motion, setStyle} from "framer-motion"
@@ -19,10 +20,10 @@ const [confirmPassword,setConfirmPassword]=useState('')
 const [oldPassword,setOldPassword]=useState('')
   async function handleResetPassword(e){
    e.preventDefault()
-   
+
    if(password!==confirmPassword)return alert("new password must match confirm password")
 try{
-   
+
       const request=await API.post(`auth/recover/${token}`,{newPassword: password},{headers:{Authorization:""}})
       alert(request.data.message)
 navigate('/Login')
@@ -31,7 +32,7 @@ navigate('/Login')
       console.log(e.response.data.message)
       }else{
          console.log(e.message)
-      }  
+      }
    }
    }
 
@@ -47,7 +48,7 @@ navigate('/Login')
 Reset Your Password
    </h1>
    <div className="w-[80%] mx-auto">
- 
+
  <p className="my-5">Please enter your New Password</p>
    </div>
   <form className=" w-[80%] mx-auto text-left mt-8">
@@ -62,7 +63,7 @@ Reset Your Password
 
   </form>
   <div className=" my-5">
- <Link to='/Login' className="underline ml-2 hover:no-underline">Back to Login</Link>
+ <Link to='/Login' className="underline ml-2 hover:no-underline text-primary">Back to Login</Link>
 </div>
 </div>
 </motion.div>

@@ -1,11 +1,11 @@
 export function houseDetailsFormatter(house) {
   return {
       _id:house._id,
-    userId: house.user._id,
+    userId: house.user?._id || house.user,
     alt:house.alt,
     consultation:house.consultationFee,
-    ownerEmail:house.user.email,
-  
+    ownerEmail:house.user?.email,
+
     houseType:house.houseType,
     images: Array.isArray(house.images) && house.images.length > 0
       ? house.images

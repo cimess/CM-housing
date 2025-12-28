@@ -9,7 +9,7 @@ export default function VerifyEmailPage() {
 
   useEffect(() => {
     const token = searchParams.get("token");
-    alert(token)
+    // alert(token)
     if (!token) {
       setStatus("❌ Invalid verification link");
       return;
@@ -21,7 +21,7 @@ export default function VerifyEmailPage() {
       try {
         const res = await API.get(`/auth/verify-email?token=${token}`);
         if (!ignore) {
-         
+
           setStatus(res.data.message );
           setTimeout(() => navigate("/email-verified"), 2000);
         }

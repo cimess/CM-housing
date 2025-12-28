@@ -1,4 +1,5 @@
 import Input from "@/body component/input-component";
+import { toast } from "sonner";
 import { Link,useNavigate  } from "react-router-dom";
 import {motion} from "framer-motion"
 import API from "@/api/axios";
@@ -20,18 +21,18 @@ if(!isLogin)return navigate('/')
 
   async function handleResetPassword(e){
    e.preventDefault()
-   
-   if(password!==confirmPassword)return alert("new password must match confirm password")
+
+   if(password!==confirmPassword)return toast.error("new password must match confirm password")
 try{
-   
+
       const request=await API.post("auth/reset-password",{oldPassword, newPassword: password})
-      alert(request.data.message)
+      toast.success(request.data.message)
    }catch(e){
       if(e.response){
       console.log(e.response.data.message)
       }else{
          console.log(e.message)
-      }  
+      }
    }
    }
 
@@ -48,7 +49,7 @@ try{
 Reset Your Password
    </h1>
    <div className="w-[80%] mx-auto">
- 
+
  <p className="my-5">Please enter your New Password</p>
    </div>
   <form className=" w-[80%] mx-auto text-left mt-8">

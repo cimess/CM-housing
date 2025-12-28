@@ -9,19 +9,12 @@ const { passwordSchema } = require('../utils/passwordPolicy');
 const { v4: uuidv4 } = require('uuid');
 
 const CLIENT_COOKIE_NAME = 'refreshToken';
-// production
-// const COOKIE_OPTIONS = {
-//   httpOnly: true,
-//   secure: process.env.COOKIE_SECURE === 'true',
-//   sameSite: 'none',
-//    path: '/'
-  
-// };
-// development 
+
+
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: false, // false for localhost
-  sameSite: 'Lax',
+  secure: process.env.NODE_ENV === "production", // false for localhost
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   path:'/'
 };
 
@@ -105,7 +98,7 @@ exports.login = async (req, res) => {
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
 
-    
+
     const match = await bcrypt.compare(password, user.passwordHash);
     if (!match) return res.status(400).json({ message: 'Invalid credentials' });
 
@@ -231,7 +224,7 @@ return res.status(500).json({message:"Invalid or expired token"})
 
 exports.resetPassword = async (req, res) => {
 
-  
+
 
   const userId=req.user?._id;
   const { oldPassword, newPassword } = req.body;
@@ -241,7 +234,7 @@ exports.resetPassword = async (req, res) => {
   if (error) return res.status(400).json({ message: error.details[0].message });
 
   try {
-    
+
     const user = await User.findById(userId);
     if (!user) return res.status(400).json({ message: 'User not Found' });
 const isMatched= await bcrypt.compare(oldPassword,user.passwordHash)

@@ -25,7 +25,7 @@ export default function Region({ setRegionClick, onSearch }) {
     <div className="flex items-start justify-between absolute translate-y-[80px] left-2 z-98 w-[50%]">
       <form
         onSubmit={handleSubmit}
-        className="border border-gray-300 bg-white w-full rounded pl-2 pr-3 py-3 shadow space-y-3"
+        className="border border-border bg-card w-full rounded pl-2 pr-3 py-3 shadow space-y-3"
       >
         {/* State */}
         <div>
@@ -93,12 +93,12 @@ export default function Region({ setRegionClick, onSearch }) {
         <div className="flex justify-between items-center pt-2">
           <button
             type="submit"
-            className="bg-black text-white px-3 py-1 rounded hover:bg-gray-800"
+            className="bg-primary text-primary-foreground px-3 py-1 rounded hover:bg-primary/90 transition-colors"
           >
             Search
           </button>
 
-          <button type="button" onClick={() => setRegionClick(false)}>
+          <button type="button" aria-label="Close region search" onClick={() => setRegionClick(false)}>
             <FontAwesomeIcon
               icon={faXmarkCircle}
               className="text-xl hover:text-red-600"

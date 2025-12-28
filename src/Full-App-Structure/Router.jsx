@@ -1,126 +1,139 @@
-import Body from "@/body component/homeBody";
-import Login from "@/Page-component/Login";
+import { Suspense, lazy } from "react";
 import Default from "@/home-component/header-footer";
-import Register from "@/Page-component/register";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   useLocation,
 } from "react-router-dom";
-import HouseRegister from "@/Page-component/Agent";
-import RecoverPassword from "@/Page-component/RecoverPassword";
-import MyMessagePage from "@/Page-component/my-message-component";
-import MyadvertComponent from "@/Page-component/my-advert-component";
-import EmailSuccess from "@/emailVerification/Emailsuccess";
-import VerifyEmailPage from "@/emailVerification/verifyEmailPage";
-import { AnimatePresence, motion } from "framer-motion";
-import Settings from "@/Page-component/profile";
+import { AnimatePresence } from "framer-motion";
 import LoadingAnimationPage from "@/animations/loadingAnimationPage";
-import HouseDetailPage from "@/shortlet/HouseDetailPage";
-import ResetPassword from "@/Page-component/ResetPassword";
-import ResetPasswordWithoutLogin from "@/Page-component/resetPasswordWithoutlogin";
+import LoadingAnimation from "@/animations/LoadingAnim";
+
+// Lazy load page components
+const Body = lazy(() => import("@/body component/homeBody"));
+const Login = lazy(() => import("@/Page-component/Login"));
+const Register = lazy(() => import("@/Page-component/register"));
+const HouseRegister = lazy(() => import("@/Page-component/Agent"));
+const RecoverPassword = lazy(() => import("@/Page-component/RecoverPassword"));
+const MyMessagePage = lazy(() => import("@/Page-component/my-message-component"));
+const MyadvertComponent = lazy(() => import("@/Page-component/my-advert-component"));
+const EmailSuccess = lazy(() => import("@/emailVerification/Emailsuccess"));
+const VerifyEmailPage = lazy(() => import("@/emailVerification/verifyEmailPage"));
+const Settings = lazy(() => import("@/Page-component/profile"));
+const HouseDetailPage = lazy(() => import("@/shortlet/HouseDetailPage"));
+const ResetPassword = lazy(() => import("@/Page-component/ResetPassword"));
+const ResetPasswordWithoutLogin = lazy(() => import("@/Page-component/resetPasswordWithoutlogin"));
+
+// Admin Router
+const AdminRouter = lazy(() => import("@/admin/AdminRouter").then(module => ({ default: module.AdminRouter })));
+
 function AnimatedRouter() {
   const location = useLocation();
 
   return (
-    <AnimatePresence location={location} key={location.pathname}>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Default>
-              <Body />
-            </Default>
-          }
-        />
-        <Route path="/verify-email" element={<VerifyEmailPage />} />
-        <Route path="/email-verified" element={<EmailSuccess />} />
-        <Route path="/house/:id" element={<Default><HouseDetailPage />
-            </Default>} />
+    <AnimatePresence mode="wait">
+      <Suspense fallback={<LoadingAnimation />}>
+        <Routes location={location} key={location.pathname}>
+          <Route
+            path="/"
+            element={
+              <Default>
+                <Body />
+              </Default>
+            }
+          />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
+          <Route path="/email-verified" element={<EmailSuccess />} />
+          <Route path="/house/:id" element={<Default><HouseDetailPage /></Default>} />
 
-        <Route
-          path="/loading"
-          element={<LoadingAnimationPage redirectTo="/" delay={2000} />}
-        />
-        <Route
-          path="/Login"
-          element={
-            <Default>
-              <Login />
-            </Default>
-          }
-        />
+          <Route
+            path="/loading"
+            element={<LoadingAnimationPage redirectTo="/" delay={2000} />}
+          />
+          <Route
+            path="/Login"
+            element={
+              <Default>
+                <Login />
+              </Default>
+            }
+          />
 
-        <Route
-          path="/Register"
-          element={
-            <Default>
-              <Register />
-            </Default>
-          }
-        />
-         <Route
-          path="/ResetPassword"
-          element={
-            <Default>
-              <ResetPassword />
-            </Default>
-          }
-        />
-         <Route
-          path="/reset-password"
-          element={
-            <Default>
-              <ResetPasswordWithoutLogin />
-            </Default>
-          }
-        />
+          <Route
+            path="/Register"
+            element={
+              <Default>
+                <Register />
+              </Default>
+            }
+          />
+           <Route
+            path="/ResetPassword"
+            element={
+              <Default>
+                <ResetPassword />
+              </Default>
+            }
+          />
+           <Route
+            path="/reset-password"
+            element={
+              <Default>
+                <ResetPasswordWithoutLogin />
+              </Default>
+            }
+          />
 
-        <Route
-          path="/HouseRegister"
-          element={
-            <Default>
-              <HouseRegister />
-            </Default>
-          }
-        />
+          <Route
+            path="/HouseRegister"
+            element={
+              <Default>
+                <HouseRegister />
+              </Default>
+            }
+          />
 
-        <Route
-          path="/RecoverPassword"
-          element={
-            <Default>
-              <RecoverPassword />
-            </Default>
-          }
-        />
+          <Route
+            path="/RecoverPassword"
+            element={
+              <Default>
+                <RecoverPassword />
+              </Default>
+            }
+          />
 
-        <Route
-          path="/MyMessagePage"
-          element={
-            <Default>
-              <MyMessagePage />
-            </Default>
-          }
-        />
-        <Route
-          path="/MyAdvertComponent"
-          element={
-            <Default>
-              <MyadvertComponent />
-            </Default>
-          }
-        />
+          <Route
+            path="/MyMessagePage"
+            element={
+              <Default>
+                <MyMessagePage />
+              </Default>
+            }
+          />
+          <Route
+            path="/MyAdvertComponent"
+            element={
+              <Default>
+                <MyadvertComponent />
+              </Default>
+            }
+          />
 
-        <Route
-          path="/Profile"
-          element={
-            <Default>
-              <Settings />
-            </Default>
-          }
-        />
-      </Routes>
+          <Route
+            path="/Profile"
+            element={
+              <Default>
+                <Settings />
+              </Default>
+            }
+          />
+
+          {/* Admin Route - No Default Layout */}
+          <Route path="/admincimess/*" element={<AdminRouter />} />
+
+        </Routes>
+      </Suspense>
     </AnimatePresence>
   );
 }

@@ -1,210 +1,214 @@
      import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser,faBars, faPlus, } from "@fortawesome/free-solid-svg-icons";
-import { faFacebook, faInstagram, faTiktok, faTwitter } from "@fortawesome/free-brands-svg-icons";
-import logo from "../assets/images/logo/newIcon.png"
-
-import {useNavigate } from "react-router-dom";
-import { useState,useRef,useEffect } from "react";
-
+import { faUser, faBars, faEnvelope, faPhone, faMapMarkerAlt, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faFacebook, faInstagram, faTiktok, faTwitter, faLinkedin } from "@fortawesome/free-brands-svg-icons";
+import logo from "../assets/images/logo/newIcon.png";
+import { useNavigate, Link } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
 import NavLink from "./navigation-link-component";
 import SlideInSidebar from "@/sideBar-component/sidebar-component";
 import IsLoginFunction from "./login-homepage";
-import {useLoginAuth} from "@/Authentication/Usecontext-logic";
+import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 import { Nav } from "./login-homepage";
 import LogoutButton from "@/Page-component/logoutButton";
+import { GsapFadeIn } from "@/animations/GsapWrapper";
+import ThemeToggle from "@/components/ThemeToggle";
 
+export default function Default({ children }) {
+  const [state, setState] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const { isLogin } = useLoginAuth();
+  const timeoutRef = useRef(null);
+  const node = useRef(null);
+  const navigate = useNavigate();
 
-export default function Default({children}) {
-  const [state,setState]=useState(false)
-    const [isOpen, setIsOpen] = useState(false);
-const {isLogin}=useLoginAuth()
-    const timeoutRef = useRef(null);
-      const node=useRef(null)
-  const sideNode=useRef(null)
-const navigate=useNavigate('/')
-
-  useEffect(
-    ()=>{function handleClick(e){
-
-  if(node.current && !node.current.contains(e.target)){
-    setState(false)
-  }
-  if(sideNode.current && !sideNode.current.contains(e.target)){
-    setIsOpen(false)
-  }
-}
-  document.addEventListener('click',handleClick);
-
-  return ()=>document.removeEventListener('click',handleClick)
-
-  
-},[]
-
-  )
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClick(e) {
+      if (node.current && !node.current.contains(e.target)) {
+        setState(false);
+      }
+    }
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, []);
 
   function toggleDropdown() {
-  setState((prev)=>!prev);
+    setState((prev) => !prev);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      setState(false);
+    }, 5000);
+  }
 
-  // Clear any existing timeout so we don’t stack multiple
-  if (timeoutRef.current) clearTimeout(timeoutRef.current);
-
-  // Auto close after 4 seconds
-  timeoutRef.current = setTimeout(() => {
-    setState(false);
-  }, 5000);
-}
-
-  function showLogin(reg){
-    return(
-      
-
-<>
-  {
-    !isLogin?
-    <div className=" absolute  translate-y-[65%]  md:translate-y-[75%] border border-gray-300 bg-white left-[20%] -translate-x-1/2  py-2 w-[150px] md:w-[200px] shadow-sm rounded">
-    <div className="flex flex-col gap-y-2 ">
-      <NavLink text='Login' nav='/Login' />
-  <NavLink text=' Sign up' nav='/Register' />
-</div>
-  </div>
-  :
-  <div className=" absolute  translate-y-[20%]  md:translate-y-[20%] border border-gray-300 bg-white left-[60%] -translate-x-1/2  py-2 w-[150px] md:w-[250px] shadow-sm rounded transition-ease-out">
- <div className="flex flex-col gap-y-2">
-
-  <NavLink text='List House' nav='/HouseRegister' />
-    {/* <NavLink text='Notification' nav='/HouseRegister' /> */}
-      <NavLink text='profile' nav='/Profile' />
-       <NavLink text='change password' nav='/ResetPassword' />
-       <LogoutButton/>
+  const DropdownMenu = () => (
+    <div className="absolute top-16 right-0 w-56 bg-white dark:bg-card border border-gray-100 dark:border-white/10 rounded-xl shadow-2xl p-2 flex flex-col gap-1 z-50 animate-in fade-in slide-in-from-top-2">
+      {!isLogin ? (
+        <>
+          <NavLink text="Login" nav="/Login" />
+          <NavLink text="Sign Up" nav="/Register" />
+        </>
+      ) : (
+        <>
+          <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            Account
+          </div>
+          <NavLink text="List Property" nav="/HouseRegister" />
+          <NavLink text="My Profile" nav="/Profile" />
+          <NavLink text="Change Password" nav="/ResetPassword" />
+          <div className="h-px bg-gray-100 dark:bg-white/10 my-1" />
+          <LogoutButton />
+        </>
+      )}
     </div>
-  </div>
-  }
-</>
+  );
 
-    )
-  }
   return (
-  
-    <div className="" >
+    <div className="min-h-screen flex flex-col relative bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
 
-    <div className="border-b-2  border-gray-300 sticky top-0 z-99  bg-white pt-2 w-full ">
-      <div className={` grid grid-cols-[1fr_1fr_1fr] place-items-center ${isLogin?'gap-12':'gap-16'} w-[90%] mx-auto  `}>
-       <div className="  border round-bg p-3 md:p-5 relative" onClick={()=>setIsOpen(!isOpen)}>
-  <FontAwesomeIcon icon={faBars} className="sm: h-3 w-3"/>
- <SlideInSidebar isOpen={isOpen} setIsOpen={setIsOpen}/>
-         </div>
-          
-         
-     
-         
-        
-      
-        
-           <div className="flex items-end cursor-pointer">
-          
-       
-              <div className="flex items-center " onClick={()=>navigate('/')}>
-              
-              <img 
-               src={logo}
-               alt="CM logo"
-               className=" w-[9vw]  -mr-2"
-               />
-             
-          <span className="text-[3.5vw] font-Merriweather font-bold ">
-            Housing 
-            </span>
-              </div>
-         
+      {/* Floating Glass Navbar */}
+      <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-50 transition-all duration-300">
+        <div className="glass-panel rounded-full px-6 py-3 flex items-center justify-between">
+
+          {/* Left: Hamburger (Mobile) & Logo */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle menu"
+              className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors md:hidden"
+            >
+              <FontAwesomeIcon icon={faBars} className="text-lg" />
+            </button>
+            <SlideInSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+
+            <div
+              className="flex items-center gap-2 cursor-pointer group"
+              onClick={() => navigate('/')}
+            >
+              <img src={logo} alt="CM Logo" className="w-10 h-10 object-contain group-hover:scale-110 transition-transform" />
+              <span className="text-2xl font-serif font-bold tracking-tight">
+                CM<span className="text-primary">Housing</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Center: Desktop Links (Optional - currently hidden/handled by sidebar, but could add here) */}
+          <div className="hidden md:flex items-center gap-8">
+             <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">Home</Link>
+             <Link to="/about" className="text-sm font-medium hover:text-primary transition-colors">About</Link>
+             <Link to="/properties" className="text-sm font-medium hover:text-primary transition-colors">Properties</Link>
+             <Link to="/contact" className="text-sm font-medium hover:text-primary transition-colors">Contact</Link>
+          </div>
+
+          {/* Right: User Actions */}
+          <div className="flex items-center gap-4 relative" ref={node}>
+            <div className="hidden md:block">
+               <IsLoginFunction />
+            </div>
+
+            <button
+              onClick={toggleDropdown}
+              aria-label="User menu"
+              className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300"
+            >
+              <FontAwesomeIcon icon={faUser} />
+            </button>
+
+            {state && <DropdownMenu />}
+          </div>
+
+          {/* Theme Toggle */}
+          <div className="hidden md:block">
+            <ThemeToggle />
+          </div>
         </div>
-            
-       
-       
-        <div className="flex items-center space-x-2 pl-5  relative ">
-        
-         
-       
-         {state && (<div className=" border border-red-500" >{showLogin('true')
-          }</div>)}
- 
- { <IsLoginFunction />}
-<div
-  ref={node}
-  className="round-bg md:p-5 p-3 group"
-  onClick={toggleDropdown}
+      </nav>
 
->
-  <FontAwesomeIcon icon={faUser} className="sm:h-3 w-3" />
-</div>
+      {/* Main Content */}
+      <main className="flex-grow pt-24 pb-10">
+        {children}
+      </main>
 
+      {/* Fat Footer */}
+      <footer className="bg-[#050505] text-white pt-20 pb-10 rounded-t-[3rem] mt-10 relative overflow-hidden">
+        {/* Background Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
 
-{<Nav/>}
-          
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
+
+          {/* Brand Column */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-2">
+              <img src={logo} alt="CM Logo" className="w-12 h-12 grayscale brightness-200" />
+              <span className="text-2xl font-serif font-bold">CM<span className="text-primary">Housing</span></span>
+            </div>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Discover the epitome of luxury living. We connect you with the most exclusive properties in Nigeria's prime locations.
+            </p>
+            <div className="flex gap-4">
+              {[faFacebook, faInstagram, faTwitter, faLinkedin, faTiktok].map((icon, i) => (
+                <a key={i} href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary hover:text-black transition-all duration-300">
+                  <FontAwesomeIcon icon={icon} />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-lg font-serif font-semibold mb-6">Quick Links</h3>
+            <ul className="space-y-4 text-gray-400">
+              {['Home', 'About Us', 'Properties', 'Agents', 'Contact'].map((item) => (
+                <li key={item}>
+                  <Link to="/" className="hover:text-primary transition-colors flex items-center gap-2 group">
+                    <span className="w-0 group-hover:w-2 h-px bg-primary transition-all duration-300" />
+                    {item}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact Info */}
+          <div>
+            <h3 className="text-lg font-serif font-semibold mb-6">Contact Us</h3>
+            <ul className="space-y-4 text-gray-400">
+              <li className="flex items-start gap-3">
+                <FontAwesomeIcon icon={faMapMarkerAlt} className="mt-1 text-primary" />
+                <span>123 Luxury Lane, Victoria Island,<br />Lagos, Nigeria</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <FontAwesomeIcon icon={faPhone} className="text-primary" />
+                <a href="tel:+2349065440424" className="hover:text-white transition-colors">+234 906 544 0424</a>
+              </li>
+              <li className="flex items-center gap-3">
+                <FontAwesomeIcon icon={faEnvelope} className="text-primary" />
+                <a href="mailto:info@cmhousing.com" className="hover:text-white transition-colors">info@cmhousing.com</a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <h3 className="text-lg font-serif font-semibold mb-6">Newsletter</h3>
+            <p className="text-gray-400 text-sm mb-4">Subscribe to get the latest property updates.</p>
+            <div className="relative">
+              <input
+                type="email"
+                placeholder="Your email address"
+                className="w-full bg-white/5 border border-white/10 rounded-full py-3 pl-4 pr-12 focus:outline-none focus:border-primary/50 text-sm text-white placeholder:text-gray-600 transition-colors"
+              />
+              <button aria-label="Subscribe" className="absolute right-1 top-1 w-10 h-10 bg-primary rounded-full flex items-center justify-center text-black hover:scale-105 transition-transform">
+                <FontAwesomeIcon icon={faArrowRight} />
+              </button>
+            </div>
+          </div>
+
         </div>
 
-       
-      </div>
-      </div>
-      
-      {children}
-
-      <div className="max-h-[1000px] bg-black mt-3 rounded">
-       <h1 className="text-white text-center md:text-[50px] mb-5 animate-fade-in-up hover:scale-105 transition-transform duration-300 ease-in-out">
-  Find your dream home
-</h1>
-
-
-       
-
-        
-        <div className="grid grid-cols-2  md:grid-cols-3 my-5">
-          <div className="w-fit">
-          <p className="text-white  my-3 mx-3 ">House types <FontAwesomeIcon icon={faPlus}/></p>
-        <div className="grid space-y-3 my-3 mx-3 text-sm font-extralight">
-           <a href="" className="text-white hover-me">Self-Contain (Mini Flat)</a>
-           <a href="" className="text-white hover-me"> Mini Flat (1-Bedroom)</a>
-            <a href="" className="text-white hover-me">2-Bedroom Flat</a>
-             <a href="" className="text-white hover-me">3-Bedroom Flat</a>
-               <a href="" className="text-white hover-me">Duplex</a>
-                 <a href="" className="text-white hover-me">Bungalows</a>
-                   <a href="" className="text-white hover-me">Studio Apartments</a>
-                     <a href="" className="text-white hover-me">Shared Apartments</a>
+        <div className="max-w-7xl mx-auto px-6 mt-16 pt-8 border-t border-white/5 text-center text-gray-500 text-sm">
+          <p>© {new Date().getFullYear()} CM-Housing Inc. All rights reserved.</p>
         </div>
-         </div>
-        <div className="w-fit">
-          <p className="text-white my-3 mx-3 ">Locations <FontAwesomeIcon icon={faPlus}/></p>
-        <div className="grid space-y-3 my-3 mx-3 text-sm font-extralight w-fit">
-           <a href="" className="text-white hover-me">Lagos & Highland</a>
-           <a href="" className="text-white hover-me">Abuja</a>
-            <a href="" className="text-white hover-me">Edo & Benin</a>
-             <a href="" className="text-white hover-me">Ogun</a>
-               <a href="" className="text-white hover-me">Osun</a>
-                 <a href="" className="text-white hover-me">Kano & Kastina</a>
-                   <a href="" className="text-white hover-me">Enugu</a>
-                     <a href="" className="text-white hover-me">PortHarcoat</a>
-        </div>
-         </div>
-         <div className="w-fit">
-          <p className="text-white my-3 mx-3 ">Contact<FontAwesomeIcon icon={faPlus}/></p>
-        <div className="grid space-y-3 my-3 mx-3 text-sm font-extralight">
-           <a href="mailto:cimessthemanofvalor@gmail.com" className="text-white ">email:cimessthemanofvalor@gmail.com</a>
-           <a href="tel:+2349065440424" className="text-white "> Contact us</a>
-            <a href="https://www.facebook.com/profile.php?id=100070880838814" className="text-white"> <FontAwesomeIcon icon={faFacebook}/> Facebook</a>
-             <a href="https://www.tiktok.com/@aimuanthankgod?lang=en" className="text-white"> <FontAwesomeIcon icon={faTiktok}/> Tiktok</a>
-               
-        </div>
-         </div>
-                    
-       
-</div>
-<div className="text-white flex space-x-3 justify-center">
-         <a href=""> </a>
-         <a href="">  <FontAwesomeIcon icon={faInstagram}/></a>
-        <a href="">   <FontAwesomeIcon icon={faTwitter}/></a> 
-        </div>
- <p className="text-white text-center mt-5">© 2025 <span className="font-bold text-xl">CM</span>-Housing  Inc.</p>
-      </div>
-     </div>
-    
+      </footer>
+    </div>
   );
 }

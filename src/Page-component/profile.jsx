@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import API from "@/api/axios";
-import Input from "@/body component/input-component";
 import LoadingAnimation from "@/animations/LoadingAnim";
 import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 import { useNavigate } from "react-router-dom";
-export default function ProfilePage() {
-  
-  const {isLogin}=useLoginAuth()
-  const navigate=useNavigate()
-useEffect(()=>{
-if(!isLogin)return navigate('/')
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser, faBriefcase, faSave } from "@fortawesome/free-solid-svg-icons";
 
-},[isLogin,navigate])
+export default function ProfilePage() {
+  const { isLogin } = useLoginAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLogin) return navigate('/');
+  }, [isLogin, navigate]);
 
   // ------------------ States ------------------
   const [loading, setLoading] = useState(true);
@@ -22,8 +24,6 @@ if(!isLogin)return navigate('/')
     firstname: "",
     lastname: "",
     email: "",
-    password: "",
-    confirmPassword: "",
     phone: "",
     address: "",
     whatsapp: "",
@@ -41,48 +41,46 @@ if(!isLogin)return navigate('/')
   });
 
   // ------------------ Fetch Data ------------------
-useEffect(() => {
-  async function fetchProfiles() {
-    try {
-      const [userRes, bizRes] = await Promise.all([
-        API.get("/profile/me").catch(() => ({ data: {} })),
-        API.get("/business-profile/me").catch(() => ({ data: {} })),
-      ]);
+  useEffect(() => {
+    async function fetchProfiles() {
+      try {
+        const [userRes, bizRes] = await Promise.all([
+          API.get("/profile/me").catch(() => ({ data: {} })),
+          API.get("/business-profile/me").catch(() => ({ data: {} })),
+        ]);
 
-      const u = userRes.data || {};
-      const b = bizRes.data || {};
+        const u = userRes.data || {};
+        const b = bizRes.data || {};
 
-      setUserForm(prev => ({
-        ...prev,
-        firstname: u.firstname || "",
-        lastname: u.lastname || "",
-        email: u.email || "",
-        phone: u.phone || "",
-        address: u.address || "",
-        whatsapp: u.whatsapp || "",
-        website: u.website || "",
-      }));
+        setUserForm(prev => ({
+          ...prev,
+          firstname: u.firstname || "",
+          lastname: u.lastname || "",
+          email: u.email || "",
+          phone: u.phone || "",
+          address: u.address || "",
+          whatsapp: u.whatsapp || "",
+          website: u.website || "",
+        }));
 
-      setBizForm(prev => ({
-        ...prev,
-        dob: b.dob || "",
-        nin: b.nin || "",
-        idType: b.idType || "",
-        idNumber: b.idNumber || "",
-        company: b.company || "",
-        rcNumber: b.rcNumber || "",
-        officePhone: b.officePhone || "",
-      }));
-    } catch (err) {
-      console.error("Error fetching profiles:", err);
-    }finally {
-  setLoading(false);
-}
-
-  }
-  fetchProfiles();
-}, []);
-
+        setBizForm(prev => ({
+          ...prev,
+          dob: b.dob || "",
+          nin: b.nin || "",
+          idType: b.idType || "",
+          idNumber: b.idNumber || "",
+          company: b.company || "",
+          rcNumber: b.rcNumber || "",
+          officePhone: b.officePhone || "",
+        }));
+      } catch (err) {
+        console.error("Error fetching profiles:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProfiles();
+  }, []);
 
   // ------------------ Handlers ------------------
   const handleUserChange = (e) =>
@@ -93,129 +91,147 @@ useEffect(() => {
 
   const saveUserProfile = async (e) => {
     e.preventDefault();
-
     try {
       setSavingUser(true);
-      await API.post("/profile/save", {...userForm});
-      alert("User profile saved successfully!");
+      await API.post("/profile/save", { ...userForm });
+      toast.success("User profile saved successfully!");
     } catch (err) {
       console.error(err);
-      alert("Failed to save user profile!");
+      toast.error("Failed to save user profile!");
     } finally {
       setSavingUser(false);
     }
   };
 
   const saveBizProfile = async (e) => {
-  e.preventDefault();
-  try {
-    setSavingBiz(true);
-    await API.post("/business-profile/save", { ...bizForm }); // <-- correct endpoint
-    alert("Business profile saved successfully!");
-  } catch (err) {
-    console.error(err);
-    alert("Failed to save business profile!");
-  } finally {
-    setSavingBiz(false);
-  }
-};
+    e.preventDefault();
+    try {
+      setSavingBiz(true);
+      await API.post("/business-profile/save", { ...bizForm });
+      toast.success("Business profile saved successfully!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to save business profile!");
+    } finally {
+      setSavingBiz(false);
+    }
+  };
 
-
-  // ------------------ Render ------------------
-  if (loading)
-    return (
-     <LoadingAnimation/>
-    );
+  if (loading) return <LoadingAnimation />;
 
   return (
-    <div className="h-[100vh] mx-3 shadow w-full overflow-y-scroll [scrollbar-width:none]">
-      {/* Normal Profile */}
-      <h2 className="text-xl text-center mt-3 font-bold">Profile Settings</h2>
-      {/* <div className="text-center mt-5 mb-2 flex justify-center">
-        <img
-          src={profileDemoPic}
-          className="object-cover h-30 w-30 rounded-full"
-          alt="profile"
-        />
-      </div> */}
+    <div className="h-full overflow-y-auto pb-20">
+      <h2 className="text-2xl font-serif font-bold text-foreground mb-8">Profile Settings</h2>
 
-      <form onSubmit={saveUserProfile} className="p-2 max-w-[900px] mx-auto">
-        <div className="grid gap-4">
-          {[
-            { id: "firstname", label: "Firstname", type: "text" },
-            { id: "lastname", label: "Lastname", type: "text" },
-            { id: "email", label: "Email", type: "email" },
-            { id: "phone", label: "Phone", type: "text" },
-            { id: "address", label: "Address", type: "text" },
-            { id: "whatsapp", label: "Whatsapp Number", type: "text" },
-            { id: "website", label: "Website", type: "text" },
-          ].map((input) => (
-            <Input
-              key={input.id}
-              type={input.type}
-              id={input.id}
-              label={input.label}
-              inputValue={userForm[input.id]}
-              onChange={handleUserChange}
-            />
-          ))}
+      {/* 👤 Personal Profile Section */}
+      <div className="mb-12">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+            <FontAwesomeIcon icon={faUser} />
+          </div>
+          <h3 className="text-xl font-semibold text-foreground">Personal Information</h3>
         </div>
 
-        <div className="text-center">
-          <button
-            type="submit"
-            disabled={savingUser}
-            className={`button rounded-full mt-7 w-[150px] ${
-              savingUser ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            {savingUser ? "Saving..." : "Save Profile"}
-          </button>
+        <form onSubmit={saveUserProfile} className="bg-card p-6 rounded-3xl border border-border">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { id: "firstname", label: "First Name", type: "text" },
+              { id: "lastname", label: "Last Name", type: "text" },
+              { id: "email", label: "Email Address", type: "email" },
+              { id: "phone", label: "Phone Number", type: "text" },
+              { id: "address", label: "Address", type: "text", fullWidth: true },
+              { id: "whatsapp", label: "WhatsApp Number", type: "text" },
+              { id: "website", label: "Website URL", type: "text" },
+            ].map((field) => (
+              <div key={field.id} className={field.fullWidth ? "md:col-span-2" : ""}>
+                <label htmlFor={field.id} className="block text-sm font-medium text-muted-foreground mb-2">
+                  {field.label}
+                </label>
+                <input
+                  type={field.type}
+                  id={field.id}
+                  value={userForm[field.id]}
+                  onChange={handleUserChange}
+                  className="w-full bg-background border border-input rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                  placeholder={`Enter your ${field.label.toLowerCase()}`}
+                />
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 flex justify-end">
+            <button
+              type="submit"
+              disabled={savingUser}
+              className="bg-primary hover:bg-primary/90 text-black font-bold py-3 px-8 rounded-full transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {savingUser ? (
+                <>Saving...</>
+              ) : (
+                <>
+                  <FontAwesomeIcon icon={faSave} />
+                  Save Changes
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* 💼 Business Profile Section */}
+      <div>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-500">
+            <FontAwesomeIcon icon={faBriefcase} />
+          </div>
+          <h3 className="text-xl font-semibold text-foreground">Business Profile</h3>
         </div>
-      </form>
 
-      {/* Divider */}
-      <hr className="my-10 border-gray-400" />
+        <form onSubmit={saveBizProfile} className="bg-card p-6 rounded-3xl border border-border">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { id: "company", label: "Company Name", type: "text" },
+              { id: "rcNumber", label: "RC Number", type: "text" },
+              { id: "officePhone", label: "Office Phone", type: "text" },
+              { id: "dob", label: "Date of Birth", type: "date" },
+              { id: "nin", label: "NIN", type: "text" },
+              { id: "idType", label: "ID Type", type: "text" },
+              { id: "idNumber", label: "ID Number", type: "text" },
+            ].map((field) => (
+              <div key={field.id}>
+                <label htmlFor={field.id} className="block text-sm font-medium text-muted-foreground mb-2">
+                  {field.label}
+                </label>
+                <input
+                  type={field.type}
+                  id={field.id}
+                  value={bizForm[field.id]}
+                  onChange={handleBizChange}
+                  className="w-full bg-background border border-input rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                  placeholder={field.type === 'date' ? '' : `Enter ${field.label.toLowerCase()}`}
+                />
+              </div>
+            ))}
+          </div>
 
-      {/* Business Profile */}
-      <h2 className="text-xl text-center mt-3 font-bold">
-        Business (House Listing) Profile
-      </h2>
-
-      <form onSubmit={saveBizProfile} className="p-2 max-w-[900px] mx-auto">
-        <div className="grid grid-cols-2 gap-4">
-          {[
-            { id: "dob", label: "Date of Birth", type: "date" },
-            { id: "nin", label: "NIN", type: "text" },
-            { id: "idType", label: "ID Type", type: "text" },
-            { id: "idNumber", label: "ID Number", type: "text" },
-            { id: "company", label: "Company Name", type: "text" },
-            { id: "rcNumber", label: "RC Number", type: "text" },
-            { id: "officePhone", label: "Office Phone", type: "text" },
-          ].map((input) => (
-            <Input
-              key={input.id}
-              type={input.type}
-              id={input.id}
-              label={input.label}
-             inputValue={bizForm[input.id]}
-              onChange={handleBizChange}
-            />
-          ))}
-        </div>
-
-        <div className="text-center">
-          <button
-            type="submit"
-            disabled={savingBiz}
-            className={`button rounded-full mt-7 w-fit ${
-              savingBiz ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            {savingBiz ? "Saving..." : "Save Business Profile"}
-          </button>
-        </div>
-      </form>
+          <div className="mt-8 flex justify-end">
+            <button
+              type="submit"
+              disabled={savingBiz}
+              className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-8 rounded-full transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {savingBiz ? (
+                <>Saving...</>
+              ) : (
+                <>
+                  <FontAwesomeIcon icon={faSave} />
+                  Save Business Info
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

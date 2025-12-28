@@ -14,6 +14,9 @@ const houseSchema = new mongoose.Schema({
   pricePerNight: { type: Number }, // only if short
   rentPrice: { type: Number }, // only if long
 
+  // Availability Status
+  isAvailable: { type: Boolean, default: true },
+
   // House details
   houseType: { type: String, required: true }, // e.g. Apartment, Duplex, Studio
 location: {
@@ -63,7 +66,7 @@ totalRatings: { type: Number, default: 0 },
 
 
   createdAt: { type: Date, default: Date.now },
- 
+
 });
 houseSchema.index({
   houseType: "text",

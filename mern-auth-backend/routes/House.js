@@ -9,13 +9,15 @@ const { v4: uuidv4 } = require("uuid");
 const rateLimit = require("express-rate-limit");
 const cloudinary = require("../config/cloudinary");
 const router = express.Router();
-const { addComment, toggleLike, getHouseDetails,getMyFeedback, getHouseById, getMyHouses,getHouses,deleteHouse } = require("../controllers/HouseController");
+const { addComment, toggleLike, getHouseDetails,getMyFeedback, getHouseById, getMyHouses,getHouses,deleteHouse, updateHouse } = require("../controllers/HouseController");
 const authenticate = require("../middleware/authenticate");
 
 
 
-// delete listed houses 
+// delete listed houses
 router.delete("/:id", authMiddleware, deleteHouse);
+// update listed houses
+router.put("/:id", authMiddleware, updateHouse);
 
 
 // ============================

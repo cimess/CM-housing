@@ -6,14 +6,16 @@ const userSchema = new mongoose.Schema({
   firstname: { type: String, required: true, trim: true },
   lastname: { type: String, required: true, trim: true },
   phone: { type: String, required: true, trim: true },
- website:{type: String, trim:true },  
-  address: {type :String, trim:true}, 
+ website:{type: String, trim:true },
+  address: {type :String, trim:true},
 whatsapp:{type: String, trim:true},
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   passwordHash: { type: String, required: true },
 
   roles: { type: [String], default: ['user'] },
   isEmailVerified: { type: Boolean, default: false },
+  isBanned: { type: Boolean, default: false },
+  isRestricted: { type: Boolean, default: false },
   failedLoginAttempts: { type: Number, default: 0 },
   lockedUntil: { type: Date, default: null },
   createdAt: { type: Date, default: Date.now }

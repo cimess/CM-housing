@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import API from "@/api/axios";
 import Input from "@/body component/input-component";
 import LoadingAnimation from "@/animations/LoadingAnim";
@@ -80,7 +81,7 @@ if(!isLogin)return navigate('/')
         if(res.data?.company){
           const normalised= res.data.company.trim().toLowerCase().replace(/\s+/g, "");
             setFormData((prev)=>({...prev, companyName:normalised}))
-          
+
         }
       }catch(err){
         console.error("error syncing company:", err)
@@ -151,22 +152,22 @@ if(!isLogin)return navigate('/')
       setUploading(true);
 
       if (!houseImages.length) {
-        alert("Please attach at least one image");
+        toast.error("Please attach at least one image");
         return;
       }
 
       if (formData.durationType === "short") {
         if (!formData.pricePerNight) {
-          alert("Enter price per night for short-let");
+          toast.error("Enter price per night for short-let");
           return;
         }
         if (Number(formData.maxDuration) > 6) {
-          alert("Max duration for short-let is 6 months");
+          toast.error("Max duration for short-let is 6 months");
           return;
         }
       } else {
         if (!formData.rentPrice) {
-          alert("Enter rent price for long-let");
+          toast.error("Enter rent price for long-let");
           return;
         }
       }
@@ -206,7 +207,7 @@ if(!isLogin)return navigate('/')
       };
 
       await API.post("/houses/create", payload);
-      alert("House listed successfully!");
+      toast.success("House listed successfully!");
       setFormData((prev) => ({
         ...prev,
         houseType: "",
@@ -225,7 +226,7 @@ if(!isLogin)return navigate('/')
       console.error("Upload failed:", err);
       const msg =
         err?.response?.data?.message || err?.message || "Failed to list house";
-      alert(msg);
+      toast.error(msg);
     } finally {
       setUploading(false);
     }
@@ -240,7 +241,7 @@ if(!isLogin)return navigate('/')
         <p className="text-gray-600 mb-4">
           You need to complete your profile before listing a house.
         </p>
-        <a href="/profile" className="bg-black text-white px-4 py-2 rounded">
+        <a href="/profile" className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90 transition-colors">
           Go to Profile
         </a>
       </div>
@@ -432,7 +433,7 @@ if(!isLogin)return navigate('/')
             <button
               type="button"
               onClick={addCustomAmenity}
-              className="ml-2 px-3 bg-gray-800 text-white rounded"
+              className="ml-2 px-3 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
             >
               Add
             </button>
@@ -442,7 +443,7 @@ if(!isLogin)return navigate('/')
             {formData.amenities.map((am) => (
               <span
                 key={am}
-                className="inline-flex items-center bg-gray-200 text-sm px-2 py-1 rounded mr-2 mb-2"
+                className="inline-flex items-center bg-secondary text-secondary-foreground text-sm px-2 py-1 rounded mr-2 mb-2"
               >
                 {am}
                 <button
@@ -469,7 +470,7 @@ if(!isLogin)return navigate('/')
 
         <button
           type="submit"
-          className="col-span-2 bg-black text-white py-2 rounded"
+          className="col-span-2 bg-primary text-primary-foreground py-2 rounded hover:bg-primary/90 transition-colors font-bold"
           disabled={uploading}
         >
           {uploading ? "Uploading..." : "Submit"}
