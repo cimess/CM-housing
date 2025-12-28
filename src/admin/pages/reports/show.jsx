@@ -113,7 +113,7 @@ export const ReportShow = () => {
                 onClick={() => {
                     if(window.confirm("Delete this report?")) {
                         deleteReport({ resource: "reports", id: report._id });
-                        navigate('/admincimess/reports');
+                        navigate('/cimessadmin/reports');
                     }
                 }}
                 className="p-2 text-red-600 hover:bg-red-50 rounded-lg"

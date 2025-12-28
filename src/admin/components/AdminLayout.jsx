@@ -25,15 +25,15 @@ export const AdminLayout = () => {
   ];
 
   const navItems = [
-    { name: "Dashboard", path: "/admincimess", icon: LayoutDashboard },
-    { name: "Houses", path: "/admincimess/houses", icon: Home },
-    { name: "Users", path: "/admincimess/users", icon: Users },
-    { name: "Reports", path: "/admincimess/reports", icon: Bell },
+    { name: "Dashboard", path: "/cimessadmin", icon: LayoutDashboard },
+    { name: "Houses", path: "/cimessadmin/houses", icon: Home },
+    { name: "Users", path: "/cimessadmin/users", icon: Users },
+    { name: "Reports", path: "/cimessadmin/reports", icon: Bell },
   ];
 
   const isActive = (path) => {
-    if (path === "/admincimess" && location.pathname === "/admincimess") return true;
-    if (path !== "/admincimess" && location.pathname.startsWith(path)) return true;
+    if (path === "/cimessadmin" && location.pathname === "/cimessadmin") return true;
+    if (path !== "/cimessadmin" && location.pathname.startsWith(path)) return true;
     return false;
   };
 
@@ -153,7 +153,7 @@ export const AdminLayout = () => {
                       )}
                     </div>
                     <div className="p-3 bg-white/40 backdrop-blur-md border-t border-white/40 text-center">
-                        <Link to="/admincimess/notifications" className="text-xs font-bold text-primary hover:underline" onClick={() => setIsNotificationsOpen(false)}>View all notifications</Link>
+                        <Link to="/cimessadmin/notifications" className="text-xs font-bold text-primary hover:underline" onClick={() => setIsNotificationsOpen(false)}>View all notifications</Link>
                     </div>
                   </div>
               )}

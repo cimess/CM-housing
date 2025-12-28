@@ -46,6 +46,7 @@
     "react-dom": "^19.1.0",
     "react-helmet-async": "^2.0.5",
     "react-router-dom": "^7.6.3",
+    "recharts": "^3.6.0",
     "shadcn": "^2.10.0",
     "sharp": "^0.34.4",
     "sidebar": "^1.0.2",

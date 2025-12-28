@@ -130,7 +130,7 @@ function AnimatedRouter() {
           />
 
           {/* Admin Route - No Default Layout */}
-          <Route path="/admincimess/*" element={<AdminRouter />} />
+          <Route path="/cimessadmin/*" element={<AdminRouter />} />
 
         </Routes>
       </Suspense>
