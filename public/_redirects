@@ -1,5 +1,5 @@
 # Proxy sitemap.xml to the backend
-/sitemap.xml  https://cm-housing.onrender.com/sitemap.xml  200
+/sitemap.xml  https://cm-housing.onrender.com/sitemap.xml  200!
 
 # Handle React Router (SPA catch-all)
 /*  /index.html  200
