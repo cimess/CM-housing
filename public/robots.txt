@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-# Sitemap is served by the backend
-Sitemap: https://cm-housing.onrender.com/sitemap.xml
+# Sitemap is served locally (generated at build time)
+Sitemap: https://cmhousing.com.ng/sitemap.xml
