@@ -7,7 +7,7 @@ async function sendEmail() {
     secure: false, // MUST be false for 587
     auth: {
       user: "97f232002@smtp-brevo.com", // your Brevo SMTP login
-      pass: '' // the master password from Brevo
+      pass: '' 
     },
   });
 
