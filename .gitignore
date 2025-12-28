@@ -11,7 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
-
+dev-docs/
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -61,4 +61,5 @@ Thumbs.db
 *.tmp
 *.temp
 *.bak
+
 
