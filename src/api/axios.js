@@ -3,7 +3,7 @@ import axios from "axios";
 import { getAccessToken, setAccessToken, removeAccessToken } from "@/utils/authStore";
 
 const API = axios.create({
-  baseURL:import.meta.env.VITE_APP_ENV === "production" ? "https://cm-housing.onrender.com/api" : "http://localhost:4000/api",
+  baseURL:import.meta.env.MODE === "production" ? "https://cm-housing.onrender.com/api" : "http://localhost:4000/api",
   withCredentials: true, // important: send HttpOnly refresh cookie
 });
 
