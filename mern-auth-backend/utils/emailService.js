@@ -29,10 +29,11 @@
 const nodemailer = require("nodemailer");
 require('dotenv').config();
 // Create transporter once, reuse it
+const port = parseInt(process.env.SMTP_PORT) || 587;
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || "smtp-relay.brevo.com",
-  port: parseInt(process.env.SMTP_PORT) || 587,
-  secure: false, // false for port 587, true for 465
+  port: port,
+  secure: port === 465, // false for port 587, true for 465
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,

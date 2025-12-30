@@ -37,7 +37,8 @@ exports.register = async (req, res) => {
   const passwordHash = await bcrypt.hash(password, salt);
 
   const user = new User({ firstname,lastname,phone, email, passwordHash });
-  await user.save();
+   await user.save();
+
 
   // email verification token (jwt short lived)
   const emailToken = jwt.sign({ sub: user._id }, process.env.JWT_VERIFY_SECRET, { expiresIn: '1d' });
@@ -48,6 +49,7 @@ exports.register = async (req, res) => {
   addAudit(user._id, 'register', req.ip, { email });
 
   return res.status(201).json({ message: 'User registered. Please verify your email.' });
+
 };
 
 exports.verifyEmail = async (req, res) => {

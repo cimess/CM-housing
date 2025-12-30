@@ -14,6 +14,7 @@ const businessProfileRoutes = require('./routes/businessProfile');
 const profileRoutes = require("./routes/profile");
 const House=require("./routes/House");
 const app = express();
+app.set('trust proxy', 1); // Trust Render's proxy
 const PORT = process.env.PORT || 4000;
 
 connectDB();
