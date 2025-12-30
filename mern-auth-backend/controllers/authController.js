@@ -30,26 +30,31 @@ exports.register = async (req, res) => {
   const { error } = passwordSchema.validate(password);
   if (error) return res.status(400).json({ message: error.details[0].message });
 
-  const existing = await User.findOne({ email });
-  if (existing) return res.status(400).json({ message: 'Email already in use' });
+  try {
+    const existing = await User.findOne({ email });
+    if (existing) return res.status(400).json({ message: 'Email already in use' });
 
-  const salt = await bcrypt.genSalt(12);
-  const passwordHash = await bcrypt.hash(password, salt);
+    const salt = await bcrypt.genSalt(12);
+    const passwordHash = await bcrypt.hash(password, salt);
 
-  const user = new User({ firstname,lastname,phone, email, passwordHash });
-   await user.save();
+    const user = new User({ firstname, lastname, phone, email, passwordHash });
+    await user.save();
 
+    // email verification token (jwt short lived)
+    const emailToken = jwt.sign({ sub: user._id }, process.env.JWT_VERIFY_SECRET, { expiresIn: '1d' });
+    const verifyUrl = `${process.env.FRONTEND_URL}/verify-email?token=${emailToken}`;
 
-  // email verification token (jwt short lived)
-  const emailToken = jwt.sign({ sub: user._id }, process.env.JWT_VERIFY_SECRET, { expiresIn: '1d' });
-  const verifyUrl = `${process.env.FRONTEND_URL}/verify-email?token=${emailToken}`;
+    await sendEmail(email, 'Verify your email', `Click here to verify: ${verifyUrl}`);
 
-  await sendEmail(email, 'Verify your email', `Click here to verify: ${verifyUrl}`);
+    addAudit(user._id, 'register', req.ip, { email });
 
-  addAudit(user._id, 'register', req.ip, { email });
-
-  return res.status(201).json({ message: 'User registered. Please verify your email.' });
-
+    return res.status(201).json({ message: 'User registered. Please verify your email.' });
+  } catch (err) {
+    console.error("Register Error:", err);
+    // If user was created but email failed, we might want to let them know or just fail hard.
+    // For now, fail hard so they can retry or contact support.
+    return res.status(500).json({ message: "Registration failed. Server error." });
+  }
 };
 
 exports.verifyEmail = async (req, res) => {
