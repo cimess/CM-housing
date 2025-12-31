@@ -76,3 +76,22 @@ exports.updateUserStatus = async (req, res) => {
     res.status(500).json({ message: "Server Error", error: err.message });
   }
 };
+
+exports.getLikedHouses = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    // Assuming 'likes' are stored on House model as { user: ObjectId } array
+    // Or if User model has 'likedHouses' array.
+    // Based on HouseController.toggleLike, likes are on the House model!
+
+    const House = require('../models/House');
+    const likedHouses = await House.find({ "likes.user": userId })
+      .select("title location images price rentPrice pricePerNight durationType")
+      .lean();
+
+    res.json(likedHouses);
+  } catch (err) {
+    console.error("❌ Error fetching liked houses:", err);
+    res.status(500).json({ message: "Server Error", error: err.message });
+  }
+};

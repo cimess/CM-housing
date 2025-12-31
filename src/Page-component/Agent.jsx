@@ -10,7 +10,7 @@ import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 export default function HouseRegister() {
   const navigate = useNavigate();
 
-const {isLogin}=useLoginAuth()
+const {isLogin, refreshHouses}=useLoginAuth()
   const [profileCompleted, setProfileCompleted] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [houseImages, setHouseImages] = useState([]);
@@ -46,7 +46,7 @@ if(!isLogin)return navigate('/')
     petAllowed: false,
     furnished: false,
     amenities: [],
-
+    videoUrl: "", // Optional
     alt: "a picture of a room",
   });
 
@@ -206,6 +206,7 @@ if(!isLogin)return navigate('/')
         images: uploadedUrls,
       };
 
+      console.log("Submitting Listing Payload:", payload); // DEBUG LOG
       await API.post("/houses/create", payload);
       toast.success("House listed successfully!");
       setFormData((prev) => ({
@@ -221,6 +222,9 @@ if(!isLogin)return navigate('/')
         amenities: [],
       }));
       setHouseImages([]);
+
+      refreshHouses(); // Clear frontend cache to force re-fetch on home page
+
       navigate("/loading", { state: { redirectTo: "/" } });
     } catch (err) {
       console.error("Upload failed:", err);
@@ -403,6 +407,17 @@ if(!isLogin)return navigate('/')
           onChange={handleChange}
           placeholder="Description"
           className="col-span-2 border p-2 rounded"
+        />
+
+        {/* Video Link */}
+        <Input
+          type="url"
+          id="videoUrl"
+          value={formData.videoUrl}
+          onChange={handleChange}
+          label="YouTube Video Link (Optional)"
+          placeholder="https://www.youtube.com/watch?v=..."
+          className="col-span-2"
         />
 
         {/* Amenities */}

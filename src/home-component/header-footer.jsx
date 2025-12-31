@@ -16,7 +16,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 export default function Default({ children }) {
   const [state, setState] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const { isLogin } = useLoginAuth();
+  const { isLogin, user } = useLoginAuth();
   const timeoutRef = useRef(null);
   const node = useRef(null);
   const navigate = useNavigate();
@@ -108,9 +108,17 @@ export default function Default({ children }) {
             <button
               onClick={toggleDropdown}
               aria-label="User menu"
-              className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300"
+              className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 overflow-hidden border border-transparent hover:border-primary"
             >
-              <FontAwesomeIcon icon={faUser} />
+              {isLogin && user?.profileImage ? (
+                <img
+                  src={user.profileImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <FontAwesomeIcon icon={faUser} />
+              )}
             </button>
 
             {state && <DropdownMenu />}

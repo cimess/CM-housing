@@ -228,7 +228,7 @@ export default function HouseDetailPage() {
         <div className="lg:col-span-2 space-y-12">
 
           {/* Key Features */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 rounded-2xl bg-secondary/5 border border-border">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 rounded-2xl bg-secondary/5 border border-border">
             <div className="text-center p-4 rounded-xl bg-background shadow-sm">
               <FontAwesomeIcon icon={faBed} className="text-2xl text-primary mb-2" />
               <div className="font-bold text-lg">{house.bedrooms}</div>
@@ -250,6 +250,36 @@ export default function HouseDetailPage() {
               <div className="text-xs text-muted-foreground uppercase tracking-wider">Pets</div>
             </div>
           </div>
+
+          {/* Video Section */}
+          {house.videoUrl && (() => {
+            const getEmbedUrl = (url) => {
+              if (!url) return null;
+              // Handle standard youtube.com/watch?v=ID, youtu.be/ID, and shorts
+              const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+              const match = url.match(regExp);
+              const id = (match && match[7].length === 11) ? match[7] : null;
+
+              if (!id) console.warn("Video URL parsing failed:", url, "Match:", match);
+              return id ? `https://www.youtube.com/embed/${id}` : null;
+            };
+            const embedUrl = getEmbedUrl(house.videoUrl);
+
+            return embedUrl ? (
+              <div className="rounded-2xl overflow-hidden border border-border shadow-sm">
+                 <h2 className="text-2xl font-serif font-bold p-6 pb-2">Property Video Tour</h2>
+                 <div className="relative pt-[56.25%] bg-black">
+                   <iframe
+                     src={embedUrl}
+                     title="Property Video"
+                     className="absolute inset-0 w-full h-full"
+                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                     allowFullScreen
+                   ></iframe>
+                 </div>
+              </div>
+            ) : null;
+          })()}
 
           {/* Description */}
           <div>

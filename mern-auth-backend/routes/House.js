@@ -189,11 +189,17 @@ router.post("/create", authMiddleware, async (req, res) => {
       furnished: !!furnished,
       amenities: Array.isArray(amenities) ? amenities : (amenities ? [amenities] : []),
       images,
+      videoUrl: req.body.videoUrl, // Explicitly extract videoUrl
       alt: alt || "house image",
     };
 
     const house = new House(houseDoc);
     await house.save();
+
+    // 🚨 Clear cache after saving new data
+    const redis = require("../config/redis");
+    await redis.flushall();
+    console.log("DEBUG: Redis cache cleared after create.");
 
     return res.status(201).json({ message: "House listed", house });
   } catch (err) {

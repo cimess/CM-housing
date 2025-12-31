@@ -50,7 +50,7 @@ if (checked) {
       <input
         type={type==='password'&&showPassword?'text':type}
         id={id}
-        value={inputValue}
+        value={value !== undefined ? value : inputValue}
         onChange={onChange}
         className="border rounded border-input w-full focus:outline-none h-10 pl-2 bg-background text-foreground placeholder:text-muted-foreground"
         pattern={pattern}

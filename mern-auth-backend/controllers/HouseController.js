@@ -10,6 +10,9 @@ exports.createHouse = async (req, res) => {
   try {
     const userId = req.user._id;
 
+    console.log("DEBUG: createHouse CALLED");
+    console.log("DEBUG: req.body:", JSON.stringify(req.body, null, 2));
+
     // Check profile
     const profile = await BusinessProfile.findOne({ user: userId });
     if (!profile || !profile.isCompleted) {
@@ -25,6 +28,7 @@ exports.createHouse = async (req, res) => {
       pricePerNight,
       maxDuration,
       isAvailable,
+      videoUrl, // Extract videoUrl
     } = req.body;
 
     // Validate based on durationType
@@ -41,8 +45,9 @@ exports.createHouse = async (req, res) => {
       return res.status(400).json({ message: "Agent listings must include companyName & consultationFee" });
     }
 
-    const house = new House({ ...req.body, user: userId });
+    const house = new House({ ...req.body, user: userId, videoUrl }); // Explicitly include videoUrl
     await house.save();
+
     // 🚨 Clear cache after saving new data
     await redis.flushall();
 
@@ -73,6 +78,11 @@ exports.updateHouse = async (req, res) => {
     Object.keys(updates).forEach((key) => {
       house[key] = updates[key];
     });
+
+    // Special handling for videoUrl to allow clearing it (if sent as empty string or null)
+    if (updates.videoUrl !== undefined) {
+      house.videoUrl = updates.videoUrl;
+    }
 
     await house.save();
     await redis.flushall(); // Clear cache
@@ -193,7 +203,7 @@ exports.getHouses=async(req,res)=>{
       if(filter==="taken") mongoFilter.isAvailable = false;
 
       houses= await House.find(mongoFilter)
-      .sort({_id:-1})
+      .sort({createdAt:-1})
       .skip(Number(_start) || 0)
       .limit(Number(limit))
       .lean();
@@ -389,6 +399,9 @@ exports.getHouseDetails = async (req, res) => {
       .populate("comments.user", "username email");
 
     if (!house) return res.status(404).json({ msg: "House not found" });
+
+    // Debug log for video
+    console.log(`[DEBUG] House ${id} videoUrl:`, house.videoUrl);
 
     res.status(200).json(house);
   } catch (err) {

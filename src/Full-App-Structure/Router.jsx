@@ -24,6 +24,7 @@ const Settings = lazy(() => import("@/Page-component/profile"));
 const HouseDetailPage = lazy(() => import("@/shortlet/HouseDetailPage"));
 const ResetPassword = lazy(() => import("@/Page-component/ResetPassword"));
 const ResetPasswordWithoutLogin = lazy(() => import("@/Page-component/resetPasswordWithoutlogin"));
+const EditHousePage = lazy(() => import("@/Page-component/EditHousePage"));
 
 // Admin Router
 const AdminRouter = lazy(() => import("@/admin/AdminRouter").then(module => ({ default: module.AdminRouter })));
@@ -46,6 +47,7 @@ function AnimatedRouter() {
           <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/email-verified" element={<EmailSuccess />} />
           <Route path="/house/:id" element={<Default><HouseDetailPage /></Default>} />
+          <Route path="/edit-house/:id" element={<Default><EditHousePage /></Default>} />
 
           <Route
             path="/loading"

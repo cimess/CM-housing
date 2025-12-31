@@ -35,6 +35,7 @@ location: {
 
   // Media
   images: [String],
+  videoUrl: String, // YouTube URL
   alt: String,
 
   // Geo (optional but useful later for maps/search)

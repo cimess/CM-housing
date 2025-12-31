@@ -68,7 +68,7 @@ const [searchResults,setSearchResults]=useState([])
 
 // Fetch houses with optional filters
  const fetchHouses = async ({filters = {}, append = false,type= "all" }={}) => {
-  
+
   try {
  setHouseLoading(true)
     const params = new URLSearchParams(filters);
@@ -79,7 +79,7 @@ const [searchResults,setSearchResults]=useState([])
   if (type === "fullLet") lastList = fullLet;
   if (type === "shortLet") lastList = shortLet;
   if (type === "search") lastList = searchResults;
-  
+
   if(append && lastList.length > 0 ){
     const lastHouse= lastList[lastList.length -1];
     params.append("cursor",lastHouse._id)
@@ -112,9 +112,9 @@ const [searchResults,setSearchResults]=useState([])
       setCursor((prev)=>({...prev,all:nextCursor || null}));
       setHasMore((prev)=>({...prev, all:moreAvailable}))
     }
-   
+
       return {formated}
-    
+
   } catch (err) {
     console.error("Fetch houses error:", err);
     return [];
@@ -175,7 +175,6 @@ const fetchUserProfile = async () => {
   try {
     const res = await API.get("/auth/me"); // endpoint that returns current user
     setUser(res.data);
-     console.log("fetching user profile:", res.data);
   } catch (err) {
     console.error("Error fetching user profile:", err);
     setUser(null);
@@ -183,10 +182,24 @@ const fetchUserProfile = async () => {
 };
 
 
+// Clear all house lists to force re-fetches (e.g., after creating a listing/logging out)
+const refreshHouses = () => {
+    setHouses([]);
+    setFullLet([]);
+    setShortLet([]);
+    setSearchResults([]);
+    setCursor({ all: null, fullLet: null, shortLet: null, search: null });
+    setHasMore({ all: true, fullLet: true, shortLet: true, search: true });
+};
+
+
 useEffect(() => {
   if (accessToken && !user) {
     fetchUserProfile();
   }else if(!accessToken){
+    // Also clear houses if user logs out or token is invalid
+    refreshHouses();
+
 setUser(null);
 setIsLogin(false)
   }
@@ -200,7 +213,7 @@ setIsLogin(false)
 
 
   useEffect( () => {
-   
+
     async function load(){
       try{
   // const house=await  fetchHouses();
@@ -269,7 +282,7 @@ load()
           await fetchUserProfile()
         setAccessTokenState(token);
         setIsLogin(true);
-        
+
         }catch{
           removeAccessToken()
           setIsLogin(false)
@@ -301,6 +314,11 @@ setLoading(false);
   }, []);
 
   // login: keep behavior (store token in sessionStorage)
+  // Helper to manually update user state (e.g. after profile edit)
+  const updateUser = (userData) => {
+    setUser(userData);
+  };
+
   const login = async (email, password) => {
     const res = await API.post("/auth/login", { email, password });
     const token = res.data?.accessToken;
@@ -324,11 +342,11 @@ setLoading(false);
 
   return (
     <LoginAuthContext.Provider
-      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken,houses,setHouses,fetchHouses,fetchRecommendedHouses,fetchMyHouses,toggleLike,likedHouses,user,houseLoading,fullLet,shortLet,searchResults,hasMore  }}
+      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken,houses,setHouses,fetchHouses,fetchRecommendedHouses,fetchMyHouses,toggleLike,likedHouses,user, updateUser, houseLoading,fullLet,shortLet,searchResults,hasMore, refreshHouses  }}
     >
     {children}
     </LoginAuthContext.Provider>
-    // : 
+    // :
   );
 }
 

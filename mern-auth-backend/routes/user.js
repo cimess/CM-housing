@@ -13,4 +13,7 @@ router.get('/', authenticate, UserController.getAllUsers);
 router.delete('/:id', authenticate, UserController.deleteUser);
 router.put('/:id', authenticate, UserController.updateUserStatus);
 
+// Likes
+router.get('/likes', authenticate, UserController.getLikedHouses);
+
 module.exports = router;

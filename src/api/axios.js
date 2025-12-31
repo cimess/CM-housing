@@ -4,6 +4,7 @@ import { getAccessToken, setAccessToken, removeAccessToken } from "@/utils/authS
 
 const API = axios.create({
   baseURL:import.meta.env.MODE === "production" ? "https://cm-housing.onrender.com/api" : "http://localhost:4000/api",
+  // baseURL:import.meta.env.VITE_API_URL, // UNCOMMENT THIS FOR LOCAL/MOBILE TESTING
   withCredentials: true, // important: send HttpOnly refresh cookie
 });
 

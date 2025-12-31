@@ -93,12 +93,12 @@ toggleLike(_id)
           modules={[Navigation, Autoplay]}
           spaceBetween={0}
           slidesPerView={1}
-          loop
+          loop={images.length > 1}
           autoplay={{ delay: 5000 }}
-          navigation={{
+          navigation={images.length > 1 ? {
             nextEl: `.shortlet-next-${sliderId}`,
             prevEl: `.shortlet-prev-${sliderId}`,
-          }}
+          } : false}
           className="h-full"
         >
           {images.map((src, idx) => (

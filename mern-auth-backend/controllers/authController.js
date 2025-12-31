@@ -7,6 +7,8 @@ const { signAccessToken, signRefreshToken } = require('../utils/token');
 const { sendEmail } = require('../utils/emailService');
 const { passwordSchema } = require('../utils/passwordPolicy');
 const { v4: uuidv4 } = require('uuid');
+const cloudinary = require('../config/cloudinary');
+const sharp = require('sharp');
 
 const CLIENT_COOKIE_NAME = 'refreshToken';
 
@@ -93,6 +95,70 @@ exports.me = async (req, res) => {
   } catch (err) {
     console.error('Error fetching user profile:', err);
     return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.uploadProfileImage = async (req, res) => {
+  try {
+    const userId = req.user?._id;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No image file provided" });
+    }
+
+    // Process image with sharp
+    const img = sharp(req.file.buffer);
+    const processedBuffer = await img
+      .resize({ width: 500, height: 500, fit: "cover" }) // Profile pics can be smaller/square
+      .jpeg({ quality: 80 })
+      .toBuffer();
+
+    const publicId = `profile_images/${userId}_${Date.now()}`;
+
+    // Upload to Cloudinary
+    const uploadResult = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "profile_images",
+          public_id: publicId,
+          resource_type: "image",
+          overwrite: true, // Overwrite old profile pic if same ID (though we append timestamp so likely new)
+        },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        }
+      );
+      stream.end(processedBuffer);
+    });
+
+    const imageUrl = uploadResult.secure_url;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { profileImage: imageUrl },
+      { new: true }
+    ).select("-passwordHash");
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json({ message: "Profile image updated", user });
+  } catch (err) {
+    console.error("Profile upload error:", err);
+    res.status(500).json({ message: "Image upload failed" });
+  }
+};
+
+exports.clearCache = async (req, res) => {
+  try {
+    const redis = require("../config/redis");
+    await redis.flushall();
+    console.log("🧹 Redis cache cleared manually");
+    res.json({ message: "Cache cleared" });
+  } catch (err) {
+    console.error("Cache clear error:", err);
+    res.status(500).json({ message: "Failed to clear cache" });
   }
 };
 

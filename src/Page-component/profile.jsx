@@ -5,10 +5,10 @@ import LoadingAnimation from "@/animations/LoadingAnim";
 import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faBriefcase, faSave } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faBriefcase, faSave, faCamera } from "@fortawesome/free-solid-svg-icons";
 
 export default function ProfilePage() {
-  const { isLogin } = useLoginAuth();
+  const { isLogin, updateUser } = useLoginAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +28,7 @@ export default function ProfilePage() {
     address: "",
     whatsapp: "",
     website: "",
+    profileImage: "",
   });
 
   const [bizForm, setBizForm] = useState({
@@ -60,7 +61,10 @@ export default function ProfilePage() {
           phone: u.phone || "",
           address: u.address || "",
           whatsapp: u.whatsapp || "",
+          address: u.address || "",
+          whatsapp: u.whatsapp || "",
           website: u.website || "",
+          profileImage: u.profileImage || "",
         }));
 
         setBizForm(prev => ({
@@ -117,6 +121,31 @@ export default function ProfilePage() {
     }
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const toastId = toast.loading("Uploading profile image...");
+
+    try {
+      const res = await API.post("/auth/upload-profile-image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setUserForm(prev => ({ ...prev, profileImage: res.data.user.profileImage }));
+      // Update global context so header/sidebar update immediately
+      updateUser(res.data.user);
+
+      toast.success("Profile image updated!", { id: toastId });
+    } catch (err) {
+      console.error("Upload failed", err);
+      toast.error("Failed to upload image", { id: toastId });
+    }
+  };
+
   if (loading) return <LoadingAnimation />;
 
   return (
@@ -126,8 +155,19 @@ export default function ProfilePage() {
       {/* 👤 Personal Profile Section */}
       <div className="mb-12">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-            <FontAwesomeIcon icon={faUser} />
+          <div className="relative group">
+            <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center text-primary overflow-hidden border-2 border-primary/20">
+              {userForm.profileImage ? (
+                <img src={userForm.profileImage} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <FontAwesomeIcon icon={faUser} className="text-2xl" />
+              )}
+            </div>
+
+            <label className="absolute bottom-0 right-0 w-6 h-6 bg-primary text-black rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shadow-sm">
+               <FontAwesomeIcon icon={faCamera} className="text-xs" />
+               <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+            </label>
           </div>
           <h3 className="text-xl font-semibold text-foreground">Personal Information</h3>
         </div>

@@ -106,8 +106,12 @@ function HandleShortLetAndFullLetListing() {
       <section className="space-y-8">
         <div className="flex items-center justify-between px-4">
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400" ref={newestRef}>
-            Fresh on the Market
+            Recent Listings
           </h2>
+          <div className="md:hidden flex items-center gap-2 text-primary animate-pulse">
+            <span className="text-xs font-medium uppercase tracking-widest">Swipe</span>
+            <FontAwesomeIcon icon={faArrowRight} className="w-3 h-3" />
+          </div>
           <div className="hidden md:block w-32 h-[1px] bg-border"></div>
         </div>
 

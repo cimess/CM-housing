@@ -18,6 +18,7 @@ import LoadingAnimation from "@/animations/LoadingAnim";
 import API from "@/api/axios";
 import { motion } from "framer-motion";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useNavigate } from "react-router-dom";
 
 export default function MyadvertComponent() {
   const [state, setState] = useState(1);
@@ -51,7 +52,7 @@ export default function MyadvertComponent() {
             <div className="flex flex-col items-center mb-8">
               <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-br from-primary to-amber-600 mb-4">
                 <img
-                  src={user?.picture || "/default-avatar.jpg"}
+                  src={user?.profileImage || "/default-avatar.jpg"}
                   alt="Profile"
                   className="w-full h-full rounded-full object-cover border-2 border-background"
                 />
@@ -119,9 +120,10 @@ export default function MyadvertComponent() {
 }
 
 function ClientAdvert() {
-  const { fetchMyHouses } = useLoginAuth();
+  const { fetchMyHouses, myHouseReady, user } = useLoginAuth();
   const [houses, setHouses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     handleFetchHouse();
@@ -159,15 +161,20 @@ function ClientAdvert() {
       {houses.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {houses.map((house, index) => (
-            <div key={index} className="relative group">
-              <HouseListing {...house} />
-              <button
-                onClick={() => handleDelete(house._id)}
-                className="absolute top-4 right-4 bg-destructive/90 hover:bg-destructive text-destructive-foreground p-2 rounded-full backdrop-blur-md transition-all opacity-0 group-hover:opacity-100"
-                title="Delete Listing"
-              >
-                <FontAwesomeIcon icon={faTrash} />
-              </button>
+            <div
+                key={index}
+                className="relative group cursor-pointer hover:ring-2 ring-primary/50 rounded-xl transition-all"
+                onClick={() => navigate(`/edit-house/${house._id}`)}
+            >
+              <div className="pointer-events-none">
+                {/* Wrap in div with pointer-events-none so clicks pass through to parent,
+                    OR just ensure HouseListing doesn't stop propagation.
+                    Using window.location.href or navigate from hooks.
+                    Better to use useNavigate hook but window.location works for quick fix if hook not imported in sub-component?
+                    Wait, ClientAdvert is a function component inside MyadvertComponent which has no Router context?
+                    Actually MyadvertComponent is in Router. Let's use useNavigate. */}
+                 <HouseListing {...house} />
+              </div>
             </div>
           ))}
         </div>

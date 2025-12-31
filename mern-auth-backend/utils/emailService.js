@@ -40,8 +40,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-console.log(`📧 SMTP Configured: ${process.env.SMTP_HOST || "smtp-relay.brevo.com"}:${port} (Secure: ${port === 465})`);
-
 async function sendEmail(to, subject, html) {
   try {
     const info = await transporter.sendMail({

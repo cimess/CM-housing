@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
 whatsapp:{type: String, trim:true},
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   passwordHash: { type: String, required: true },
+  profileImage: { type: String, default: "" },
 
   roles: { type: [String], default: ['user'] },
   isEmailVerified: { type: Boolean, default: false },
