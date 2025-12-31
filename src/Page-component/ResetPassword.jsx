@@ -29,9 +29,9 @@ try{
       toast.success(request.data.message)
    }catch(e){
       if(e.response){
-      console.log(e.response.data.message)
+      // console.log(e.response.data.message)
       }else{
-         console.log(e.message)
+         // console.log(e.message)
       }
    }
    }

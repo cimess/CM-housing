@@ -65,7 +65,7 @@ if(!isLogin)return navigate('/')
           setFormData((prev) => ({ ...prev, companyName: normalised }));
         }
       } catch (err) {
-        console.error("profile check error:", err);
+        // console.error("profile check error:", err);
         setProfileCompleted(false);
       }
     }
@@ -84,7 +84,7 @@ if(!isLogin)return navigate('/')
 
         }
       }catch(err){
-        console.error("error syncing company:", err)
+        // console.error("error syncing company:", err)
       }
       syncCompany()
     }
@@ -206,7 +206,7 @@ if(!isLogin)return navigate('/')
         images: uploadedUrls,
       };
 
-      console.log("Submitting Listing Payload:", payload); // DEBUG LOG
+      // console.log("Submitting Listing Payload:", payload); // DEBUG LOG
       await API.post("/houses/create", payload);
       toast.success("House listed successfully!");
       setFormData((prev) => ({
@@ -227,7 +227,7 @@ if(!isLogin)return navigate('/')
 
       navigate("/loading", { state: { redirectTo: "/" } });
     } catch (err) {
-      console.error("Upload failed:", err);
+      // console.error("Upload failed:", err);
       const msg =
         err?.response?.data?.message || err?.message || "Failed to list house";
       toast.error(msg);

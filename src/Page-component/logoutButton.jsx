@@ -10,7 +10,7 @@ export default function LogoutButton() {
       await logout(); // context handles API call, token clearing, etc.
       navigate("/loading", { state: { redirectTo: "/" } });
     } catch (err) {
-      console.error("Logout error:", err);
+      // console.error("Logout error:", err);
     }
   }
 

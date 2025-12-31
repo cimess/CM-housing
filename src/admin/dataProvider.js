@@ -94,7 +94,7 @@ export const dataProvider = {
             total: Array.isArray(data) ? data.length : (data.total || 0),
         };
     } catch (error) {
-        console.error("Data Provider Error:", error);
+        // console.error("Data Provider Error:", error);
         throw error;
     }
   },
@@ -107,7 +107,7 @@ export const dataProvider = {
         const { data } = await axiosAuth.get(url);
         return { data };
     } catch (error) {
-        console.error("GetOne Error:", error);
+        // console.error("GetOne Error:", error);
         throw error;
     }
   },
@@ -120,7 +120,7 @@ export const dataProvider = {
         const { data } = await axiosAuth.delete(url);
         return { data };
     } catch (error) {
-        console.error("Delete Error:", error);
+        // console.error("Delete Error:", error);
         throw error;
     }
   },
@@ -138,7 +138,7 @@ export const dataProvider = {
              const { data } = await axiosAuth.patch(url, variables);
              return { data };
         } catch (patchError) {
-             console.error("Update Error:", error);
+             // console.error("Update Error:", error);
              throw error;
         }
     }

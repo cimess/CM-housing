@@ -78,7 +78,7 @@ export default function ProfilePage() {
           officePhone: b.officePhone || "",
         }));
       } catch (err) {
-        console.error("Error fetching profiles:", err);
+        // console.error("Error fetching profiles:", err);
       } finally {
         setLoading(false);
       }
@@ -100,7 +100,7 @@ export default function ProfilePage() {
       await API.post("/profile/save", { ...userForm });
       toast.success("User profile saved successfully!");
     } catch (err) {
-      console.error(err);
+      // console.error(err);
       toast.error("Failed to save user profile!");
     } finally {
       setSavingUser(false);
@@ -114,7 +114,7 @@ export default function ProfilePage() {
       await API.post("/business-profile/save", { ...bizForm });
       toast.success("Business profile saved successfully!");
     } catch (err) {
-      console.error(err);
+      // console.error(err);
       toast.error("Failed to save business profile!");
     } finally {
       setSavingBiz(false);
@@ -141,7 +141,7 @@ export default function ProfilePage() {
 
       toast.success("Profile image updated!", { id: toastId });
     } catch (err) {
-      console.error("Upload failed", err);
+      // console.error("Upload failed", err);
       toast.error("Failed to upload image", { id: toastId });
     }
   };

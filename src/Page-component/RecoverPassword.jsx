@@ -13,7 +13,7 @@ try{
       const request=await API.post("auth/forgot-password",{ email: state})
       alert(request.data.message)
    }catch(e){
-      console.log(e);
+      // console.log(e);
    }
    }
 

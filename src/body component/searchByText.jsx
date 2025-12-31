@@ -33,7 +33,7 @@ export default function TextSearchFilter() {
         setHouses(formated || []);
         setHasSearched(true);
       } catch (err) {
-        console.error("Search error:", err);
+        // console.error("Search error:", err);
       } finally {
         setLoading(false);
       }

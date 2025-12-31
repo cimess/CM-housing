@@ -77,7 +77,7 @@ export default function HouseDetailPage() {
         setSimilarHouses([]);
       }
     } catch (err) {
-      console.error("Failed to fetch house details:", err);
+      // console.error("Failed to fetch house details:", err);
       setHouse(null);
     } finally {
       setLoading(false);
@@ -107,7 +107,7 @@ export default function HouseDetailPage() {
       setRating(0);
       fetchHouseDetails();
     } catch (err) {
-      console.error("comment failed", err);
+      // console.error("comment failed", err);
     }
   }
 
@@ -260,7 +260,7 @@ export default function HouseDetailPage() {
               const match = url.match(regExp);
               const id = (match && match[7].length === 11) ? match[7] : null;
 
-              if (!id) console.warn("Video URL parsing failed:", url, "Match:", match);
+              if (!id) {/* console.warn("Video URL parsing failed:", url, "Match:", match); */}
               return id ? `https://www.youtube.com/embed/${id}` : null;
             };
             const embedUrl = getEmbedUrl(house.videoUrl);

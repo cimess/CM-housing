@@ -26,7 +26,7 @@ export default function VerifyEmailPage() {
           setTimeout(() => navigate("/email-verified"), 2000);
         }
       } catch (err) {
-        console.error(err.response?.data || err.message);
+        // console.error(err.response?.data || err.message);
         if (!ignore) setStatus("❌ Invalid or expired link");
       }
     };

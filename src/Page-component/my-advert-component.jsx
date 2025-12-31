@@ -146,7 +146,7 @@ function ClientAdvert() {
       await handleFetchHouse();
       alert("Listing deleted successfully.");
     } catch (err) {
-      console.error("Delete error:", err);
+      // console.error("Delete error:", err);
       alert("Failed to delete listing.");
     } finally {
       setLoading(false);
@@ -201,7 +201,7 @@ function Feedback() {
       const res = await API.get("/houses/feedback");
       setFeedback(res.data);
     } catch (err) {
-      console.error("Error fetching feedback:", err);
+      // console.error("Error fetching feedback:", err);
     } finally {
       setLoading(false);
     }

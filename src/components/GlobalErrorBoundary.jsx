@@ -14,7 +14,7 @@ class GlobalErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     // You can also log the error to an error reporting service like PostHog or Sentry here
-    console.error("Uncaught error:", error, errorInfo);
+    // console.error("Uncaught error:", error, errorInfo);
     this.setState({ errorInfo });
   }
 

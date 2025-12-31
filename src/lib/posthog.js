@@ -15,7 +15,7 @@ export const initPostHog = () => {
       window.posthog = posthog;
     }
   } else {
-    console.warn("PostHog API Key not found. Analytics disabled.");
+    // console.warn("PostHog API Key not found. Analytics disabled.");
   }
 };
 

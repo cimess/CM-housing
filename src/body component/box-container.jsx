@@ -22,7 +22,7 @@ export default function BoxContainer({ images, state, city, alt, className }) {
       setHouses(fetchedHouses);
       toast.success(`Showing ${fetchedHouses.length} listings in ${city}, ${state}.`);
     } catch (err) {
-      console.error("Error fetching houses:", err);
+      // console.error("Error fetching houses:", err);
       toast.error("Something went wrong while fetching data. Please try again.");
     } finally {
       setLoading(false);

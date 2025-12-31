@@ -59,7 +59,7 @@ export default function EditHousePage() {
         setLoading(true);
         const res = await API.get(`/houses/${id}`);
         const house = res.data;
-        console.log("Fetched House Data:", house); // DEBUG
+        // console.log("Fetched House Data:", house); // DEBUG
 
 
         setFormData({
@@ -89,7 +89,7 @@ export default function EditHousePage() {
         });
         setLoading(false);
       } catch (err) {
-        console.error("Fetch error:", err);
+        // console.error("Fetch error:", err);
         toast.error("Failed to load property details");
         navigate("/MyAdvertComponent");
       }
@@ -162,7 +162,7 @@ export default function EditHousePage() {
         toast.success("Listing deleted");
         navigate("/MyAdvertComponent");
     } catch (err) {
-        console.error("Delete error", err);
+        // console.error("Delete error", err);
         toast.error("Failed to delete");
     } finally {
         setUploading(false);
@@ -214,7 +214,7 @@ export default function EditHousePage() {
       navigate("/MyAdvertComponent");
 
     } catch (err) {
-      console.error("Update failed:", err);
+      // console.error("Update failed:", err);
       toast.error(err?.response?.data?.message || "Failed to update property");
     } finally {
       setUploading(false);

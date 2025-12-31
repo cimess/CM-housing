@@ -51,7 +51,7 @@ const [searchResults,setSearchResults]=useState([])
       setIsLogin(false);
       setUser(null);
       setLoading(false);
-      console.log("Logged out via auth:logout event", e?.detail);
+      // console.log("Logged out via auth:logout event", e?.detail);
     };
 
     window.addEventListener("auth:logout", onAuthLogout);
@@ -116,7 +116,7 @@ const [searchResults,setSearchResults]=useState([])
       return {formated}
 
   } catch (err) {
-    console.error("Fetch houses error:", err);
+    // console.error("Fetch houses error:", err);
     return [];
   }finally{
     setHouseLoading(false)
@@ -131,7 +131,7 @@ const fetchMyHouses = async () => {
    if(formatted){setMyHouseReady(true)}
     return formatted;
   } catch (err) {
-    console.error("Fetch my houses error:", err);
+    // console.error("Fetch my houses error:", err);
     return [];
   }
 };
@@ -146,7 +146,7 @@ const fetchRecommendedHouses = async () => {
     // Just shuffle + slice 3 results for now
     return data.sort(() => 0.5 - Math.random()).slice(0, 3);
   } catch (err) {
-    console.error("Fetch recommended houses error:", err);
+    // console.error("Fetch recommended houses error:", err);
     return [];
   }
 };
@@ -168,7 +168,7 @@ const toggleLike = async (houseId) => {
         : [...prev, houseId] // like
     );
   } catch (err) {
-    console.error("Error toggling like:", err);
+    // console.error("Error toggling like:", err);
   }
 };
 const fetchUserProfile = async () => {
@@ -176,7 +176,7 @@ const fetchUserProfile = async () => {
     const res = await API.get("/auth/me"); // endpoint that returns current user
     setUser(res.data);
   } catch (err) {
-    console.error("Error fetching user profile:", err);
+    // console.error("Error fetching user profile:", err);
     setUser(null);
   }
 };
@@ -221,7 +221,7 @@ setIsLogin(false)
     // setHouses(house)
   }
    catch(error){
-    console.log('init load error',error)
+    // console.log('init load error',error)
    }finally{
     setLoading(false)
    }
