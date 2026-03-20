@@ -28,7 +28,7 @@ const EditHousePage = lazy(() => import("@/Page-component/EditHousePage"));
 
 // Admin Router
 const AdminRouter = lazy(() => import("@/admin/AdminRouter").then(module => ({ default: module.AdminRouter })));
-
+const AdminLogin = lazy(() => import("@/admin/pages/login/login"));
 function AnimatedRouter() {
   const location = useLocation();
 
@@ -133,7 +133,7 @@ function AnimatedRouter() {
 
           {/* Admin Route - No Default Layout */}
           <Route path="/cimessadmin/*" element={<AdminRouter />} />
-
+          <Route path="/cimessadmin/login" element={<AdminLogin />} />
         </Routes>
       </Suspense>
     </AnimatePresence>

@@ -4,30 +4,43 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 
-export default function LoginComponent({ header }) {
+export default function LoginComponent({ header, path = "/", showRegAndLogin = true }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [state, setState] = useState(false);
-  const { login } = useLoginAuth();
+  const { login,adminLogin } = useLoginAuth();
 
   async function handleLogin(e) {
     setState(true);
     e.preventDefault();
     try {
       await login(email, password);
-      navigate("/loading", { state: { redirectTo: "/" } });
+      navigate("/loading", { state: { redirectTo: path } });
+
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed");
     } finally {
       setState(false);
     }
   }
+  async function handleAdminLogin(e){
+  setState(true);
+  e.preventDefault();
+  try {
+    await adminLogin(email,password);
+    navigate("/loading", { state: { redirectTo: path } });
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Login failed");
+  } finally {
+    setState(false);
+  }
+}
 
   return (
     <div className="w-full max-w-md mx-auto p-6 bg-card rounded-xl shadow-lg border border-border">
       <h1 className="text-2xl font-bold text-center mb-6 text-foreground">{header || "Login"}</h1>
-      <form onSubmit={handleLogin} className="space-y-4">
+      <form onSubmit={showRegAndLogin?handleLogin:handleAdminLogin} className="space-y-4">
         <Input
           label="Email"
           type="email"
@@ -57,15 +70,15 @@ export default function LoginComponent({ header }) {
           {state ? "Logging in..." : "Login"}
         </button>
 
-        <div className="text-center text-sm text-muted-foreground mt-4">
+        {showRegAndLogin && <div className="text-center text-sm text-muted-foreground mt-4">
           Don't have an account? <Link to="/register" className="text-primary hover:underline font-semibold">Register now</Link>
-        </div>
+        </div>}
 
         <hr className="my-6 border-border" />
 
-        <Link className="text-center block text-sm text-muted-foreground hover:text-foreground transition-colors" to='/RecoverPassword'>
+        {showRegAndLogin && <Link className="text-center block text-sm text-muted-foreground hover:text-foreground transition-colors" to='/RecoverPassword'>
           Forgot Password?
-        </Link>
+        </Link>}
       </form>
     </div>
   );

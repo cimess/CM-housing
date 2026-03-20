@@ -1,6 +1,8 @@
 import React from "react";
 import { useTable, useNavigation, useDelete, useUpdate } from "@refinedev/core";
 import { Edit, Trash2, MapPin, Home, CheckCircle, XCircle, ToggleLeft, ToggleRight } from "lucide-react";
+import { useLoginAuth } from "@/Authentication/Usecontext-logic";
+import { useNavigate } from "react-router-dom";
 
 export const HouseList = () => {
   const { tableQueryResult, setFilters, current, setCurrent, pageCount, pageSize, setPageSize } = useTable({
@@ -30,6 +32,15 @@ export const HouseList = () => {
     return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(price);
   };
 
+    const {isAdminLogin} = useLoginAuth();
+
+    const navigate = useNavigate();
+
+    if(!isAdminLogin){
+      console.log("unauthorized");
+      navigate('/cimessadmin/login');
+      return
+    }
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">

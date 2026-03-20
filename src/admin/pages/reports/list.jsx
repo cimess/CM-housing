@@ -2,6 +2,7 @@ import React from "react";
 import { useTable, useUpdate, useDelete } from "@refinedev/core";
 import { useNavigate } from "react-router-dom";
 import { Trash2, CheckCircle, XCircle, AlertTriangle, ExternalLink } from "lucide-react";
+import { useLoginAuth } from "@/Authentication/Usecontext-logic";
 
 export const ReportList = () => {
   const { tableQueryResult, current, setCurrent, pageCount, pageSize, setPageSize } = useTable({
@@ -12,8 +13,6 @@ export const ReportList = () => {
   const reports = tableQueryResult?.data?.data || [];
   const { mutate: updateReport } = useUpdate();
   const { mutate: deleteReport } = useDelete();
-  const navigate = useNavigate();
-
 
   const handleStatusChange = (id, status) => {
     updateReport({
@@ -27,6 +26,15 @@ export const ReportList = () => {
     });
   };
 
+    const {isAdminLogin} = useLoginAuth();
+
+    const navigate = useNavigate();
+
+    if(!isAdminLogin){
+      console.log("unauthorized");
+      navigate('/cimessadmin/login');
+      return
+    }
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">

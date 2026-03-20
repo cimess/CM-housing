@@ -7,7 +7,6 @@ import { ReportShow } from "./pages/reports/show";
 import { Dashboard } from "./pages/dashboard";
 import { AdminLayout } from "./components/AdminLayout";
 import { Route, Routes, Outlet } from "react-router-dom";
-
 export const AdminRouter = () => {
   return (
     <Refine

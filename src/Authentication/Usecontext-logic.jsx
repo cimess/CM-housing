@@ -9,6 +9,7 @@ const LoginAuthContext = createContext();
 
 export function LoginAuth({ children }) {
   const [isLogin, setIsLogin] = useState(false);
+  const [isAdminLogin,setIsAdminLogin]=useState(false)
   const [loading, setLoading] = useState(true);
   const [accessToken, setAccessTokenState] = useState(() => getAccessToken());
    const [houses, setHouses] = useState([]);
@@ -329,6 +330,16 @@ setLoading(false);
     return res;
   };
 
+
+  const adminLogin=async(email,password)=>{
+
+    const res=await API.post("/auth/admin-login",{email,password});
+    const token =res.data?.accessToken;
+    if(token){
+      setToken(token);
+      setIsAdminLogin(true)
+    }
+  }
   const logout = async () => {
     try {
       await API.post("/auth/logout");
@@ -342,7 +353,7 @@ setLoading(false);
 
   return (
     <LoginAuthContext.Provider
-      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken,houses,setHouses,fetchHouses,fetchRecommendedHouses,fetchMyHouses,toggleLike,likedHouses,user, updateUser, houseLoading,fullLet,shortLet,searchResults,hasMore, refreshHouses  }}
+      value={{ isLogin, setIsLogin, loading, login, logout, accessToken, setAccessToken: setToken,houses,setHouses,fetchHouses,fetchRecommendedHouses,fetchMyHouses,toggleLike,likedHouses,user, updateUser, houseLoading,fullLet,shortLet,searchResults,hasMore, refreshHouses,isAdminLogin,setIsAdminLogin,adminLogin  }}
     >
     {children}
     </LoginAuthContext.Provider>

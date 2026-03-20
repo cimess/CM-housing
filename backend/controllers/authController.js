@@ -162,7 +162,39 @@ exports.clearCache = async (req, res) => {
   }
 };
 
+exports.adminLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email, });
+    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!user.roles.includes('admin'))return res.status(403).json({message:'You are not authorized to login as admin'})
+    const match = await bcrypt.compare(password, user.passwordHash);
+    if (!match) return res.status(400).json({ message: 'Invalid credentials' });
 
+    if (!user.isEmailVerified) return res.status(403).json({ message: 'Verify your email' });
+
+    const accessToken = signAccessToken({ sub: user._id, roles: user.roles });
+    const tokenValue = signRefreshToken();
+
+    const refreshDoc = new RefreshToken({
+      user: user._id,
+      token: tokenValue,
+      expiresAt: new Date(Date.now() + 7*24*60*60*1000),
+      createdByIp: req.ip
+    });
+    await refreshDoc.save();
+
+    res.cookie(CLIENT_COOKIE_NAME, tokenValue, { ...COOKIE_OPTIONS, maxAge: 7*24*60*60*1000 });
+
+    return res.json({
+      accessToken,
+      user: { id: user._id, email: user.email, name: user.name }
+    });
+  } catch (err) {
+    console.error('🚨 Login error:', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
 
 exports.login = async (req, res) => {
   try {

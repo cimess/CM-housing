@@ -9,6 +9,8 @@ router.post('/register', registerLimiter, authController.register);
 // Login
 router.post('/login', loginLimiter, authController.login);
 
+// Admin Login
+router.post('/admin-login', authController.adminLogin)
 // Fetch logged-in user
 router.get('/me', authenticate, authController.me);
 

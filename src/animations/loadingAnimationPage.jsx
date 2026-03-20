@@ -1,10 +1,12 @@
 // LoadingPage.jsx
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import LoadingAnimation from "./LoadingAnim";
 
-export default function LoadingPage({ redirectTo = "/", delay = 2000 }) {
+export default function LoadingPage({ redirectTo: defaultRedirectTo = "/", delay = 2000 }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.redirectTo || defaultRedirectTo;
 
   useEffect(() => {
     const timer = setTimeout(() => {
